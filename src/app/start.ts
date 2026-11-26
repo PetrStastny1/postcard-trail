@@ -7,6 +7,8 @@ import type { PlatformAdapter } from '../platform/types.ts'
 export interface GameSession {
   adapter: PlatformAdapter
   storage: GameStorage
+  /** Created once per page load; the active run names the tab that owns it. */
+  tabId: string
   feedback: Feedback
   settings: Settings
 }
@@ -36,12 +38,13 @@ async function launch({ createAdapter, createTabId, createFeedback, showTitle }:
   const adapter = createAdapter()
   adapter.loadingStarted()
   await adapter.init()
-  const storage = new GameStorage(adapter.store, createTabId())
+  const tabId = createTabId()
+  const storage = new GameStorage(adapter.store, tabId)
   const settings = storage.loadSettings()
   const feedback = createFeedback({ sound: settings.soundEnabled, vibration: settings.vibrationEnabled })
   feedback.setPortalMuted(adapter.portalAudioMuted())
   adapter.onPortalAudioMutedChange((muted) => feedback.setPortalMuted(muted))
-  const session: GameSession = { adapter, storage, feedback, settings }
+  const session: GameSession = { adapter, storage, tabId, feedback, settings }
   showTitle(session)
   adapter.loadingFinished()
   return session

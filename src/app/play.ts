@@ -1,0 +1,321 @@
+import type { Catalog, Route, Stop } from '../content/types.ts'
+import { elsewhereTitleId, elsewhereWindow, pauseTitleId, pauseWindow, zoomTitleId, zoomWindow } from '../game/render/playDialogs.ts'
+import { createPlayScreen, type PlayScene } from '../game/render/playScreen.ts'
+import { currentStop, type RunState } from '../game/logic/run.ts'
+import { ownsActiveRun, storageKeys } from '../game/storage/schema.ts'
+import { openDialog, topDialog, type OpenDialog } from '../ui/dialog.ts'
+import { createRunController } from './runController.ts'
+import { rememberHint } from './settings.ts'
+import type { GameSession } from './start.ts'
+
+/** The adapter's key for the active run, as `storage` events name it. */
+const activeRunStorageKey = `postcard-trail:${storageKeys.activeRun}`
+const fiftyFiftyHintId = 'fifty-fifty'
+const hintMs = 1500
+const choiceKeys = ['1', '2', '3', '4']
+
+export interface PlayOptions {
+  session: GameSession
+  catalog: Catalog
+  route: Route
+  /** A new run, or a restored one, which is always paused. */
+  run: RunState
+  /** Puts the game screen into the app's screen slot. */
+  mount(screen: HTMLElement): void
+  /** Opens settings over the pause; `returnFocusId` is the control focused when settings close. */
+  openSettings(returnFocusId: string): void
+  /** Back to the title: the app first calls `leave()` and then `dispose()`. */
+  goHome(): void
+}
+
+export interface PlaySession {
+  /** Draws the screen and the open game windows again in the current language. */
+  redraw(): void
+  /** × and Home: saves the run paused and reports `route_left`; nothing happens after a finish or a takeover. */
+  leave(): void
+  dispose(): void
+}
+
+let placeholderIds: Promise<ReadonlySet<string>> | undefined
+let knownPlaceholderIds: ReadonlySet<string> | undefined
+
+/** Fetched once per page; a failed fetch is tried again with the next scene. */
+function placeholderSceneIds(): Promise<ReadonlySet<string>> {
+  if (placeholderIds) return placeholderIds
+  const loading = fetch(`${import.meta.env.BASE_URL}scenes/placeholders.json`).then(async (response) => {
+    if (!response.ok) throw new Error(`placeholders.json answered ${response.status}`)
+    const list: { stopIds: string[] } = await response.json()
+    knownPlaceholderIds = new Set(list.stopIds)
+    return knownPlaceholderIds
+  })
+  placeholderIds = loading
+  loading.catch(() => {
+    placeholderIds = undefined
+  })
+  return loading
+}
+
+function sceneUrl(stop: Stop): string {
+  return `${import.meta.env.BASE_URL}${stop.sceneAsset}`
+}
+
+/**
+ * The game screen of one run: loads the scenes, turns input, time, page visibility and `storage` events into
+ * controller calls, and opens the pause, zoom and "continues in another tab" windows.
+ */
+export function startPlay({ session, catalog, route, run, mount, openSettings, goHome }: PlayOptions): PlaySession {
+  const listeners = new AbortController()
+  let disposed = false
+  let scene: PlayScene = { status: 'loading', image: null, placeholder: false }
+  let loadedRound = 0
+  let sceneWaitsForVisiblePage = false
+  let tickTimer: ReturnType<typeof setTimeout> | undefined
+  let hintTimer: ReturnType<typeof setTimeout> | undefined
+  let hintVisible = false
+  let pauseDialog: OpenDialog | null = null
+  let pauseEnd: 'resume' | 'quiet' = 'resume'
+  let zoomDialog: OpenDialog | null = null
+  let zoomEnd: 'resume' | 'quiet' = 'resume'
+  let elsewhereDialog: OpenDialog | null = null
+  let leaving = false
+
+  const routeStop = (stopId: string): Stop => {
+    const stop = route.stops.find((candidate) => candidate.id === stopId)
+    if (!stop) throw new Error(`Stop ${stopId} is not in route ${route.id}.`)
+    return stop
+  }
+
+  const controller = createRunController({
+    run,
+    storage: session.storage,
+    adapter: session.adapter,
+    feedback: session.feedback,
+    catalog,
+    now: () => performance.now(),
+    listener: {
+      changed(changedRun) {
+        showFiftyFiftyHintOnce(changedRun)
+        render()
+        if (changedRun.round !== loadedRound) void loadScene()
+      },
+      finished: goHome,
+      ownerLost: showElsewhere,
+    },
+  })
+
+  const screen = createPlayScreen({
+    onLeave: goHome,
+    onPause: openPause,
+    onZoom: openZoom,
+    onRetry: () => void loadScene(),
+    onChoose: (choiceId) => controller.choose(choiceId),
+    onFiftyFifty: () => controller.useFiftyFifty(),
+    onExtraTime: () => controller.useExtraTime(),
+    onNext: () => controller.next(),
+  })
+
+  function render(): void {
+    if (disposed) return
+    screen.show({
+      locale: session.settings.locale,
+      route,
+      run: controller.run,
+      scene,
+      remainingMs: controller.remainingMs(),
+      fiftyFiftyHint: hintVisible,
+    })
+    scheduleTick()
+  }
+
+  /** A tick at every whole second of the countdown redraws the time and saves a checkpoint. */
+  function scheduleTick(): void {
+    clearTimeout(tickTimer)
+    const current = controller.run
+    if (controller.stopped || current.phase !== 'question' || current.paused || current.untimed) return
+    const untilNextSecond = controller.remainingMs() % 1000 || 1000
+    tickTimer = setTimeout(() => controller.tick(), untilNextSecond)
+  }
+
+  /** Brief §6: on the second stop the label next to 50:50 shows once for 1 500 ms; the time keeps running. */
+  function showFiftyFiftyHintOnce(changedRun: RunState): void {
+    const shown = session.settings.shownHintIds.includes(fiftyFiftyHintId)
+    if (shown || changedRun.stopIndex !== 1 || changedRun.phase !== 'question' || changedRun.paused) return
+    if (changedRun.usedLifelines.includes('fiftyFifty')) return
+    rememberHint(session, fiftyFiftyHintId)
+    hintVisible = true
+    hintTimer = setTimeout(() => {
+      hintVisible = false
+      render()
+    }, hintMs)
+  }
+
+  async function loadScene(): Promise<void> {
+    const loadingRun = controller.run
+    const stop = routeStop(currentStop(loadingRun).stopId)
+    loadedRound = loadingRun.round
+    scene = { status: 'loading', image: null, placeholder: knownPlaceholderIds?.has(stop.id) ?? false }
+    render()
+    const image = new Image()
+    image.src = sceneUrl(stop)
+    let placeholders: ReadonlySet<string>
+    try {
+      ;[placeholders] = await Promise.all([placeholderSceneIds(), image.decode()])
+    } catch {
+      // A failed scene stops nothing else: the error state offers "Try again" for the same asset.
+      if (disposed || controller.run.round !== loadingRun.round) return
+      scene = { ...scene, status: 'error' }
+      render()
+      return
+    }
+    if (disposed || controller.run.round !== loadingRun.round) return
+    scene = { status: 'ready', image, placeholder: placeholders.has(stop.id) }
+    render()
+    if (document.visibilityState === 'hidden') sceneWaitsForVisiblePage = true
+    else sceneShown()
+  }
+
+  /** The scene is decoded, the choices are drawn and the page is visible. */
+  function sceneShown(): void {
+    sceneWaitsForVisiblePage = false
+    controller.sceneReady()
+    const nextRunStop = controller.run.stops[controller.run.stopIndex + 1]
+    if (nextRunStop) new Image().src = sceneUrl(routeStop(nextRunStop.stopId))
+    // A restored run comes back paused and waits in the pause window.
+    if (controller.run.paused) openPause()
+  }
+
+  function openPause(): void {
+    if (controller.stopped || pauseDialog || scene.status === 'error') return
+    controller.pause()
+    if (controller.stopped) return
+    pauseEnd = 'resume'
+    pauseDialog = openDialog({
+      labelledBy: pauseTitleId,
+      content: pauseContent(),
+      returnFocusId: 'play-pause',
+      onClosed: () => {
+        pauseDialog = null
+        if (pauseEnd === 'resume' && !disposed) controller.resume()
+      },
+    })
+  }
+
+  function pauseContent(): HTMLElement[] {
+    return pauseWindow({ onContinue: () => pauseDialog?.close(), onSettings: () => openSettings('pause-settings'), onHome: goHome })
+  }
+
+  function openZoom(): void {
+    if (!scene.image || zoomDialog || controller.stopped) return
+    controller.zoomOpened()
+    zoomEnd = 'resume'
+    zoomDialog = openDialog({
+      labelledBy: zoomTitleId,
+      content: zoomContent(scene.image),
+      returnFocusId: 'play-zoom',
+      className: 'zoom-window',
+      onClosed: () => {
+        zoomDialog = null
+        controller.zoomClosed(zoomEnd === 'resume')
+        render()
+      },
+    })
+  }
+
+  function zoomContent(image: HTMLImageElement): HTMLElement[] {
+    const stop = routeStop(currentStop(controller.run).stopId)
+    const caption = scene.placeholder ? stop.sceneAlt[session.settings.locale] : null
+    return zoomWindow({ image, caption, onClose: () => zoomDialog?.close() })
+  }
+
+  /** Closes the game windows and settings without resuming the question. */
+  function closeWindowsQuietly(): void {
+    pauseEnd = 'quiet'
+    zoomEnd = 'quiet'
+    for (let open = topDialog(); open; open = topDialog()) open.close()
+  }
+
+  function showElsewhere(): void {
+    clearTimeout(tickTimer)
+    if (leaving) return
+    closeWindowsQuietly()
+    render()
+    elsewhereDialog = openDialog({
+      labelledBy: elsewhereTitleId,
+      content: elsewhereWindow({ onHome: () => elsewhereDialog?.close() }),
+      returnFocusId: 'play-pause',
+      onClosed: () => {
+        elsewhereDialog = null
+        if (!disposed) goHome()
+      },
+    })
+  }
+
+  window.addEventListener(
+    'keydown',
+    (event) => {
+      if (topDialog() || event.altKey || event.ctrlKey || event.metaKey) return
+      if (event.key === 'Escape') {
+        // Without this the same Escape would close the pause window it has just opened.
+        event.preventDefault()
+        openPause()
+        return
+      }
+      const index = choiceKeys.indexOf(event.key)
+      if (index !== -1) controller.choose(currentStop(controller.run).choiceIds[index])
+    },
+    { signal: listeners.signal },
+  )
+
+  document.addEventListener(
+    'visibilitychange',
+    () => {
+      if (document.visibilityState === 'hidden') {
+        clearTimeout(tickTimer)
+        if (zoomDialog) {
+          zoomEnd = 'quiet'
+          zoomDialog.close()
+        }
+        controller.pageHidden()
+        render()
+        return
+      }
+      controller.ownershipChecked(session.storage.isActiveRunOwner())
+      if (controller.stopped) return
+      if (sceneWaitsForVisiblePage) sceneShown()
+      else if (controller.run.paused && !zoomDialog) openPause()
+    },
+    { signal: listeners.signal },
+  )
+
+  window.addEventListener(
+    'storage',
+    (event) => {
+      if (event.key === activeRunStorageKey) controller.ownershipChecked(ownsActiveRun(event.newValue, session.tabId))
+    },
+    { signal: listeners.signal },
+  )
+
+  mount(screen.element)
+  void loadScene()
+
+  return {
+    redraw() {
+      render()
+      pauseDialog?.replaceContent(pauseContent())
+      if (zoomDialog && scene.image) zoomDialog.replaceContent(zoomContent(scene.image))
+      elsewhereDialog?.replaceContent(elsewhereWindow({ onHome: () => elsewhereDialog?.close() }))
+    },
+    leave() {
+      if (disposed) return
+      leaving = true
+      closeWindowsQuietly()
+      controller.leave()
+    },
+    dispose() {
+      disposed = true
+      clearTimeout(tickTimer)
+      clearTimeout(hintTimer)
+      listeners.abort()
+    },
+  }
+}
