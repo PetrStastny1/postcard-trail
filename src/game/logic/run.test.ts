@@ -156,19 +156,33 @@ test('two different random sources give a different choice order on at least one
   }
 })
 
-test('B09 keeps its source order in a city run for any random source', () => {
-  const metroStop: Stop = {
-    ...stop('B09'),
-    choices: [
-      { id: 'M1', label: text },
-      { id: 'M2', label: text },
-      { id: 'M3', label: text },
-      { id: 'M4', label: text },
-    ],
-    correctChoiceId: 'M1',
+const budapest = route('budapest', 'B')
+budapest.stops[8] = {
+  ...stop('B09'),
+  choices: [
+    { id: 'M1', label: text },
+    { id: 'M2', label: text },
+    { id: 'M3', label: text },
+    { id: 'M4', label: text },
+  ],
+  correctChoiceId: 'M1',
+}
+
+test('a city run with a random source that always returns 0 or 0.999 has the exact choice order on every stop', () => {
+  const expectedOrders = [
+    { random: () => 0, order: ['b', 'c', 'd', 'a'] },
+    { random: () => 0.999, order: ['a', 'b', 'c', 'd'] },
+  ]
+  for (const { random, order } of expectedOrders) {
+    const run = startCityRun({ route: budapest, runId: 'run-1', untimed: false, random })
+    run.stops.forEach((runStop) => {
+      const expected = runStop.stopId === 'B09' ? ['M1', 'M2', 'M3', 'M4'] : order.map((letter) => `${runStop.stopId}-${letter}`)
+      assert.deepEqual(runStop.choiceIds, expected, runStop.stopId)
+    })
   }
-  const budapest = route('budapest', 'B')
-  budapest.stops[8] = metroStop
+})
+
+test('B09 keeps its source order in a city run for any random source', () => {
   for (const random of [seeded(1), seeded(2), () => 0]) {
     const run = startCityRun({ route: budapest, runId: 'run-1', untimed: false, random })
     assert.deepEqual(run.stops[8].choiceIds, ['M1', 'M2', 'M3', 'M4'])
@@ -344,6 +358,8 @@ test('a pause at the deadline ends the question as a timeout', () => {
   const run = reduceRun(question(cityRun()), { type: 'pause', round: 1, elapsedMs: 25_000 })
   assert.equal(run.phase, 'feedback')
   assert.equal(run.results[0].outcome, 'timeout')
+  assert.equal(run.paused, true)
+  assert.equal(next(run), run)
 })
 
 test('pause while loading or in feedback does not touch the time and Next waits for resume', () => {

@@ -164,8 +164,8 @@ export function reduceRun(run: RunState, action: RunAction): RunState {
     case 'pause': {
       if (run.paused) return run
       if (!isRunning(run)) return { ...run, paused: true }
-      const elapsed = elapse(run, action.elapsedMs)
-      return elapsed.phase === 'question' ? { ...elapsed, paused: true } : elapsed
+      // A pause that reaches the deadline still pauses the feedback, so a hidden page waits for resume.
+      return { ...elapse(run, action.elapsedMs), paused: true }
     }
 
     case 'resume':

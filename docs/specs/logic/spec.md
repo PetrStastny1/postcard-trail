@@ -46,7 +46,7 @@ Fáze: `loading` (scéna se načítá, čas neběží; zbývající čas je limi
 - **R8 +10 s.** Jednou za průchod, jen ve fázi `question` bez pauzy a jen v časovaném režimu. Přičte 10 000 ms. V nečasovaném režimu je nedostupný a akce se ignoruje.
 - **R9 Kombinace.** Na jedné otázce lze použít 50:50 i +10 s a pak správně odpovědět.
 - **R10 Nečasovaný režim.** Volba se přebírá jen při startu nového průchodu. Odpočet neběží, timeout nenastane, `elapsedMs` se ignoruje.
-- **R11 Pauza.** Pauza zmrazí čas (`elapsedMs` pauzovací akce se započte podle R3). Pokračování po pauze čas nemění. Pauza je možná i ve fázi `loading` a `feedback` a čas tam neovlivní. Pauza přesně na nule skončí timeoutem podle R3. Pokračování zruší probíhající pokus o reklamu (R13).
+- **R11 Pauza.** Pauza zmrazí čas (`elapsedMs` pauzovací akce se započte podle R3). Pokračování po pauze čas nemění. Pauza je možná i ve fázi `loading` a `feedback` a čas tam neovlivní. Pauza přesně na nule skončí timeoutem podle R3 a průchod zůstane v pauze i ve fázi `feedback`, takže „Další“ čeká na pokračování. Pokračování zruší probíhající pokus o reklamu (R13).
 - **R12 Přeskočit za video – dostupnost.** Jen v pauze ve fázi `question`, jednou za průchod, od 3. zastávky průchodu (index ≥ 2): ve městě od 3. z 10, v denní výzvě jen u 3. ze 3 (rozhodnutí v LOG.md). Zda portál reklamy nabízí, rozhoduje app podle adaptéru; logika žolík jen povolí nebo zakáže podle stavu.
 - **R13 Přeskočit za video – pokus.** Žádost o reklamu uloží ID pokusu, jen když je žolík dostupný podle R12 a žádný pokus neprobíhá. Výsledek reklamy se přijme jen s ID právě probíhajícího pokusu a jen jednou. `completed` uzavře otázku jako `skipped`, označí žolík jako použitý, zruší pauzu a přejde do `feedback`. `cancelled` a `unavailable` pokus zruší, otázka zůstane v pauze se stejným časem a žolík zůstane k dispozici. Výsledek s jiným ID, opakovaný výsledek nebo výsledek bez probíhajícího pokusu se ignoruje. Bez potvrzeného `completed` přeskočení nevznikne. Pokračování z pauzy pokus zruší, takže pozdní výsledek běžící otázku nepřeskočí.
 - **R14 Další.** „Další“ je jediná akce, která ve fázi `feedback` posouvá hru, a v pauze se ignoruje. Po zastávce, která není poslední, přejde na další zastávku do `loading` s novým číslem kola. Po poslední přejde do `summary`.
@@ -66,6 +66,7 @@ Fáze: `loading` (scéna se načítá, čas neběží; zbývající čas je limi
 - Reklama na 2. zastávce města nebo na 2. otázce denní výzvy → zakázáno. Na 3. otázce denní výzvy začínající zastávkou 1, 2 i 6 → povoleno.
 - Nečasovaný režim: libovolně velké `elapsedMs` nevede k timeoutu, +10 s nejde použít.
 - Pokus o reklamu, pak pokračování z pauzy a pozdní `completed` → ignorováno, otázka běží dál.
+- Pauza s `elapsedMs` rovným zbývajícímu času → timeout, fáze `feedback` v pauze, „Další“ ignorováno do pokračování.
 - Pauza, obnova ze serializovaného JSON a pokračování → stejný zbývající čas a pořadí voleb.
 - Deset timeoutů → `summary`, 0 správných.
 
