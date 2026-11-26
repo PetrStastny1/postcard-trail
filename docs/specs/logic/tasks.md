@@ -27,12 +27,12 @@ Požadavky a scénáře jsou ve [spec.md](spec.md). Vývojář balíčku zaškrt
 
 ## Balíček 4: Uložení (`storage`), po balíčcích 1–3
 
-- [ ] Oddíly a schéma v1, validace po oddílech a po záznamech (S1, S2, S9)
-- [ ] Verze: migrace starší, zachování novější, přepis poškozené (S3)
-- [ ] Slučování odměn, jeden aktivní průchod, dokončení (S4, S5, S7)
-- [ ] Vlastnictví mezi kartami (S6)
-- [ ] Paměťová náhrada a jednorázové upozornění (S8)
-- [ ] Testy scénářů ze spec.md §5 nad paměťovým `KeyValueStore` v testu, Rozhraní doplněné
+- [x] Oddíly a schéma v1, validace po oddílech a po záznamech (S1, S2, S9)
+- [x] Verze: zachování novější, přepis poškozené; starší verze neexistují (S3)
+- [x] Slučování odměn, jeden aktivní průchod, dokončení (S4, S5, S7)
+- [x] Vlastnictví mezi kartami (S6)
+- [x] Paměťová náhrada a jednorázové upozornění (S8)
+- [x] Testy scénářů ze spec.md §5 nad paměťovým `KeyValueStore` v testu, Rozhraní doplněné
 
 ## Předání oblasti
 
