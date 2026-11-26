@@ -190,7 +190,9 @@ function parseStop(file: string, section: string, verifiedOn: string, problems: 
         if (stability) stopProblems.push('stability line appears twice')
         stability = stabilityMatch[2] === undefined ? {} : { changeableFact: stabilityMatch[2] }
       }
-      for (const [, text, bracketedUrl, bareUrl] of line.matchAll(/\[([^\]]+)\]\((?:<([^>]+)>|([^)\s]+))\)/g)) {
+      // A bare URL may hold one level of parentheses, as Wikimedia file names often do.
+      const linkPattern = /\[([^\]]+)\]\((?:<([^>]+)>|((?:[^()\s]|\([^()\s]*\))+))\)/g
+      for (const [, text, bracketedUrl, bareUrl] of line.matchAll(linkPattern)) {
         links.push({ text, url: bracketedUrl ?? bareUrl })
       }
       continue
