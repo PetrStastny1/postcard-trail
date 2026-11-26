@@ -20,10 +20,10 @@ Požadavky a scénáře jsou ve [spec.md](spec.md). Vývojář balíčku zaškrt
 
 ## Balíček 3: Denní výzva (`daily`), po balíčcích 1 a 2
 
-- [ ] FNV-1a 32bit, datum UTC z ms, výběr verze katalogu, rozvrh (D1–D3, D10)
-- [ ] Start denního průchodu s FNV permutacemi a pevným B09 (D4, D5)
-- [ ] Denní výsledky, série dnů, slučování, zpřístupnění (D6–D9)
-- [ ] Testy scénářů ze spec.md §4 včetně katalogů 30, 40 a 47 měst, Rozhraní doplněné
+- [x] FNV-1a 32bit, datum UTC z ms, výběr verze katalogu, rozvrh (D1–D3, D10)
+- [x] Start denního průchodu s FNV permutacemi a pevným B09 (D4, D5)
+- [x] Denní výsledky, série dnů, slučování, zpřístupnění (D6–D9)
+- [x] Testy scénářů ze spec.md §4 včetně katalogů 30, 40 a 47 měst, Rozhraní doplněné
 
 ## Balíček 4: Uložení (`storage`), po balíčcích 1–3
 
