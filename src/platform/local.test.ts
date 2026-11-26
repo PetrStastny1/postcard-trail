@@ -1,6 +1,3 @@
-// Temporary until the director changes the tsconfig setup: this directive adds Node types
-// to the whole tsconfig.json program, not just to this file.
-/// <reference types="node" />
 import assert from 'node:assert/strict'
 import { afterEach, beforeEach, mock, test } from 'node:test'
 import { createLocalAdapter, LATE_RESULT_DELAY_MS, SIMULATED_SPOT_MS } from './local.ts'
