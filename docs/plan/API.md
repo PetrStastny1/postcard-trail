@@ -19,6 +19,8 @@ Sdílené soubory `package.json`, `package-lock.json`, `vite.config.ts`, `playwr
 
 - `src/content/catalog.json` a `src/content/catalog.ts`: `export const catalog: Catalog`. Malý, načítá se staticky. Datum `effectiveUtcDate` první verze je jen tady.
 - `src/content/routes/<cityId>.json`: generovaná data trasy, commitují se. Importér přenáší texty z `docs/game/cities/*.md` 1:1.
+- `Stop.place` je text výsledku. U 30 zastávek obsahuje název správné volby, proto se na obrazovce otázky nesmí objevit v textu ani v přístupných názvech (BRIEF §10, rozhodnutí arbitra v LOG). Validátor ho na únik nekontroluje.
+- Souřadnice měst jsou v `tools/content/city-coordinates.json` (Wikidata P625). Městské soubory je nemají; každý nový balík měst doplní řádek do této tabulky.
 - `src/content/index.ts`: `loadRoute(cityId: string): Promise<Route>`, každá trasa ve vlastním chunku (lazy-load).
 - `public/scenes/<stopId>.webp`: scéna 1280 × 1280, cíl do 150 kB. Zástupné i finální mají stejnou cestu a formát.
 - `public/scenes/placeholders.json`: `{ "stopIds": string[] }`, seznam scén, které jsou zatím zástupné. Po dodání finální scény se ID ze seznamu odebere. Aplikace podle něj zobrazí pod scénou viditelný `sceneAlt`.

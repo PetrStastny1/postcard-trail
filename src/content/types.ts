@@ -16,6 +16,7 @@ export interface Choice {
 export interface Stop {
   /** Stable ID from the city file heading, e.g. `PAR01`. Also identifies the scene. */
   id: string
+  /** Result text, shown only after the answer. It names the correct choice for 30 stops. */
   place: Localized
   difficulty: Difficulty
   /**

@@ -74,7 +74,7 @@ Kontrakty od této chvíle mění jen ředitel.
 - Odpovědnost: všechny obrazovky z §10 v DOM/CSS, aplikační vrstva (skutečný čas, viditelnost stránky, kontrolní body, přechody mezi obrazovkami), texty `src/i18n`, napojení na logiku, obsah a platformu, e2e testy, ověření přístupnosti, rozměrů a výkonu.
 - Hranice: `src/main.ts`, `src/app/`, `src/game/render/`, `src/ui/`, `src/i18n/`, `src/styles/` (tokeny jen čte), `e2e/`, `index.html`, `docs/specs/app/`. Validátor obsahu kontroluje i `src/i18n/*.json` a app ho drží zelený.
 - Závisí na: výsledcích oblastí content, logic a platform (vlna 1) a na schválené klíčové obrazovce.
-- Akceptační kritéria: K3, K6, K7 (výkon a lazy-load), UI část K5 (potvrzení videa, stav nedostupnosti, skrytý žolík).
+- Akceptační kritéria: K3, K6, K7 (výkon a lazy-load), UI část K5 (potvrzení videa, stav nedostupnosti, skrytý žolík). Navíc test, že obrazovka otázky neukazuje `Stop.place` v UI ani v přístupných názvech, i v denní výzvě a po obnovení scény. Implementace obrazovky otázky musí projít kontrolami `docs/design/check-layout.mjs`.
 - Pracovní balíčky:
   1. Kostra aplikace: načítání, úvod s animací, nastavení, jazyk, navigace a křížky, potvrzení změny průchodu.
   2. Hra: otázka, výsledek, odpočet, žolíky, pauza, zvětšení scény, potvrzení videa, chyba načtení, kontrolní body.
