@@ -72,22 +72,24 @@ Scénáře:
 
 ## R4 Validace obsahu
 
-`npm run validate:content` (součást `npm test` i `npm run build`) zkontroluje data a při jakékoli chybě skončí nenulovým kódem a vypíše seznam chyb, každou na řádek s ID trasy nebo zastávky. Nikdy nevypíše stack trace. Cestu ke kořeni dat jde předat parametrem (`--root <adresář>` se stejnou strukturou jako repozitář), výchozí je repozitář.
+`npm run validate:content` (součást `npm test` i `npm run build`) zkontroluje data a při jakékoli chybě skončí nenulovým kódem a vypíše seznam chyb, každou na řádek s ID trasy nebo zastávky. Nikdy nevypíše stack trace. Cestu ke kořeni dat jde předat parametrem (`--root <adresář>` se stejnou strukturou jako repozitář), výchozí je repozitář. `tools/content/validate.ts` exportuje `validateContent(root?)`, která vrátí seznam chyb, a `countryQuestionStopIds(routes)` pro kontrolu 8.
 
-Pořadí: nejdřív se ověří existence souborů a struktura JSON (typy polí, povinná pole, n-tice čtyř voleb, lokalizované texty v `en` i `cs`). Věcné kontroly běží jen nad strukturálně platnými daty.
+Výpis začíná řádkem `Content validation failed:` a pokračuje jednou chybou na řádek ve tvaru `<trasa>: …`, `<trasa> <zastávka>: …`, `catalog <město>: …`, `catalog versions[<i>]: …`, `<soubor>: …` (chybějící soubor, neplatný JSON) nebo `src/i18n/<soubor> <klíč>: …`. Chyby importu městských souborů z kontroly 10 mají předponu `source`.
+
+Pořadí: nejdřív se ověří existence souborů a struktura JSON (typy polí, povinná pole, n-tice čtyř voleb, lokalizované texty v `en` i `cs`). Věcné kontroly běží jen nad strukturálně platnými daty: když existuje jakákoli chyba souborů nebo struktury katalogu či tras, vypíšou se jen tyto chyby.
 
 Kontroly:
 
 1. Složka `src/content/routes` existuje, počet tras se rovná počtu měst v katalogu a ID tras odpovídají katalogu i názvům souborů.
-2. Katalog má 20 měst v pořadí BRIEF §5, splňuje R2 a souřadnice leží v rozsahu Evropy (zeměpisná šířka 34–72, délka −25 až 50, pokrývá Reykjavík i města §5 řazená v M49 do Asie).
+2. Katalog má 20 měst v pořadí BRIEF §5 (pořadí dává `readContent`), splňuje R2 (alespoň jedna verze, platná data přísně vzestupně, každá další verze zachová předchozí a přidá aspoň jedno město na konec, poslední verze = `cities`), `name` města se shoduje s trasou a souřadnice leží v rozsahu Evropy (zeměpisná šířka 34–72, délka −25 až 50, pokrývá Reykjavík i města §5 řazená v M49 do Asie).
 3. Každá trasa má právě 10 zastávek, ID zastávek jsou jedinečná napříč katalogem a odpovídají vzoru `^[A-Z]+[0-9]{2}$`, `postcardQuestionId` je jedna ze zastávek trasy a pohlednice v katalogu jí odpovídá.
 4. Obtížnost podle pořadí: zastávky 1–4 `easy`, 5–8 `hard`, 9–10 `expert`. Expertní zastávky mají `distinguishingFeature`.
 5. Čtyři volby mají různá ID a v každém jazyce různé neprázdné popisky. `correctChoiceId` je jedna z nich.
-6. `sceneAsset` je `scenes/<id>.webp`, `sourceUrls` a `photoReferenceUrls` mají aspoň jednu adresu `https://`, `verifiedOn` je platné datum `YYYY-MM-DD`, `stability` je `stable` nebo `changeable`, `changeableFact` je neprázdný právě u `changeable`.
+6. `sceneAsset` je `scenes/<id>.webp`, `sourceUrls` a `photoReferenceUrls` mají aspoň jednu adresu a všechny jsou platné adresy `https://`, `verifiedOn` je platné datum `YYYY-MM-DD`, `stability` je `stable` nebo `changeable`, `changeableFact` je neprázdný právě u `changeable`.
 7. B09 zobrazuje přesně „Na kterou linku metra právě čekáš?“ / „Which metro line are you waiting for?“ a volby M1, M2, M3, M4 v tomto pořadí ve zdroji.
-8. Otázky na stát nebo státní vlajku jsou jen PAR02 a P01. Pozná je podle klíčových slov v anglické i české otázce (vlajka a stát / země, flag a country / state). Na současných datech kontrola najde právě PAR02 a P01, jinde nic.
-9. Únik odpovědi (K7): `question` ani `sceneAlt` v žádném jazyce neobsahuje popisek správné volby, porovnává se bez ohledu na velikost písmen a diakritiku. Žádný text v `src/i18n/*.json` (pokud existují) neobsahuje popisek správné volby žádné zastávky jako celé slovo či slovní spojení. `place` se nekontroluje, protože je to text výsledku (R6).
-10. Generovaná data odpovídají zdroji: import městských souborů v paměti dá stejné trasy a stejné `cities` jako commitnuté soubory.
+8. Otázky na stát nebo státní vlajku jsou jen PAR02 a P01. Pozná je podle celých slov v anglické nebo české otázce po odstranění diakritiky (EN `flag(s)`, `country`, `countries`, `state(s)`; CS tvary `vlajka`, `stát`, `státní`, `země`), stačí shoda v jednom jazyce. „Zeměkoule“ ani „statue“ se nepočítají. Na současných datech kontrola najde právě PAR02 a P01, jinde nic.
+9. Únik odpovědi (K7): `question` ani `sceneAlt` v žádném jazyce neobsahuje popisek správné volby, porovnává se bez ohledu na velikost písmen a diakritiku. Žádný řetězec v `src/i18n/*.json` (pokud složka existuje, včetně vnořených objektů a polí) neobsahuje popisek správné volby žádné zastávky v kterémkoli jazyce jako celé slovo či slovní spojení, opět bez ohledu na velikost písmen a diakritiku. Chybějící `src/i18n` není chyba. `place` se nekontroluje, protože je to text výsledku (R6).
+10. Generovaná data odpovídají zdroji: import městských souborů v paměti (`readContent(root)`) dá stejné trasy a stejné `cities` jako commitnuté soubory. Rozdíl se hlásí s ID trasy a pokynem `run npm run content:import`.
 11. Scény: pro každou zastávku existuje `public/scenes/<id>.webp`, je to WebP 1280 × 1280 a má nejvýš 150 kB. `public/scenes/placeholders.json` má tvar `{ "stopIds": string[] }`, obsahuje jen existující ID bez duplicit. Ve složce nejsou scény bez zastávky.
 
 Scénáře: ke každé kontrole existuje test na záměrně poškozených datech a aspoň jeden test spustí validátor jako proces nad vadnou kopií dat a ověří nenulový kód a čitelný výpis.

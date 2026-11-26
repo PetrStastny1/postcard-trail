@@ -18,9 +18,9 @@ Požadavky jsou v [spec.md](spec.md). WP1 je první, protože ostatní stavějí
 
 ## WP3 Validátor (`wp/content/validator`)
 
-- [ ] Strukturální kontrola JSON před věcnými a čitelný výpis chyb, parametr `--root` (R4).
-- [ ] Kontroly 1–10 z R4 s testy na poškozených datech.
-- [ ] Test, který spustí validátor jako proces nad vadnými daty a ověří nenulový exit.
+- [x] Strukturální kontrola JSON před věcnými a čitelný výpis chyb, parametr `--root` (R4).
+- [x] Kontroly 1–10 z R4 s testy na poškozených datech.
+- [x] Test, který spustí validátor jako proces nad vadnými daty a ověří nenulový exit.
 
 ## WP4 Validace scén (`wp/content/scene-checks`)
 
