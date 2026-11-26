@@ -33,6 +33,15 @@ Závisí na balíčku 1.
 - [x] Vibrace 25 ms a 35 ms podle nastavení (S9.1–S9.3).
 - [x] Unit testy s nahrazeným `AudioContext` a `navigator.vibrate`.
 
+## Balíček 4: portal-mute (portálové ztlumení CrazyGames)
+
+Závisí na balíčcích 2 a 3 a na rozšíření kontraktu o `portalAudioMuted()` (LOG.md, 26. 11. 2026).
+
+- [x] CrazyGames: `portalAudioMuted()` z `SDK.game.settings.muteAudio` po úspěšném `init()` a odběr přes `addSettingsChangeListener`, listener jen při změně `muteAudio` (S10.1–S10.4).
+- [x] Poki a lokální adaptér: `portalAudioMuted()` vždy `false`, listener se nevolá (S10.5).
+- [x] Feedback: `setPortalMuted()` jako samostatný důvod ticha, souběh s nastavením zvuku, reklamou a `unlock()` (S8.5).
+- [x] Unit testy s nahrazeným SDK, `AudioContext` a `navigator.vibrate`, včetně limitu 5 000 ms s řízeným časem.
+
 ## Předání oblasti
 
 - [x] Review a QA oblasti proti akceptačním kritériím, `.handoff/REPORT.md`.

@@ -62,5 +62,7 @@ export function createLocalAdapter({ development, search, openStorage }: LocalAd
     },
     track: analytics.record,
     recordedEvents: analytics.recordedEvents,
+    portalAudioMuted: () => false,
+    onPortalAudioMutedChange() {},
   }
 }

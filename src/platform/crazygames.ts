@@ -11,6 +11,11 @@ export interface CrazyGamesAdError {
   message?: string
 }
 
+export interface CrazyGamesSettings {
+  muteAudio: boolean
+  disableChat: boolean
+}
+
 /** The part of the CrazyGames SDK v3 the game uses. */
 export interface CrazyGamesSdk {
   init(): Promise<unknown>
@@ -21,6 +26,10 @@ export interface CrazyGamesSdk {
     loadingStop(): void
     gameplayStart(): void
     gameplayStop(): void
+    /** Read after `init()` resolves; in the `local` environment `?muteAudio=true` forces the value. */
+    readonly settings: CrazyGamesSettings
+    /** Called on every settings change, also when only `disableChat` changes. */
+    addSettingsChangeListener(listener: (settings: CrazyGamesSettings) => void): void
   }
   readonly ad: {
     requestAd(
@@ -56,6 +65,8 @@ export function createCrazyGamesAdapter({ development, openStorage, loadSdk }: C
   const session = createPortalSession<CrazyGamesSdk>()
   let adsOffered = false
   let loadingSignal: 'start' | 'stop' | null = null
+  let portalAudioMuted = false
+  const portalAudioMutedListeners: ((muted: boolean) => void)[] = []
 
   return {
     name: 'crazygames',
@@ -75,6 +86,19 @@ export function createCrazyGamesAdapter({ development, openStorage, loadSdk }: C
       if (!sdk || sdk.environment === 'disabled') return
       adsOffered = true
       session.connect(sdk, sdk.game)
+      // Read before subscribing: an SDK that calls the listener on registration must not report the start value as a change.
+      // Not routed through the session: the SDK calls the game here, so a running spot does not block it.
+      try {
+        portalAudioMuted = sdk.game.settings.muteAudio
+        sdk.game.addSettingsChangeListener(({ muteAudio }) => {
+          if (muteAudio === portalAudioMuted) return
+          portalAudioMuted = muteAudio
+          for (const listener of portalAudioMutedListeners) listener(muteAudio)
+        })
+      } catch {
+        // A portal SDK without a working settings API must not fail init(): the game keeps its own sound setting.
+        portalAudioMuted = false
+      }
     },
     loadingStarted() {
       if (loadingSignal === 'start') return
@@ -118,5 +142,9 @@ export function createCrazyGamesAdapter({ development, openStorage, loadSdk }: C
     },
     track: analytics.record,
     recordedEvents: analytics.recordedEvents,
+    portalAudioMuted: () => portalAudioMuted,
+    onPortalAudioMutedChange(listener) {
+      portalAudioMutedListeners.push(listener)
+    },
   }
 }
