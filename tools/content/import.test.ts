@@ -272,6 +272,7 @@ describe('content:import command', () => {
 
 describe('content:import on a broken source', () => {
   const paris = 'docs/game/cities/paris.md'
+  const lisbon = 'docs/game/cities/lisbon.md'
   const brokenSources: { name: string; file?: string; edit: (source: string) => string; message: RegExp }[] = [
     {
       name: 'CS and EN bold different positions',
@@ -332,6 +333,24 @@ describe('content:import on a broken source', () => {
       name: 'an invalid verification date',
       edit: (source) => source.replace('**Ověřeno** — 26. 11. 2026.', '**Ověřeno** — 31. 2. 2026.'),
       message: /paris\.md: "Ověřeno" must start with a valid date "D\. M\. RRRR\.", found "31\. 2\. 2026\./,
+    },
+    {
+      name: 'a links-only bullet with text between links',
+      file: lisbon,
+      edit: (source) => source.replace('- [Carris – srovnání', '- [Wikipedie](<https://pt.wikipedia.org/wiki/Ascensor_da_Gl%C3%B3ria>) viz také [Carris – srovnání'),
+      message: /lisbon\.md LIS10: unexpected line "- \[Wikipedie\].* viz také \[Carris/,
+    },
+    {
+      name: 'a links-only bullet with text after the link',
+      file: lisbon,
+      edit: (source) => source.replace('funiculars/>).', 'funiculars/>), ověřeno na místě.'),
+      message: /lisbon\.md LIS10: unexpected line "- \[Carris.*ověřeno na místě\."/,
+    },
+    {
+      name: 'a links-only bullet with a link that does not match the link pattern',
+      file: lisbon,
+      edit: (source) => source.replace('(<https://www.carris.pt/en/discover/fleet/funiculars/>)', '(https://www.carris.pt/a b)'),
+      message: /lisbon\.md LIS10: unexpected line "- \[Carris/,
     },
     {
       name: 'a missing coordinates row',
