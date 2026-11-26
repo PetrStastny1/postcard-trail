@@ -1,5 +1,6 @@
 /// <reference types="node" />
-// The browser tsconfig has no Node types; node:test needs them in this file only.
+// Temporary: tsconfig.json has no Node types and this directive adds them to the whole tsconfig.json program,
+// not just this file. Remove it once the director changes the tsconfig setup.
 import assert from 'node:assert/strict'
 import { afterEach, beforeEach, test } from 'node:test'
 import { createFeedback, type FeedbackCue } from './index.ts'
@@ -56,7 +57,7 @@ class FakeOscillator {
 class FakeAudioContext {
   static instances: FakeAudioContext[] = []
   static initialState: 'suspended' | 'running' = 'running'
-  state: 'suspended' | 'running' | 'closed' = FakeAudioContext.initialState
+  state: 'suspended' | 'running' | 'closed' | 'interrupted' = FakeAudioContext.initialState
   currentTime = 10
   destination = { kind: 'destination' }
   resumeCalls = 0
@@ -163,6 +164,19 @@ test('S8.1 unlock resumes a suspended context, also on a repeated call', () => {
   context.state = 'suspended'
   feedback.unlock()
   assert.equal(context.resumeCalls, 2)
+  assert.equal(FakeAudioContext.instances.length, 1)
+})
+
+test('S8.1 unlock resumes an interrupted context but not a closed one', () => {
+  const feedback = createFeedback(allOn)
+  feedback.unlock()
+  const context = onlyContext()
+  context.state = 'interrupted'
+  feedback.unlock()
+  assert.equal(context.resumeCalls, 1)
+  context.state = 'closed'
+  feedback.unlock()
+  assert.equal(context.resumeCalls, 1, 'a closed context cannot be resumed')
   assert.equal(FakeAudioContext.instances.length, 1)
 })
 

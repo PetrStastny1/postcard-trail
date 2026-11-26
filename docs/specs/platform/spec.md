@@ -137,7 +137,7 @@ Platí pro adaptéry Poki a CrazyGames.
 
 ### P8 Zvuk
 
-- **S8.1** Před `unlock()` se nevytváří `AudioContext` a `play` nehraje zvuk. `unlock()` vytvoří kontext (nebo obnoví pozastavený) s hlavní hlasitostí 0,6. Opakované `unlock()` nový kontext nevytváří. Bez Web Audio API hra pokračuje bez zvuku.
+- **S8.1** Před `unlock()` se nevytváří `AudioContext` a `play` nehraje zvuk. `unlock()` vytvoří kontext s hlavní hlasitostí 0,6, nebo obnoví existující kontext, který neběží (`suspended`, na iOS Safari po přerušení `interrupted`). Uzavřený kontext (`closed`) neobnovuje. Opakované `unlock()` nový kontext nevytváří. Bez Web Audio API hra pokračuje bez zvuku.
 - **S8.2** Podněty (syntéza oscilátory s obálkou bez lupnutí):
 
 | Podnět | Zvuk |

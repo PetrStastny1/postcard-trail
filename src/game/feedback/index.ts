@@ -30,9 +30,19 @@ const MASTER_VOLUME = 0.6
 // Short linear attack so every tone starts and ends at zero gain without a click.
 const ATTACK_SECONDS = 0.004
 
+const C5_HZ = 523.25
+const E5_HZ = 659.25
+const G5_HZ = 783.99
+
 const CHOICE_CLICK: Tone = { frequencyHz: 660, startSeconds: 0, durationSeconds: 0.03, peakGain: 0.25, waveform: 'triangle' }
-const CORRECT_LOW: Tone = { frequencyHz: 523.25, startSeconds: 0, durationSeconds: 0.09, peakGain: 0.3, waveform: 'sine' }
-const CORRECT_HIGH: Tone = { frequencyHz: 783.99, startSeconds: 0.09, durationSeconds: 0.14, peakGain: 0.3, waveform: 'sine' }
+const CORRECT_LOW: Tone = { frequencyHz: C5_HZ, startSeconds: 0, durationSeconds: 0.09, peakGain: 0.3, waveform: 'sine' }
+const CORRECT_HIGH: Tone = {
+  frequencyHz: G5_HZ,
+  startSeconds: CORRECT_LOW.startSeconds + CORRECT_LOW.durationSeconds,
+  durationSeconds: 0.14,
+  peakGain: 0.3,
+  waveform: 'sine',
+}
 const WRONG_LOW: Tone = { frequencyHz: 196, startSeconds: 0, durationSeconds: 0.22, peakGain: 0.3, waveform: 'triangle' }
 const POSTCARD_CHORD_SECONDS = 0.5
 // Three voices sum below 1 so the chord does not clip at full master volume.
@@ -42,7 +52,7 @@ const CUE_TONES: Readonly<Record<FeedbackCue, readonly Tone[]>> = {
   choice: [CHOICE_CLICK],
   correct: [CORRECT_LOW, CORRECT_HIGH],
   wrong: [WRONG_LOW],
-  postcard: [523.25, 659.25, 783.99].map((frequencyHz) => ({
+  postcard: [C5_HZ, E5_HZ, G5_HZ].map((frequencyHz) => ({
     frequencyHz,
     startSeconds: 0,
     durationSeconds: POSTCARD_CHORD_SECONDS,
@@ -90,6 +100,11 @@ export function createFeedback(settings: FeedbackSettings): Feedback {
     oscillator.stop(end)
   }
 
+  // iOS Safari reports 'interrupted' after a call or Siri, so anything short of running is resumed.
+  function resumeIfHalted(context: AudioContext): void {
+    if (context.state !== 'running' && context.state !== 'closed') void context.resume()
+  }
+
   function vibrate(durationMs: number): void {
     if (typeof navigator === 'undefined' || typeof navigator.vibrate !== 'function') return
     navigator.vibrate(durationMs)
@@ -98,7 +113,7 @@ export function createFeedback(settings: FeedbackSettings): Feedback {
   return {
     unlock() {
       if (audio) {
-        if (audio.context.state === 'suspended') void audio.context.resume()
+        resumeIfHalted(audio.context)
         return
       }
       if (typeof AudioContext === 'undefined') return
@@ -107,7 +122,7 @@ export function createFeedback(settings: FeedbackSettings): Feedback {
       master.connect(context.destination)
       audio = { context, master }
       applyMasterLevel()
-      if (context.state === 'suspended') void context.resume()
+      resumeIfHalted(context)
     },
 
     play(cue) {
