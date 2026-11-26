@@ -11,7 +11,7 @@ export default defineConfig({
     baseURL: url,
   },
   webServer: {
-    command: `npm run dev -- --host 127.0.0.1 --port ${port} --strictPort`,
+    command: `npm run dev -- --host 127.0.0.1 --port ${port} --strictPort --bypass-lock`,
     url,
     reuseExistingServer: false,
   },

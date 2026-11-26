@@ -10,7 +10,7 @@
     "build:crazygames": "npm run validate:content && VITE_PLATFORM=crazygames vite build",
     "preview": "vite preview",
     "lint": "oxlint --deny-warnings src tools e2e",
-    "typecheck": "tsc",
+    "typecheck": "tsc && tsc -p tsconfig.node.json",
     "validate:content": "node tools/content/validate.ts",
     "content:import": "node tools/content/import.ts",
     "content:placeholders": "node tools/content/placeholders.ts",

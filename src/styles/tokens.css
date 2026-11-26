@@ -34,6 +34,9 @@
   --scene-reflection: #e7a36c;
   --scene-dusk: #d184a8;
   --scene-leaf: #6d773f;
+  --scene-underground-yellow: #f3ad18;
+  --scene-underground-green: #3e5b46;
+  --scene-underground-ivory: #f0dec0;
 
   /* Typography */
   --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -65,7 +68,7 @@
   --focus-ring: 3px;
   --hit-target: 44px;
   --primary-height: 56px;
-  --play-max-width: 1120px;
+  --play-max-width: 1360px;
 
   /* Motion from brief §8 */
   --ease-out: cubic-bezier(0.2, 0.7, 0.3, 1);

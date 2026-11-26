@@ -32,12 +32,20 @@ export type AnalyticsEvent =
   | {
       name: 'question_resolved'
       cityId: string
+      /** Stop number within the run, 1–10 for a city route and 1–3 for the daily challenge. */
       index: number
       mode: RunMode
       outcome: 'correct' | 'wrong' | 'timeout' | 'skipped'
     }
   | { name: 'route_completed'; cityId: string; mode: RunMode; correct: number; stars: number }
-  | { name: 'route_left'; cityId: string; mode: RunMode; index: number; reason: 'abandoned' | 'paused' }
+  | {
+      name: 'route_left'
+      cityId: string
+      mode: RunMode
+      /** Stop number within the run, 1-based like `question_resolved.index`. */
+      index: number
+      reason: 'abandoned' | 'paused'
+    }
   | { name: 'lifeline_used'; lifeline: LifelineKind; mode: RunMode }
   | { name: 'rewarded_ad_outcome'; outcome: RewardedAdOutcome }
   | { name: 'daily_completed'; utcDate: string; correct: number }
@@ -65,6 +73,12 @@ export interface PlatformAdapter {
   gameplayStop(): void
   /** Known up front, e.g. false on CrazyGames Basic Launch or without an SDK. The skip lifeline is hidden when false. */
   rewardedAdsOffered(): boolean
+  /**
+   * The adapter stops the gameplay signal before the spot and keeps it stopped.
+   * The game calls `gameplayStart` again when the player is back in an active question.
+   */
   requestRewardedAd(request: RewardedAdRequest): void
   track(event: AnalyticsEvent): void
+  /** Events tracked in this session. Recorded by every adapter in development builds, empty in production builds. */
+  recordedEvents(): readonly AnalyticsEvent[]
 }
