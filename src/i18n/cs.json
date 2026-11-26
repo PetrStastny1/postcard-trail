@@ -4,7 +4,7 @@
   "title.settings": "Nastavení",
   "title.collection": "Sbírka",
   "title.daily": "Denní výzva",
-  "title.dailyLocked": "Odemkne se po dokončení prvního města",
+  "title.dailyLocked": "Odemkne se po prvním městě",
   "title.progress": "Tvůj postup",
   "title.cities.one": "{done}/{total} město",
   "title.cities.few": "{done}/{total} města",

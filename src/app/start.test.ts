@@ -5,7 +5,7 @@ import { createRun } from '../game/logic/run.ts'
 import { ownsActiveRun, storageKeys } from '../game/storage/schema.ts'
 import type { KeyValueStore, PlatformAdapter } from '../platform/types.ts'
 import { changeSettings } from './settings.ts'
-import { startGame, type GameSession } from './start.ts'
+import { startGame, type GameSession, type StartOptions } from './start.ts'
 
 // The adapter and the feedback are the platform area's boundary; fakes record what the app asks of them.
 
@@ -14,16 +14,17 @@ function memoryStore(initial: Record<string, string> = {}): KeyValueStore & { va
   return { values, read: (key) => values.get(key) ?? null, write: (key, value) => void values.set(key, value) }
 }
 
-function fakeAdapter(calls: string[], store: KeyValueStore, portalMuted = false) {
+function fakeAdapter(calls: string[], store: KeyValueStore, portalMuted = false, initFailure?: Error) {
   let initDone = false
   const muteListeners: ((muted: boolean) => void)[] = []
   const adapter: PlatformAdapter = {
     name: 'local',
     store,
     init: () =>
-      new Promise((resolve) => {
+      new Promise((resolve, reject) => {
         calls.push('init')
         setTimeout(() => {
+          if (initFailure) return reject(initFailure)
           initDone = true
           calls.push('init resolved')
           resolve()
@@ -70,11 +71,21 @@ function fakeFeedback(calls: string[]) {
 
 const savedSettings = (fields: Record<string, unknown>) => JSON.stringify({ version: 1, data: fields })
 
+function startOptions(calls: string[], adapter: PlatformAdapter, overrides: Partial<StartOptions> = {}): StartOptions {
+  return {
+    createAdapter: () => adapter,
+    createTabId: () => 'tab-1',
+    createFeedback: fakeFeedback(calls).create,
+    showTitle: () => calls.push('showTitle'),
+    showLoadError: () => calls.push('showLoadError'),
+    ...overrides,
+  }
+}
+
 test('start reports loading, initialises, wires the portal mute and finishes loading after the title', async () => {
   const calls: string[] = []
   const { adapter } = fakeAdapter(calls, memoryStore(), true)
-  const feedback = fakeFeedback(calls)
-  await startGame({ adapter, tabId: 'tab-1', createFeedback: feedback.create, showTitle: () => calls.push('showTitle') })
+  await startGame(startOptions(calls, adapter))
   assert.deepEqual(calls, [
     'loadingStarted',
     'init',
@@ -88,10 +99,31 @@ test('start reports loading, initialises, wires the portal mute and finishes loa
   ])
 })
 
+test('a failed init shows the load error and never the title', async () => {
+  const calls: string[] = []
+  const failure = new Error('init failed')
+  const { adapter } = fakeAdapter(calls, memoryStore(), false, failure)
+  await assert.rejects(startGame(startOptions(calls, adapter)), failure)
+  assert.deepEqual(calls, ['loadingStarted', 'init', 'showLoadError'])
+})
+
+test('a synchronous failure while creating the adapter or the tab ID also shows the load error', async () => {
+  for (const overrides of [
+    { createAdapter: () => { throw new Error('no platform') } },
+    { createTabId: () => { throw new Error('no crypto') } },
+  ] satisfies Partial<StartOptions>[]) {
+    const calls: string[] = []
+    await assert.rejects(startGame(startOptions(calls, fakeAdapter(calls, memoryStore()).adapter, overrides)))
+    assert.ok(!calls.includes('showTitle'))
+    assert.ok(!calls.includes('loadingFinished'))
+    assert.equal(calls.at(-1), 'showLoadError')
+  }
+})
+
 test('a portal mute change reaches the feedback', async () => {
   const calls: string[] = []
   const { adapter, changePortalMute } = fakeAdapter(calls, memoryStore())
-  await startGame({ adapter, tabId: 'tab-1', createFeedback: fakeFeedback(calls).create, showTitle: () => undefined })
+  await startGame(startOptions(calls, adapter))
   calls.length = 0
   changePortalMute(true)
   changePortalMute(false)
@@ -103,7 +135,7 @@ test('the feedback starts from the settings saved in the adapter store', async (
   const store = memoryStore({ [storageKeys.settings]: savedSettings({ soundEnabled: false, vibrationEnabled: false, locale: 'cs' }) })
   const feedback = fakeFeedback(calls)
   let shown: GameSession | undefined
-  await startGame({ adapter: fakeAdapter(calls, store).adapter, tabId: 'tab-1', createFeedback: feedback.create, showTitle: (session) => (shown = session) })
+  await startGame(startOptions(calls, fakeAdapter(calls, store).adapter, { createFeedback: feedback.create, showTitle: (session) => (shown = session) }))
   assert.deepEqual(feedback.created, [{ sound: false, vibration: false }])
   assert.equal(shown?.settings.locale, 'cs')
 })
@@ -111,7 +143,7 @@ test('the feedback starts from the settings saved in the adapter store', async (
 test('the storage writes through the adapter store as the given tab', async () => {
   const calls: string[] = []
   const store = memoryStore()
-  const session = await startGame({ adapter: fakeAdapter(calls, store).adapter, tabId: 'tab-7', createFeedback: fakeFeedback(calls).create, showTitle: () => undefined })
+  const session = await startGame(startOptions(calls, fakeAdapter(calls, store).adapter, { createTabId: () => 'tab-7' }))
   const stop = { stopId: 'PAR01', routeStopNumber: 1, timeLimitMs: 25_000, choiceIds: ['a', 'b', 'c', 'd'], correctChoiceId: 'a' }
   const stops = Array.from({ length: 10 }, (_unused, index) => ({ ...stop, stopId: `PAR0${index}`, routeStopNumber: index + 1 }))
   session.storage.startRun(createRun({ runId: 'run-1', mode: 'city', cityId: 'paris', untimed: false, stops }))
@@ -123,7 +155,7 @@ test('the storage writes through the adapter store as the given tab', async () =
 test('a settings change is saved at once and only changed sound or vibration reach the feedback', async () => {
   const calls: string[] = []
   const store = memoryStore()
-  const session = await startGame({ adapter: fakeAdapter(calls, store).adapter, tabId: 'tab-1', createFeedback: fakeFeedback(calls).create, showTitle: () => undefined })
+  const session = await startGame(startOptions(calls, fakeAdapter(calls, store).adapter))
   calls.length = 0
   changeSettings(session, { soundEnabled: false })
   changeSettings(session, { vibrationEnabled: false })

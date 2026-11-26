@@ -3,6 +3,7 @@ import type { Locale } from '../content/types.ts'
 import type { Settings } from '../game/storage/schema.ts'
 import { t, type MessageKey } from '../i18n/index.ts'
 import { element } from './element.ts'
+import { markMoreContent } from './moreContent.ts'
 import { windowBar } from './windowBar.ts'
 
 export interface SettingsOptions {
@@ -58,8 +59,7 @@ export function settingsWindow({ settings, onChange, onClose, onHome }: Settings
     return element('li', {}, toggle, ...(note && noteId ? [element('p', { id: noteId, class: 'setting-note' }, t(note))] : []))
   })
 
-  return [
-    windowBar({ titleId: settingsTitleId, title: t('settings.title'), onClose, onHome }),
-    element('div', { class: 'window-body' }, element('div', { class: 'settings' }, language, element('ul', { class: 'setting-list' }, ...switchRows))),
-  ]
+  const body = element('div', { class: 'window-body' }, element('div', { class: 'settings' }, language, element('ul', { class: 'setting-list' }, ...switchRows)))
+  markMoreContent(body)
+  return [windowBar({ titleId: settingsTitleId, title: t('settings.title'), onClose, onHome }), body]
 }

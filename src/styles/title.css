@@ -1,8 +1,12 @@
-/* Title screen. Portrait: logo, scene, Play, menu, progress in one column. Landscape: scene left, controls right. */
+/*
+ * Title screen. Portrait: logo, scene, Play, menu and progress in one column, centred in the height.
+ * Landscape: scene left, logo and controls right. Short landscape: logo above the scene, controls right.
+ */
 .title {
   --side: max(var(--space-4), env(safe-area-inset-left), env(safe-area-inset-right));
   display: flex;
   flex-direction: column;
+  justify-content: safe center;
   gap: var(--space-3);
   width: 100%;
   max-width: 32rem;
@@ -13,10 +17,6 @@
 
 .title-panel {
   display: contents;
-}
-
-.title .logo {
-  order: -1;
 }
 
 .title-scene {
@@ -44,9 +44,10 @@
   font-size: var(--text-question);
 }
 
+/* Two columns while a tile is wide enough for its longest word (7.5em scales with the text size), else one. */
 .title-menu {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(max(7.5em, calc(50% - var(--space-1))), 1fr));
   gap: var(--space-2);
 }
 
@@ -63,9 +64,16 @@
   gap: var(--space-1);
 }
 
+/* Locked until the first city: the deeper paper tone and the softer condition set it apart from the open tiles. */
+.title-daily[data-locked] {
+  background: var(--color-paper-deep);
+}
+
 .title-daily-condition {
+  color: var(--color-ink-soft);
   font-size: var(--text-small);
   font-weight: var(--weight-regular);
+  line-height: var(--leading-tight);
 }
 
 .title-progress {
@@ -80,44 +88,77 @@
   font-variant-numeric: tabular-nums;
 }
 
+/*
+ * Landscape: the scene fills the left column and the rest of the width; logo and controls sit centred on the right.
+ * The outer rows take the spare height, the panel row shrinks first and then scrolls on its own.
+ */
 @media (orientation: landscape) {
   .title {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    align-items: center;
-    gap: var(--space-6);
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    grid-template-rows: 1fr auto minmax(0, auto) 1fr;
+    grid-template-areas:
+      'scene .'
+      'scene logo'
+      'scene panel'
+      'scene .';
+    column-gap: var(--space-6);
+    row-gap: 0;
     max-width: var(--play-max-width);
     height: 100%;
     min-height: 0;
     padding-block: max(var(--space-2), env(safe-area-inset-top)) max(var(--space-2), env(safe-area-inset-bottom));
   }
 
+  .title .logo {
+    grid-area: logo;
+    margin-bottom: var(--space-3);
+  }
+
   .title-scene {
+    grid-area: scene;
     width: 100%;
     max-height: 100%;
   }
 
-  /* The controls scroll on their own when a short viewport cannot hold them. */
   .title-panel {
     display: flex;
+    grid-area: panel;
     flex-direction: column;
     justify-content: safe center;
     gap: var(--space-3);
     width: 100%;
-    max-width: 30rem;
+    min-height: 0;
     max-height: 100%;
     padding: var(--space-2);
     overflow-y: auto;
   }
+}
 
-  .title .logo {
-    order: 0;
+@media (orientation: landscape) and (min-width: 64rem) {
+  .title {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 30rem);
   }
 }
 
-/* Short landscape screens (phones, small portal frames) keep the whole menu in view with a smaller logo. */
+/*
+ * Short landscape (phones, small portal frames): the logo moves above the scene, so the right column holds only
+ * Play, the menu and the progress and shows them whole. The scene row gives way first when height runs out.
+ */
 @media (orientation: landscape) and (max-height: 30rem) {
+  .title {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    grid-template-rows: 1fr auto minmax(0, auto) 1fr;
+    grid-template-areas:
+      '. panel'
+      'logo panel'
+      'scene panel'
+      '. panel';
+    column-gap: var(--space-4);
+  }
+
   .title .logo {
+    margin-bottom: var(--space-2);
     font-size: var(--text-title);
   }
 

@@ -9,12 +9,16 @@ export interface DialogOptions {
 }
 
 export interface OpenDialog {
-  readonly element: HTMLDialogElement
   replaceContent(content: HTMLElement[]): void
   close(): void
 }
 
 const focusableSelector = 'button:not(:disabled), [href], input:not(:disabled), [tabindex]:not([tabindex="-1"])'
+
+/** The modal window on top. Dialogs are appended to the body in the order they open, so it is the last open one. */
+export function topDialog(): HTMLDialogElement | null {
+  return [...document.querySelectorAll<HTMLDialogElement>('dialog[open]')].at(-1) ?? null
+}
 
 /** A modal window. Escape closes it like ×, Tab and Shift+Tab stay inside, focus returns to the opener. */
 export function openDialog({ labelledBy, content, returnFocusId, onClosed }: DialogOptions): OpenDialog {
@@ -36,14 +40,15 @@ export function openDialog({ labelledBy, content, returnFocusId, onClosed }: Dia
   // Escape fires `cancel` and then `close`; × calls `close()`. Both end here.
   dialog.addEventListener('close', () => {
     dialog.remove()
-    document.querySelector<HTMLElement>(`[data-focus-id="${returnFocusId}"]`)?.focus()
+    // The opener lives in the window below: the next open dialog, or the screen when none is left.
+    const parent: ParentNode = topDialog() ?? document
+    parent.querySelector<HTMLElement>(`[data-focus-id="${returnFocusId}"]`)?.focus()
     onClosed()
   })
 
   document.body.append(dialog)
   dialog.showModal()
   return {
-    element: dialog,
     replaceContent(next) {
       dialog.replaceChildren(...next)
     },

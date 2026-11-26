@@ -17,10 +17,26 @@ export interface LayoutOptions {
 
 /**
  * Checks the screen as shown: no horizontal scrolling, controls at least 44 × 44 CSS px, no two controls overlapping,
- * and every control visible and on top either at once or after scrolling it into view. With a modal dialog open,
- * only the dialog's controls count, because the screen behind it is inert.
+ * every scroller whose content continues below its bottom edge shows the `has-more` signal, and every control
+ * visible and on top either at once or after scrolling it into view. With a modal dialog open, only the dialog's
+ * controls count, because the screen behind it is inert.
  */
 export async function expectUsableLayout(page: Page, { controls = 'button, a[href], input, select, textarea, [role="switch"]' }: LayoutOptions = {}) {
+  // The signal follows resize observers, so it is polled before anything below scrolls.
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        [...document.querySelectorAll<HTMLElement>('*')]
+          .filter((node) => {
+            const overflowY = getComputedStyle(node).overflowY
+            const scrolls = (overflowY === 'auto' || overflowY === 'scroll') && node.scrollHeight > node.clientHeight + 1
+            return scrolls && node.scrollHeight - node.scrollTop - node.clientHeight > 1 && !node.classList.contains('has-more')
+          })
+          .map((node) => `${node.tagName.toLowerCase()}.${node.className} hides content below without the has-more signal`),
+      ),
+    )
+    .toEqual([])
+
   const problems = await page.evaluate((selector) => {
     const found: string[] = []
     const describe = (control: Element) =>

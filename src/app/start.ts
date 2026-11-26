@@ -12,18 +12,31 @@ export interface GameSession {
 }
 
 export interface StartOptions {
-  adapter: PlatformAdapter
-  /** Created once per page load, so a reload is a new tab owner. */
-  tabId: string
+  createAdapter(): PlatformAdapter
+  /** Called once per page load, so a reload is a new tab owner. */
+  createTabId(): string
   createFeedback(settings: FeedbackSettings): Feedback
   /** Renders the title screen; loading is reported finished right after it returns. */
   showTitle(session: GameSession): void
+  /** Turns the static loading screen into its error state with "Try again". */
+  showLoadError(): void
 }
 
-export async function startGame({ adapter, tabId, createFeedback, showTitle }: StartOptions): Promise<GameSession> {
+/** Every step runs inside the promise, so a failure anywhere, even a synchronous one, ends in the error state. */
+export async function startGame(options: StartOptions): Promise<GameSession> {
+  try {
+    return await launch(options)
+  } catch (error) {
+    options.showLoadError()
+    throw error
+  }
+}
+
+async function launch({ createAdapter, createTabId, createFeedback, showTitle }: StartOptions): Promise<GameSession> {
+  const adapter = createAdapter()
   adapter.loadingStarted()
   await adapter.init()
-  const storage = new GameStorage(adapter.store, tabId)
+  const storage = new GameStorage(adapter.store, createTabId())
   const settings = storage.loadSettings()
   const feedback = createFeedback({ sound: settings.soundEnabled, vibration: settings.vibrationEnabled })
   feedback.setPortalMuted(adapter.portalAudioMuted())

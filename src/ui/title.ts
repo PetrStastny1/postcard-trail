@@ -1,10 +1,12 @@
 import type { ProgressTotals } from '../game/logic/progress.ts'
 import { plural, t } from '../i18n/index.ts'
 import { element } from './element.ts'
+import { markMoreContent } from './moreContent.ts'
 import { titleScene } from './titleScene.ts'
 
 export interface TitleOptions {
   totals: ProgressTotals
+  dailyUnlocked: boolean
   onOpenSettings(): void
 }
 
@@ -16,7 +18,7 @@ const logoMarkup = `<svg class="logo-arc" viewBox="0 0 240 60" aria-hidden="true
  * The title screen. Play, the map, the collection and the daily challenge are wired by the later packages;
  * until then only Settings opens a window.
  */
-export function titleScreen({ totals, onOpenSettings }: TitleOptions): HTMLElement {
+export function titleScreen({ totals, dailyUnlocked, onOpenSettings }: TitleOptions): HTMLElement {
   const logo = element('h1', { class: 'logo' })
   logo.innerHTML = logoMarkup
 
@@ -24,12 +26,18 @@ export function titleScreen({ totals, onOpenSettings }: TitleOptions): HTMLEleme
   const settings = secondaryButton('title-settings', t('title.settings'))
   settings.addEventListener('click', onOpenSettings)
 
-  const dailyUnlocked = totals.completedCities > 0
+  // The condition is the button's description only; hidden from the name, so a screen reader reads it once.
   const daily = element(
     'button',
-    { class: 'secondary title-daily', type: 'button', 'data-focus-id': 'title-daily', 'aria-describedby': dailyUnlocked ? undefined : 'title-daily-condition' },
+    {
+      class: 'secondary title-daily',
+      type: 'button',
+      'data-focus-id': 'title-daily',
+      'data-locked': !dailyUnlocked,
+      'aria-describedby': dailyUnlocked ? undefined : 'title-daily-condition',
+    },
     element('span', { class: 'title-daily-name' }, t('title.daily')),
-    ...(dailyUnlocked ? [] : [element('span', { id: 'title-daily-condition', class: 'title-daily-condition' }, t('title.dailyLocked'))]),
+    ...(dailyUnlocked ? [] : [element('span', { id: 'title-daily-condition', class: 'title-daily-condition', 'aria-hidden': 'true' }, t('title.dailyLocked'))]),
   )
 
   const progress = element(
@@ -54,12 +62,11 @@ export function titleScreen({ totals, onOpenSettings }: TitleOptions): HTMLEleme
     daily,
   )
 
-  return element(
-    'main',
-    { class: 'title' },
-    titleScene(),
-    element('div', { class: 'title-panel' }, logo, play, menu, progress),
-  )
+  // In landscape the panel scrolls on its own when a short viewport cannot hold it.
+  const panel = element('div', { class: 'title-panel' }, play, menu, progress)
+  markMoreContent(panel)
+
+  return element('main', { class: 'title' }, logo, titleScene(), panel)
 }
 
 function secondaryButton(focusId: string, label: string): HTMLButtonElement {

@@ -11,11 +11,15 @@
     <link rel="stylesheet" href="/src/styles/title.css" />
     <link rel="stylesheet" href="/src/styles/settings.css" />
     <script>
-      // Runs before the entry module: a script that fails to load shows the error state with "Try again".
+      // Runs before the entry module: when the entry module or one of its imports fails to load, the error state with
+      // "Try again" appears. Portal SDKs are classic scripts (src/platform/script.ts); one an ad blocker stops does not
+      // count, the game runs without it. Matched by type because the build drops other attributes of the entry tag.
       addEventListener(
         'error',
         (event) => {
-          if (event.target instanceof HTMLScriptElement) document.getElementById('boot')?.setAttribute('data-state', 'error')
+          if (event.target instanceof Element && event.target.matches('script[type="module"]')) {
+            document.getElementById('boot')?.setAttribute('data-state', 'error')
+          }
         },
         true,
       )

@@ -1,8 +1,10 @@
 import type { Catalog } from '../content/types.ts'
+import { dailyUnlocked } from '../game/logic/daily.ts'
 import { progressTotals } from '../game/logic/progress.ts'
 import { setLocale } from '../i18n/index.ts'
-import { openDialog, type OpenDialog } from '../ui/dialog.ts'
+import { openDialog, topDialog, type OpenDialog } from '../ui/dialog.ts'
 import { element } from '../ui/element.ts'
+import { markMoreContent } from '../ui/moreContent.ts'
 import { settingsTitleId, settingsWindow } from '../ui/settings.ts'
 import { storageNotice } from '../ui/storageNotice.ts'
 import { titleScreen } from '../ui/title.ts'
@@ -16,10 +18,14 @@ import type { GameSession } from './start.ts'
 export function mountApp(root: HTMLElement, session: GameSession, catalog: Catalog): void {
   const screenSlot = element('div', { class: 'screen' })
   const noticeSlot = element('div', { class: 'notice-slot' })
-  const renderTitle = () =>
-    titleScreen({ totals: progressTotals(session.storage.loadProgress(), catalog), onOpenSettings: openSettings })
+  const renderTitle = () => {
+    const progress = session.storage.loadProgress()
+    return titleScreen({ totals: progressTotals(progress, catalog), dailyUnlocked: dailyUnlocked(progress), onOpenSettings: openSettings })
+  }
   let renderScreen = renderTitle
   let settingsDialog: OpenDialog | null = null
+  let storageNoticeOpen = false
+  markMoreContent(screenSlot)
 
   // Capturing on window runs before any other handler, so a cue played by that handler can already sound.
   window.addEventListener('click', () => session.feedback.unlock(), { capture: true })
@@ -40,19 +46,28 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
   function redraw(): void {
     const focusId = document.activeElement instanceof HTMLElement ? document.activeElement.dataset.focusId : undefined
     screenSlot.replaceChildren(renderScreen())
+    if (storageNoticeOpen) renderStorageNotice()
     settingsDialog?.replaceContent(settingsContent())
-    if (focusId) document.querySelector<HTMLElement>(`[data-focus-id="${focusId}"]`)?.focus()
+    // Windows share the IDs of their bar buttons, so the control is looked up in the window that has focus.
+    const layer: ParentNode = topDialog() ?? root
+    if (focusId) layer.querySelector<HTMLElement>(`[data-focus-id="${focusId}"]`)?.focus()
+  }
+
+  function renderStorageNotice(): void {
+    noticeSlot.replaceChildren(
+      storageNotice(() => {
+        storageNoticeOpen = false
+        noticeSlot.replaceChildren()
+        screenSlot.querySelector<HTMLElement>('button')?.focus()
+      }),
+    )
   }
 
   function showStorageNoticeOnce(): void {
     // `takeUnavailableNotice` answers true once per session, so the notice never comes back after it is closed.
     if (!session.storage.takeUnavailableNotice()) return
-    noticeSlot.replaceChildren(
-      storageNotice(() => {
-        noticeSlot.replaceChildren()
-        screenSlot.querySelector<HTMLElement>('button')?.focus()
-      }),
-    )
+    storageNoticeOpen = true
+    renderStorageNotice()
   }
 
   function settingsContent(): HTMLElement[] {

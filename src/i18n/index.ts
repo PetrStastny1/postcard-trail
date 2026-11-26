@@ -14,10 +14,6 @@ const messages: Record<Locale, Record<MessageKey, string>> = { en, cs }
 let currentLocale: Locale = 'en'
 let pluralRules = new Intl.PluralRules(currentLocale)
 
-export function locale(): Locale {
-  return currentLocale
-}
-
 export function setLocale(next: Locale): void {
   currentLocale = next
   pluralRules = new Intl.PluralRules(next)

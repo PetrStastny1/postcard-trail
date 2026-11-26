@@ -36,7 +36,10 @@ test.describe('title screen', () => {
     const playBox = await play.boundingBox()
     const menuBox = await page.locator('.title-menu').boundingBox()
     expect(menuBox!.y).toBeGreaterThan(playBox!.y)
-    await expect(page.getByRole('button', { name: 'Daily challenge' })).toHaveAccessibleDescription('Finish your first city to unlock')
+    const daily = page.getByRole('button', { name: 'Daily challenge', exact: true })
+    await expect(daily).toHaveAccessibleName('Daily challenge')
+    await expect(daily).toHaveAccessibleDescription('Unlocks after your first city')
+    await expect(daily).toHaveAttribute('data-locked', '')
     await expect(page.locator('.title-progress li')).toHaveText(['0/20 cities', /^0\/60 ★/, '0 postcards'])
   })
 
@@ -52,6 +55,7 @@ test.describe('title screen', () => {
     await expect(page.locator('.title-progress li')).toHaveText(['3/20 cities', /^7\/60 ★/, '3 postcards'])
     await expect(page.locator('.title-progress')).toContainText('7 of 60 stars')
     await expect(page.locator('.title-daily-condition')).toHaveCount(0)
+    await expect(page.locator('.title-daily')).not.toHaveAttribute('data-locked')
   })
 
   test('the animation loops in 8 s and never names the river', async ({ page }) => {
@@ -65,6 +69,34 @@ test.describe('title screen', () => {
       [document.body.innerText, ...[...document.querySelectorAll('[alt], [aria-label], title')].map((node) => node.getAttribute('alt') ?? node.getAttribute('aria-label') ?? node.textContent)].join(' '),
     )
     expect(named).not.toMatch(/sein/i)
+  })
+
+  test('on a desktop the scene takes the free width and the controls are centred in their column', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await openTitle(page)
+    const scene = (await page.locator('.title-scene').boundingBox())!
+    const panel = (await page.locator('.title-panel').boundingBox())!
+    const logo = (await page.locator('.title .logo').boundingBox())!
+    expect(scene.width).toBeGreaterThan(720)
+    expect(Math.abs(logo.x + logo.width / 2 - (panel.x + panel.width / 2))).toBeLessThan(2)
+  })
+
+  test('in portrait the title is centred in the height', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 })
+    await openTitle(page)
+    const logo = (await page.locator('.title .logo').boundingBox())!
+    const progress = (await page.locator('.title-progress').boundingBox())!
+    const above = logo.y
+    const below = 812 - (progress.y + progress.height)
+    expect(Math.abs(above - below)).toBeLessThan(4)
+  })
+
+  test('Play keeps its amber on hover', async ({ page }) => {
+    await openTitle(page)
+    const play = page.getByRole('button', { name: 'Play' })
+    const amber = await play.evaluate((node) => getComputedStyle(node).backgroundColor)
+    await play.hover()
+    await expect(play).toHaveCSS('background-color', amber)
   })
 
   test('in landscape the scene is left of the controls, in portrait above them', async ({ page }) => {
@@ -117,6 +149,30 @@ test('the loading screen offers "Try again" when the entry script fails and relo
   await retry.click()
   await expect(page.getByRole('button', { name: 'Play' })).toBeVisible()
   await expect(retry).toHaveCount(0)
+})
+
+test('a portal script blocked while the game starts does not show the load error', async ({ page }) => {
+  // An ad blocker stops a portal SDK the adapter loads during init; the game runs on without it.
+  await page.route('**/blocked-sdk.js', (route) => route.abort())
+  await page.addInitScript(() => {
+    document.addEventListener('readystatechange', () => {
+      if (document.readyState !== 'interactive') return
+      const sdk = document.createElement('script')
+      sdk.src = '/blocked-sdk.js'
+      sdk.addEventListener('error', () => {
+        Object.assign(window, { bootStateAfterBlockedSdk: document.getElementById('boot')?.dataset.state })
+      })
+      document.head.append(sdk)
+    })
+  })
+  // The entry script waits until the SDK has failed, so the failure lands while the loading screen is up.
+  await page.route('**/src/main.ts', async (route) => {
+    await page.waitForFunction(() => 'bootStateAfterBlockedSdk' in window)
+    await route.continue()
+  })
+  await page.goto('/')
+  await expect(page.getByRole('button', { name: 'Play' })).toBeVisible()
+  expect(await page.evaluate(() => (window as unknown as { bootStateAfterBlockedSdk: string }).bootStateAfterBlockedSdk)).toBe('loading')
 })
 
 test.describe('settings', () => {
@@ -311,6 +367,19 @@ test.describe('unavailable storage', () => {
     await page.getByRole('button', { name: 'Close' }).click()
     await expect(page.getByText('This browser is not saving the game.')).toHaveCount(0)
   })
+
+  test('the open notice follows a switch to Čeština', async ({ page }) => {
+    await openTitle(page)
+    await expect(page.getByText('This browser is not saving the game.')).toBeVisible()
+    await page.getByRole('button', { name: 'Settings' }).click()
+    await page.getByRole('button', { name: 'Čeština' }).click()
+    await page.getByRole('button', { name: 'Zavřít', exact: true }).click()
+    const notice = page.getByRole('status').filter({ hasText: 'Prohlížeč hru neukládá.' })
+    await expect(notice).toBeVisible()
+    await expect(page.getByText('This browser is not saving the game.')).toHaveCount(0)
+    await notice.getByRole('button', { name: 'Zavřít upozornění' }).click()
+    await expect(notice).toHaveCount(0)
+  })
 })
 
 test('a focused button shows an ink outline on a paper halo', async ({ page }) => {
@@ -321,6 +390,97 @@ test('a focused button shows an ink outline on a paper halo', async ({ page }) =
   await expect(focused).toHaveCSS('outline-color', 'rgb(21, 31, 68)')
   await expect(focused).toHaveCSS('outline-width', '3px')
   await expect(focused).toHaveCSS('box-shadow', 'rgb(255, 244, 224) 0px 0px 0px 6px')
+})
+
+/** True when the whole box lies inside the viewport and inside every clipping ancestor, without scrolling. */
+async function wholeInView(page: Page, selector: string) {
+  return page.locator(selector).evaluateAll((nodes) =>
+    nodes.map((node) => {
+      const box = node.getBoundingClientRect()
+      let clip = { top: 0, left: 0, bottom: innerHeight, right: innerWidth }
+      for (let parent = node.parentElement; parent; parent = parent.parentElement) {
+        if (getComputedStyle(parent).overflowY === 'visible') continue
+        const rect = parent.getBoundingClientRect()
+        clip = { top: Math.max(clip.top, rect.top), left: Math.max(clip.left, rect.left), bottom: Math.min(clip.bottom, rect.bottom), right: Math.min(clip.right, rect.right) }
+      }
+      const inside = box.top >= clip.top - 0.5 && box.left >= clip.left - 0.5 && box.bottom <= clip.bottom + 0.5 && box.right <= clip.right + 0.5
+      return inside ? 'whole' : `${node.className} "${node.textContent?.trim().slice(0, 30)}" is cut`
+    }),
+  )
+}
+
+const titleParts = '.title-play, .title-menu button, .title-progress'
+
+test.describe('short landscape screens show the whole title and settings without scrolling', () => {
+  for (const locale of ['en', 'cs'] as const) {
+    for (const size of [
+      { width: 568, height: 320 },
+      { width: 640, height: 360 },
+    ]) {
+      test(`title at ${size.width} × ${size.height} in ${locale}`, async ({ page }) => {
+        await seedStorage(page, { settings: { locale } })
+        await page.setViewportSize(size)
+        await page.goto('/')
+        await expect(page.locator('.title-play')).toBeVisible()
+        for (const state of await wholeInView(page, titleParts)) expect(state).toBe('whole')
+      })
+    }
+
+    test(`settings at 568 × 320 in ${locale}`, async ({ page }) => {
+      await seedStorage(page, { settings: { locale } })
+      await page.setViewportSize({ width: 568, height: 320 })
+      await page.goto('/')
+      await page.locator('[data-focus-id="title-settings"]').click()
+      await expect(page.getByRole('dialog')).toBeVisible()
+      for (const state of await wholeInView(page, 'dialog button, .setting-note')) expect(state).toBe('whole')
+    })
+  }
+
+  test.describe('with the storage notice', () => {
+    test.beforeEach(async ({ page }) => {
+      await page.addInitScript(() => {
+        Object.defineProperty(window, 'localStorage', {
+          get() {
+            throw new DOMException('Storage is blocked.', 'SecurityError')
+          },
+        })
+      })
+    })
+
+    test('title at 640 × 360', async ({ page }) => {
+      await page.setViewportSize({ width: 640, height: 360 })
+      await openTitle(page)
+      await expect(page.getByText('This browser is not saving the game.')).toBeVisible()
+      for (const state of await wholeInView(page, titleParts)) expect(state).toBe('whole')
+    })
+  })
+})
+
+test('settings float as a rounded window over the Poki 836 × 470 frame', async ({ page }) => {
+  await page.setViewportSize({ width: 836, height: 470 })
+  await openTitle(page)
+  await page.getByRole('button', { name: 'Settings' }).click()
+  const dialog = page.getByRole('dialog')
+  await expect(dialog).toHaveCSS('border-top-left-radius', '20px')
+  const box = (await dialog.boundingBox())!
+  expect(box.height).toBeLessThan(470)
+  expect(box.y).toBeGreaterThan(0)
+})
+
+test.describe('large text', () => {
+  test.use({ viewport: { width: 375, height: 812 } })
+
+  test('at 200 % text the menu stacks so no label spills out of its tile, and the cut edge shows more below', async ({ page }) => {
+    await openTitle(page)
+    await page.evaluate(() => (document.documentElement.style.fontSize = '200%'))
+    await expect
+      .poll(() => page.locator('.title-menu button').evaluateAll((buttons) => buttons.filter((button) => button.scrollWidth > button.clientWidth + 1).length))
+      .toBe(0)
+    const columns = await page.locator('.title-menu').evaluate((menu) => getComputedStyle(menu).gridTemplateColumns.split(' ').length)
+    expect(columns).toBe(1)
+    await expect(page.locator('.screen')).toHaveClass(/has-more/)
+    await expectUsableLayout(page)
+  })
 })
 
 for (const locale of ['en', 'cs'] as const) {

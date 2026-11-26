@@ -12,20 +12,20 @@ declare global {
   }
 }
 
-const root = document.querySelector<HTMLElement>('#app')
-if (!root) throw new Error('The page has no #app element.')
-const adapter = createPlatform()
-
-// Vite replaces import.meta.env.DEV with false in production builds, so the export is dropped there.
-if (import.meta.env.DEV) window.__postcardTrail = { recordedEvents: () => adapter.recordedEvents() }
-
-startGame({
-  adapter,
-  tabId: crypto.randomUUID(),
+// A rejected start stays unhandled on purpose: the player sees the error state, the console and portals get the error.
+void startGame({
+  createAdapter: () => {
+    const adapter = createPlatform()
+    // Vite replaces import.meta.env.DEV with false in production builds, so the export is dropped there.
+    if (import.meta.env.DEV) window.__postcardTrail = { recordedEvents: () => adapter.recordedEvents() }
+    return adapter
+  },
+  createTabId: () => crypto.randomUUID(),
   createFeedback,
-  showTitle: (session) => mountApp(root, session, catalog),
-}).catch((error: unknown) => {
-  // The static loading screen in index.html turns into its error state with "Try again".
-  document.querySelector('#boot')?.setAttribute('data-state', 'error')
-  throw error
+  showTitle: (session) => {
+    const root = document.querySelector<HTMLElement>('#app')
+    if (!root) throw new Error('The page has no #app element.')
+    mountApp(root, session, catalog)
+  },
+  showLoadError: () => document.querySelector('#boot')?.setAttribute('data-state', 'error'),
 })

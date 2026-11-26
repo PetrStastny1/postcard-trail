@@ -99,9 +99,16 @@ svg {
   background: var(--color-on-ink);
 }
 
-.secondary:hover,
-.primary:hover {
-  background: var(--color-paper-deep);
+/* Play keeps its amber on hover; only devices that really hover get the hover tone. */
+@media (hover: hover) {
+  .secondary:hover {
+    background: var(--color-paper-deep);
+  }
+}
+
+/* Set by markMoreContent while a scroller's content continues below its bottom edge: the edge fades out. */
+.has-more {
+  mask-image: linear-gradient(to top, transparent, var(--color-ink) var(--space-8)); /* only the alpha counts */
 }
 
 /* Logo: two bold lines under an amber arc that evokes a bridge. Also used by the static loading screen. */
@@ -260,8 +267,8 @@ dialog.window::backdrop {
   overflow-y: auto;
 }
 
-/* Large screens: the window becomes a centred sheet over the dimmed screen. */
-@media (min-width: 48rem) and (min-height: 36rem) {
+/* Large screens and the Poki 836 × 470 frame: the window becomes a centred sheet over the dimmed screen. */
+@media (min-width: 48rem) and (min-height: 28rem) {
   dialog.window {
     /* fit-content: the modal dialog is fixed with both insets at 0, where auto would stretch it. */
     height: fit-content;

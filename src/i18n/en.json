@@ -4,7 +4,7 @@
   "title.settings": "Settings",
   "title.collection": "Collection",
   "title.daily": "Daily challenge",
-  "title.dailyLocked": "Finish your first city to unlock",
+  "title.dailyLocked": "Unlocks after your first city",
   "title.progress": "Your progress",
   "title.cities.one": "{done}/{total} city",
   "title.cities.few": "{done}/{total} cities",
