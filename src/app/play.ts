@@ -73,9 +73,7 @@ export function startPlay({ session, catalog, route, run, mount, openSettings, g
   let hintTimer: ReturnType<typeof setTimeout> | undefined
   let hintVisible = false
   let pauseDialog: OpenDialog | null = null
-  let pauseEnd: 'resume' | 'quiet' = 'resume'
   let zoomDialog: OpenDialog | null = null
-  let zoomEnd: 'resume' | 'quiet' = 'resume'
   let elsewhereDialog: OpenDialog | null = null
   let leaving = false
 
@@ -184,53 +182,70 @@ export function startPlay({ session, catalog, route, run, mount, openSettings, g
     if (controller.run.paused) openPause()
   }
 
+  // A window's `close` event arrives a task after `close()`, so the game acts at once and the event only covers Escape.
   function openPause(): void {
-    if (controller.stopped || pauseDialog || scene.status === 'error') return
+    if (controller.stopped || topDialog() || scene.status === 'error') return
     controller.pause()
     if (controller.stopped) return
-    pauseEnd = 'resume'
-    pauseDialog = openDialog({
+    const dialog: OpenDialog = openDialog({
       labelledBy: pauseTitleId,
       content: pauseContent(),
       returnFocusId: 'play-pause',
       onClosed: () => {
-        pauseDialog = null
-        if (pauseEnd === 'resume' && !disposed) controller.resume()
+        if (pauseDialog === dialog) continueFromPause()
       },
     })
+    pauseDialog = dialog
+  }
+
+  function continueFromPause(): void {
+    closePauseQuietly()
+    controller.resume()
+  }
+
+  function closePauseQuietly(): void {
+    const dialog = pauseDialog
+    pauseDialog = null
+    dialog?.close()
   }
 
   function pauseContent(): HTMLElement[] {
-    return pauseWindow({ onContinue: () => pauseDialog?.close(), onSettings: () => openSettings('pause-settings'), onHome: goHome })
+    return pauseWindow({ onContinue: continueFromPause, onSettings: () => openSettings('pause-settings'), onHome: goHome })
   }
 
   function openZoom(): void {
-    if (!scene.image || zoomDialog || controller.stopped) return
+    if (!scene.image || topDialog() || controller.stopped) return
     controller.zoomOpened()
-    zoomEnd = 'resume'
-    zoomDialog = openDialog({
+    const dialog: OpenDialog = openDialog({
       labelledBy: zoomTitleId,
       content: zoomContent(scene.image),
       returnFocusId: 'play-zoom',
       className: 'zoom-window',
       onClosed: () => {
-        zoomDialog = null
-        controller.zoomClosed(zoomEnd === 'resume')
-        render()
+        if (zoomDialog === dialog) closeZoom(true)
       },
     })
+    zoomDialog = dialog
+  }
+
+  /** `resumeQuestion` is false when the page was hidden: the pause then waits for "Continue". */
+  function closeZoom(resumeQuestion: boolean): void {
+    const dialog = zoomDialog
+    zoomDialog = null
+    dialog?.close()
+    controller.zoomClosed(resumeQuestion)
   }
 
   function zoomContent(image: HTMLImageElement): HTMLElement[] {
     const stop = routeStop(currentStop(controller.run).stopId)
     const caption = scene.placeholder ? stop.sceneAlt[session.settings.locale] : null
-    return zoomWindow({ image, caption, onClose: () => zoomDialog?.close() })
+    return zoomWindow({ image, caption, onClose: () => closeZoom(true) })
   }
 
   /** Closes the game windows and settings without resuming the question. */
   function closeWindowsQuietly(): void {
-    pauseEnd = 'quiet'
-    zoomEnd = 'quiet'
+    closePauseQuietly()
+    if (zoomDialog) closeZoom(false)
     for (let open = topDialog(); open; open = topDialog()) open.close()
   }
 
@@ -271,10 +286,7 @@ export function startPlay({ session, catalog, route, run, mount, openSettings, g
     () => {
       if (document.visibilityState === 'hidden') {
         clearTimeout(tickTimer)
-        if (zoomDialog) {
-          zoomEnd = 'quiet'
-          zoomDialog.close()
-        }
+        if (zoomDialog) closeZoom(false)
         controller.pageHidden()
         render()
         return
@@ -282,7 +294,7 @@ export function startPlay({ session, catalog, route, run, mount, openSettings, g
       controller.ownershipChecked(session.storage.isActiveRunOwner())
       if (controller.stopped) return
       if (sceneWaitsForVisiblePage) sceneShown()
-      else if (controller.run.paused && !zoomDialog) openPause()
+      else if (controller.run.paused) openPause()
     },
     { signal: listeners.signal },
   )
