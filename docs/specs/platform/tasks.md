@@ -15,13 +15,14 @@ Požadavky a scénáře jsou ve [spec.md](spec.md). Vývojář zaškrtává hoto
 
 Závisí na balíčku 1.
 
-- [ ] Načtení skriptu SDK až v `init()` portálového adaptéru, odolné vůči zablokování (S5.5).
-- [ ] Slučování herních signálů a jejich pozastavení během reklamy (S5.1, S5.2).
-- [ ] Adaptér Poki: init, načítání, hraní, `rewardedBreak`, `measure` (S5.3, S6.1, S7.1).
-- [ ] Adaptér CrazyGames: init, prostředí, načítání, hraní, `requestAd('rewarded')`, `adsDisabled` (S5.4, S6.2, S7.2).
-- [ ] Společná pravidla požadavku na reklamu (S6.3–S6.5) a žádné průběžné reklamy (S5.7).
-- [ ] `createPlatform()` vybírá adaptér podle `VITE_PLATFORM`, lokální build neobsahuje SDK (S1.1, S1.2).
-- [ ] Unit testy s nahrazeným SDK (bez sítě).
+- [x] Načtení skriptu SDK až v `init()` portálového adaptéru, odolné vůči zablokování (S5.5).
+- [x] Slučování herních signálů a jejich pozastavení během reklamy (S5.1, S5.2).
+- [x] Adaptér Poki: init, načítání, hraní, `rewardedBreak`, `measure` (S5.3, S6.1, S7.1).
+- [x] Adaptér CrazyGames: init, prostředí, načítání, hraní, `requestAd('rewarded')`, `adsDisabled` (S5.4, S6.2, S7.2).
+- [x] Společná pravidla požadavku na reklamu (S6.3–S6.5) a žádné průběžné reklamy (S5.7).
+- [x] `createPlatform()` vybírá adaptér podle `VITE_PLATFORM`, lokální build neobsahuje SDK (S1.1, S1.2).
+- [x] Unit testy s nahrazeným SDK (bez sítě).
+- [x] Limit 5 000 ms na celé `init()` portálového adaptéru, pozdní SDK nic neaktivuje (S5.8), testy s řízeným časem.
 
 ## Balíček 3: feedback (zvuk a vibrace)
 
