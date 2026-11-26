@@ -28,9 +28,9 @@ Sdílené soubory `package.json`, `package-lock.json`, `vite.config.ts`, `playwr
 
 Logika je čistá: bez DOM, bez `Date.now()`, `Math.random()` a bez přístupu k úložišti. Čas, náhodu, ID a úložiště dostává zvenku. Přesné podpisy dokumentuje oblast logic v `docs/specs/logic/spec.md` a app je po integraci vlny 1 používá.
 
-- **Průchod** (`src/game/logic/run.ts`): start městské trasy z `Route`, nastavení, zdroje náhody a ID průchodu; start denní výzvy z data UTC a katalogu; reducer `reduceRun(run, action)`. Akce v běžící otázce nesou `elapsedMs` od posledně započtené akce, takže reducer nejdřív vyhodnotí vypršení. Akce nesou ID kola a pokusu o reklamu, opakované vstupy se ignorují.
+- **Průchod** (`src/game/logic/run.ts`): start městské trasy z `Route`, nastavení, zdroje náhody a ID průchodu; reducer `reduceRun(run, action)`. Akce v běžící otázce nesou `elapsedMs` od posledně započtené akce, takže reducer nejdřív vyhodnotí vypršení. Akce nesou ID kola a pokusu o reklamu, opakované vstupy se ignorují.
 - **Postup** (`src/game/logic/progress.ts`): hvězdy, odemčení, pohlednice, idempotentní dokončení průchodu, součty pro úvod a mapu.
-- **Denní výzva** (`src/game/logic/daily.ts`): volba verze katalogu, města a první zastávky, FNV-1a 32bit, permutace voleb, série dnů.
+- **Denní výzva** (`src/game/logic/daily.ts`): volba verze katalogu, města a první zastávky, start denní výzvy z data UTC a katalogu (`startDailyRun`), FNV-1a 32bit, permutace voleb, série dnů.
 - **Uložení** (`src/game/storage/`): nad `KeyValueStore` z adaptéru. Verzované schéma, validace po oddílech, migrace, slučování odměn, paměťová náhrada s jednorázovým upozorněním. Vlastnictví průchodu mezi kartami řeší čistou funkcí nad uloženými daty a ID karty. Události prohlížeče (`storage`, `visibilitychange`) obsluhuje app a volá tyto funkce.
 
 ## platform → app
@@ -39,6 +39,7 @@ Logika je čistá: bez DOM, bez `Date.now()`, `Math.random()` a bez přístupu k
 - Lokální adaptér ve vývojovém režimu (`import.meta.env.DEV`, tedy i v e2e) čte chování reklamy z parametru adresy `?ad=completed|cancelled|unavailable|interrupted|duplicate|late` a `?ads=none` pro předem známou nedostupnost. V produkčním buildu bez SDK hlásí nedostupnost. Události měření drží v paměti a ve vývojovém režimu je vystaví pro export a testy.
 - `store` lokálního adaptéru je `localStorage` pod klíčem s prefixem `postcard-trail:`.
 - `src/game/feedback/`: zvuk (Web Audio syntéza) a vibrace pro podněty `choice`, `correct`, `wrong`, `postcard`. Hlasitost, ztlumení po dobu reklamy a respektování nastavení.
+- Portálové ztlumení: app po `await init()` přečte `portalAudioMuted()`, předá ho feedbacku a odebírá změny přes `onPortalAudioMutedChange()`. Ve feedbacku je to samostatný důvod ztlumení, který nepřepisuje uložené herní nastavení zvuku a má před ním přednost.
 
 ## Prostředí oblastí
 
