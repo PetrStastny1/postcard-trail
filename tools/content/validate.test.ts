@@ -477,6 +477,22 @@ describe('country and flag questions', () => {
       'rome ROM04: asks about a country or a flag, only PAR02 and P01 may',
     ])
   })
+
+  test('every case form of vlajka counts, including the genitive plural vlajek', () => {
+    const forms = ['vlajka', 'vlajky', 'vlajce', 'vlajku', 'vlajko', 'vlajkou', 'vlajek', 'vlajkám', 'vlajkách', 'vlajkami']
+    const route = structuredClone(readContent().routes.find((candidate) => candidate.id === 'rome'))
+    assert.ok(route)
+    route.stops = forms.map((form, index) => ({ ...route.stops[index], question: { en: 'Which gate is this?', cs: `Kolik ${form}?` } }))
+    assert.deepEqual(countryQuestionStopIds([route]), route.stops.map((stop) => stop.id))
+  })
+
+  test('a question about the number of flags in Czech is reported', () => {
+    const root = copyContent()
+    editStop(root, 'rome', 'ROM02', (stop) => {
+      stop.question.cs = 'Kolik vlajek visí nad branou?'
+    })
+    assert.deepEqual(factProblems(root), ['rome ROM02: asks about a country or a flag, only PAR02 and P01 may'])
+  })
 })
 
 describe('answer leaks (K7)', () => {
