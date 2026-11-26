@@ -13,6 +13,7 @@ import {
   sceneComposition,
   sceneSize,
 } from './placeholders.ts'
+import { readWebpDimensions } from './webp-header.ts'
 
 const repoRoot = path.resolve(import.meta.dirname, '../..')
 const generatorScript = path.join(repoRoot, 'tools/content/placeholders.ts')
@@ -66,18 +67,6 @@ function stringsOf(value: unknown): string[] {
     return Object.entries(value).flatMap(([key, nested]) => (key === 'kind' ? [] : stringsOf(nested)))
   }
   return []
-}
-
-/** Width and height from the VP8, VP8L or VP8X header that follows `RIFF....WEBP`. */
-function webpSize(file: Buffer): { width: number; height: number } {
-  const chunk = file.toString('ascii', 12, 16)
-  if (chunk === 'VP8X') return { width: file.readUIntLE(24, 3) + 1, height: file.readUIntLE(27, 3) + 1 }
-  if (chunk === 'VP8 ') return { width: file.readUInt16LE(26) & 0x3fff, height: file.readUInt16LE(28) & 0x3fff }
-  if (chunk === 'VP8L') {
-    const bits = file.readUInt32LE(21)
-    return { width: (bits & 0x3fff) + 1, height: ((bits >>> 14) & 0x3fff) + 1 }
-  }
-  throw new Error(`unknown WebP chunk "${chunk}"`)
 }
 
 describe('scene composition', () => {
@@ -258,9 +247,7 @@ describe('committed scenes', () => {
     )
     for (const stopId of stopIds) {
       const scene = readFileSync(path.join(scenesDirectory, `${stopId}.webp`))
-      assert.equal(scene.toString('ascii', 0, 4), 'RIFF', stopId)
-      assert.equal(scene.toString('ascii', 8, 12), 'WEBP', stopId)
-      assert.deepEqual(webpSize(scene), { width: sceneSize, height: sceneSize }, stopId)
+      assert.deepEqual(readWebpDimensions(scene), { width: sceneSize, height: sceneSize }, stopId)
       assert.ok(scene.length <= maxSceneBytes, `${stopId} has ${scene.length} bytes`)
     }
   })

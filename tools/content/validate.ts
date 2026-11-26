@@ -3,6 +3,8 @@ import path from 'node:path'
 import { isDeepStrictEqual, parseArgs } from 'node:util'
 import type { Catalog, Locale, Route, Stop } from '../../src/content/types.ts'
 import { ContentImportError, readContent } from './import.ts'
+import { maxSceneBytes, sceneSize } from './placeholders.ts'
+import { WebpHeaderError, readWebpDimensions } from './webp-header.ts'
 
 const repoRoot = path.resolve(import.meta.dirname, '../..')
 
@@ -10,6 +12,8 @@ const routesDir = 'src/content/routes'
 const catalogPath = 'src/content/catalog.json'
 const i18nDir = 'src/i18n'
 const coordinatesPath = 'tools/content/city-coordinates.json'
+const scenesDir = 'public/scenes'
+const placeholdersPath = 'public/scenes/placeholders.json'
 
 const locales: Locale[] = ['en', 'cs']
 const releasedCityCount = 20
@@ -428,6 +432,75 @@ function i18nProblems(root: string, routes: Route[]): Problems {
   return problems
 }
 
+function sceneFileProblems(root: string, relativePath: string, scenePrefix: string): Problems {
+  let scene: Buffer
+  try {
+    scene = readFileSync(path.join(root, relativePath))
+  } catch (error) {
+    if (!isFileSystemError(error)) throw error
+    return [`${relativePath}: cannot read (${error.code})`]
+  }
+  const problems: Problems = []
+  try {
+    const { width, height } = readWebpDimensions(scene)
+    if (width !== sceneSize || height !== sceneSize) {
+      problems.push(`${scenePrefix} is ${width} × ${height}, expected ${sceneSize} × ${sceneSize}`)
+    }
+  } catch (error) {
+    if (!(error instanceof WebpHeaderError)) throw error
+    problems.push(`${scenePrefix} is not a valid WebP (${error.message})`)
+  }
+  if (scene.length > maxSceneBytes) problems.push(`${scenePrefix} has ${scene.length} bytes, at most ${maxSceneBytes} allowed`)
+  return problems
+}
+
+function placeholderListProblems(root: string, stopIds: Set<string>): Problems {
+  if (!existsSync(path.join(root, placeholdersPath))) return [`${placeholdersPath}: file not found`]
+  const problems: Problems = []
+  const listing = readJson(root, placeholdersPath, problems)
+  if (problems.length > 0) return problems
+  if (!isObject(listing)) return [`${placeholdersPath}: must be an object with "stopIds"`]
+  checkStringArray(listing.stopIds, 'stopIds', problems)
+  if (problems.length > 0) return problems.map((problem) => `${placeholdersPath}: ${problem}`)
+  const listed = listing.stopIds as string[]
+  const duplicates = new Set(listed.filter((stopId, index) => listed.indexOf(stopId) !== index))
+  for (const stopId of duplicates) problems.push(`${placeholdersPath}: ${stopId} is listed more than once`)
+  for (const stopId of new Set(listed.filter((candidate) => !stopIds.has(candidate)))) {
+    problems.push(`${placeholdersPath}: ${stopId} is not a catalog stop`)
+  }
+  return problems
+}
+
+/** Check 11: a valid scene file for every stop, nothing else in the folder and a valid placeholder list. */
+function sceneProblems(root: string, routes: Route[]): Problems {
+  if (!existsSync(path.join(root, scenesDir))) return [`${scenesDir}: directory not found`]
+  let directoryFiles: string[]
+  try {
+    directoryFiles = readdirSync(path.join(root, scenesDir))
+  } catch (error) {
+    if (!isFileSystemError(error)) throw error
+    return [`${scenesDir}: cannot read (${error.code})`]
+  }
+  const routeIdByStop = new Map(routes.flatMap((route) => route.stops.map((stop) => [stop.id, route.id])))
+  const problems: Problems = []
+  // Only names from the listing are read, so a malformed stop ID can never point outside the folder.
+  const sceneFiles = new Set(directoryFiles)
+  for (const [stopId, routeId] of routeIdByStop) {
+    const relativePath = `${scenesDir}/${stopId}.webp`
+    const scenePrefix = `${routeId} ${stopId}: scene ${relativePath}`
+    if (!sceneFiles.has(`${stopId}.webp`)) problems.push(`${scenePrefix} not found`)
+    else problems.push(...sceneFileProblems(root, relativePath, scenePrefix))
+  }
+  // Hidden files such as .DS_Store come from the file manager; the generator ignores them too.
+  const strayFiles = directoryFiles
+    .filter((file) => !file.startsWith('.') && file !== 'placeholders.json')
+    .filter((file) => !(file.endsWith('.webp') && routeIdByStop.has(file.slice(0, -'.webp'.length))))
+    .sort()
+  for (const file of strayFiles) problems.push(`${scenesDir}/${file}: not the scene of a catalog stop`)
+  problems.push(...placeholderListProblems(root, new Set(routeIdByStop.keys())))
+  return problems
+}
+
 function sourceProblems(root: string, { catalog, routesByFile }: CommittedContent): Problems {
   const hint = 'run npm run content:import'
   let source
@@ -480,6 +553,7 @@ export function validateContent(root: string = repoRoot): string[] {
     ...metroStopProblems(routes),
     ...countryQuestionProblems(routes),
     ...i18nProblems(root, routes),
+    ...sceneProblems(root, routes),
     ...sourceProblems(root, content),
   ]
 }

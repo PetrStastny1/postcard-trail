@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
-import { cpSync, mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs'
+import { constants, cpSync, mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { after, describe, test } from 'node:test'
@@ -12,6 +12,8 @@ const repoRoot = path.resolve(import.meta.dirname, '../..')
 const validateScript = path.join(repoRoot, 'tools/content/validate.ts')
 const routesDir = 'src/content/routes'
 const catalogPath = 'src/content/catalog.json'
+const scenesDir = 'public/scenes'
+const placeholdersPath = 'public/scenes/placeholders.json'
 
 const temporaryRoots: string[] = []
 after(() => temporaryRoots.forEach((root) => rmSync(root, { recursive: true, force: true })))
@@ -20,8 +22,9 @@ after(() => temporaryRoots.forEach((root) => rmSync(root, { recursive: true, for
 function copyContent(): string {
   const root = mkdtempSync(path.join(tmpdir(), 'content-validate-'))
   temporaryRoots.push(root)
-  for (const relativePath of ['docs/game', routesDir, catalogPath, 'tools/content/city-coordinates.json']) {
-    cpSync(path.join(repoRoot, relativePath), path.join(root, relativePath), { recursive: true })
+  for (const relativePath of ['docs/game', routesDir, catalogPath, 'tools/content/city-coordinates.json', scenesDir]) {
+    // Copy-on-write clones where the file system supports them keep the 200 scenes cheap to copy.
+    cpSync(path.join(repoRoot, relativePath), path.join(root, relativePath), { recursive: true, mode: constants.COPYFILE_FICLONE })
   }
   return root
 }
@@ -54,6 +57,43 @@ function editCatalog(root: string, edit: (catalog: Catalog) => void) {
 /** Problems after the edit, without the reminders that committed data no longer match the city files. */
 function factProblems(root: string): string[] {
   return validateContent(root).filter((problem) => !problem.endsWith('run npm run content:import'))
+}
+
+function scenePath(root: string, stopId: string): string {
+  return path.join(root, scenesDir, `${stopId}.webp`)
+}
+
+/** A file made of `RIFF`, its size, `WEBP` and the given chunks, so the RIFF header always matches the length. */
+function riffWebp(...chunks: Buffer[]): Buffer {
+  const body = Buffer.concat([Buffer.from('WEBP', 'latin1'), ...chunks])
+  const header = Buffer.alloc(8)
+  header.write('RIFF', 0, 'latin1')
+  header.writeUInt32LE(body.length, 4)
+  return Buffer.concat([header, body])
+}
+
+function riffChunk(name: string, payload: Buffer): Buffer {
+  const header = Buffer.alloc(8)
+  header.write(name, 0, 'latin1')
+  header.writeUInt32LE(payload.length, 4)
+  return Buffer.concat([header, payload])
+}
+
+/** The header of a lossy VP8 frame: frame tag, start code 9d 01 2a, then 14-bit width and height. */
+function vp8Header(width: number, height: number, startCode = [0x9d, 0x01, 0x2a]): Buffer {
+  const payload = Buffer.alloc(10)
+  Buffer.from(startCode).copy(payload, 3)
+  payload.writeUInt16LE(width, 6)
+  payload.writeUInt16LE(height, 8)
+  return riffChunk('VP8 ', payload)
+}
+
+/** The header of a lossless VP8L frame: signature 0x2f, then width − 1 and height − 1 in 14 bits each. */
+function vp8lHeader(width: number, height: number, signature = 0x2f): Buffer {
+  const payload = Buffer.alloc(5)
+  payload[0] = signature
+  payload.writeUInt32LE((width - 1) | ((height - 1) << 14), 1)
+  return riffChunk('VP8L', payload)
 }
 
 function runValidator(root: string) {
@@ -95,6 +135,17 @@ describe('the validator as a process', () => {
     assert.equal(
       result.stderr,
       'Content validation failed:\nsrc/content/catalog.json: file not found\nsrc/content/routes: directory not found\n',
+    )
+  })
+
+  test('fails a broken scene with exit code 1 and the stop ID and size, without a stack trace', () => {
+    const root = copyContent()
+    writeFileSync(scenePath(root, 'PAR01'), riffWebp(vp8Header(1280, 720)))
+    const result = runValidator(root)
+    assert.equal(result.status, 1)
+    assert.equal(
+      result.stderr,
+      'Content validation failed:\nparis PAR01: scene public/scenes/PAR01.webp is 1280 × 720, expected 1280 × 1280\n',
     )
   })
 })
@@ -275,7 +326,11 @@ describe('routes and stops', () => {
     editRoute(root, 'rome', (route) => {
       route.stops.pop()
     })
-    assert.deepEqual(factProblems(root), ['rome: expected 10 stops, found 9'])
+    assert.deepEqual(factProblems(root), [
+      'rome: expected 10 stops, found 9',
+      'public/scenes/ROM10.webp: not the scene of a catalog stop',
+      'public/scenes/placeholders.json: ROM10 is not a catalog stop',
+    ])
   })
 
   test('a stop ID used twice across routes or not matching the pattern is reported', () => {
@@ -291,6 +346,11 @@ describe('routes and stops', () => {
     assert.deepEqual(factProblems(root), [
       'rome PAR05: duplicate stop ID',
       'rome rom6: stop ID must match /^[A-Z]+[0-9]{2}$/',
+      'rome rom6: scene public/scenes/rom6.webp not found',
+      'public/scenes/ROM05.webp: not the scene of a catalog stop',
+      'public/scenes/ROM06.webp: not the scene of a catalog stop',
+      'public/scenes/placeholders.json: ROM05 is not a catalog stop',
+      'public/scenes/placeholders.json: ROM06 is not a catalog stop',
     ])
   })
 
@@ -390,7 +450,12 @@ describe('B09', () => {
       stop.id = 'B11'
       stop.sceneAsset = 'scenes/B11.webp'
     })
-    assert.deepEqual(factProblems(root), ['B09: stop not found'])
+    assert.deepEqual(factProblems(root), [
+      'B09: stop not found',
+      'budapest B11: scene public/scenes/B11.webp not found',
+      'public/scenes/B09.webp: not the scene of a catalog stop',
+      'public/scenes/placeholders.json: B09 is not a catalog stop',
+    ])
   })
 })
 
@@ -509,5 +574,174 @@ describe('source match', () => {
     assert.deepEqual(validateContent(root), [
       'source docs/game/cities/oslo.md: file not found (listed in docs/game/BRIEF.md §5)',
     ])
+  })
+})
+
+describe('scenes', () => {
+  test('a missing scene is reported with its stop', () => {
+    const root = copyContent()
+    rmSync(scenePath(root, 'B09'))
+    assert.deepEqual(validateContent(root), ['budapest B09: scene public/scenes/B09.webp not found'])
+  })
+
+  test('VP8, VP8L and VP8X scenes of 1280 × 1280 pass', () => {
+    const root = copyContent()
+    writeFileSync(scenePath(root, 'PAR01'), riffWebp(vp8Header(1280, 1280)))
+    writeFileSync(scenePath(root, 'PAR02'), riffWebp(vp8lHeader(1280, 1280)))
+    assert.equal(readFileSync(scenePath(root, 'PAR03')).toString('latin1', 12, 16), 'VP8X')
+    assert.deepEqual(validateContent(root), [])
+  })
+
+  test('scenes of another size are reported with the measured size', () => {
+    const root = copyContent()
+    const vp8x = readFileSync(scenePath(root, 'PAR03'))
+    vp8x.writeUIntLE(1279 - 1, 24, 3)
+    writeFileSync(scenePath(root, 'PAR03'), vp8x)
+    writeFileSync(scenePath(root, 'PAR01'), riffWebp(vp8Header(640, 1280)))
+    writeFileSync(scenePath(root, 'PAR02'), riffWebp(vp8lHeader(1280, 1281)))
+    assert.deepEqual(validateContent(root), [
+      'paris PAR01: scene public/scenes/PAR01.webp is 640 × 1280, expected 1280 × 1280',
+      'paris PAR02: scene public/scenes/PAR02.webp is 1280 × 1281, expected 1280 × 1280',
+      'paris PAR03: scene public/scenes/PAR03.webp is 1279 × 1280, expected 1280 × 1280',
+    ])
+  })
+
+  test('a scene above 150 000 bytes is reported with its size', () => {
+    const root = copyContent()
+    const scene = readFileSync(scenePath(root, 'PAR01'))
+    const padding = riffChunk('JUNK', Buffer.alloc(150_000 - scene.length))
+    const padded = riffWebp(scene.subarray(12), padding)
+    writeFileSync(scenePath(root, 'PAR01'), padded)
+    assert.deepEqual(validateContent(root), [
+      `paris PAR01: scene public/scenes/PAR01.webp has ${padded.length} bytes, at most 150000 allowed`,
+    ])
+  })
+
+  test('a scene of exactly 150 000 bytes passes', () => {
+    const root = copyContent()
+    const scene = readFileSync(scenePath(root, 'PAR01'))
+    const padded = riffWebp(scene.subarray(12), riffChunk('JUNK', Buffer.alloc(150_000 - scene.length - 8)))
+    assert.equal(padded.length, 150_000)
+    writeFileSync(scenePath(root, 'PAR01'), padded)
+    assert.deepEqual(validateContent(root), [])
+  })
+
+  test('another format and damaged or truncated headers are reported with the stop', () => {
+    const root = copyContent()
+    const png = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0x0d, 0x49, 0x48, 0x44, 0x52])
+    const vp8x = readFileSync(scenePath(root, 'PAR06'))
+    writeFileSync(scenePath(root, 'PAR01'), png)
+    writeFileSync(scenePath(root, 'PAR02'), 'RIFF')
+    writeFileSync(scenePath(root, 'PAR03'), vp8x.subarray(0, 1000))
+    writeFileSync(scenePath(root, 'PAR04'), riffWebp(Buffer.from('VP8X', 'latin1'), Buffer.alloc(4)))
+    writeFileSync(scenePath(root, 'PAR05'), riffWebp(vp8Header(1280, 1280, [0, 0, 0])))
+    writeFileSync(scenePath(root, 'PAR06'), riffWebp(vp8lHeader(1280, 1280, 0)))
+    writeFileSync(scenePath(root, 'PAR07'), riffWebp(riffChunk('ALPH', Buffer.alloc(10))))
+    assert.deepEqual(validateContent(root), [
+      'paris PAR01: scene public/scenes/PAR01.webp is not a valid WebP (no RIFF/WEBP signature, the file starts with 89 50 4e 47 0d 0a 1a 0a 00 00 00 0d)',
+      'paris PAR02: scene public/scenes/PAR02.webp is not a valid WebP (truncated header, the file has only 4 bytes)',
+      `paris PAR03: scene public/scenes/PAR03.webp is not a valid WebP (the RIFF header declares ${vp8x.length} bytes, the file has 1000)`,
+      'paris PAR04: scene public/scenes/PAR04.webp is not a valid WebP (truncated VP8X header)',
+      'paris PAR05: scene public/scenes/PAR05.webp is not a valid WebP (damaged VP8 header, the frame start code is missing)',
+      'paris PAR06: scene public/scenes/PAR06.webp is not a valid WebP (damaged VP8L header, the signature byte is missing)',
+      'paris PAR07: scene public/scenes/PAR07.webp is not a valid WebP (unknown first chunk "ALPH", expected VP8, VP8L or VP8X)',
+    ])
+  })
+
+  test('a scene that cannot be read is reported with its path', () => {
+    const root = copyContent()
+    rmSync(scenePath(root, 'PAR01'))
+    mkdirSync(scenePath(root, 'PAR01'))
+    assert.deepEqual(validateContent(root), ['public/scenes/PAR01.webp: cannot read (EISDIR)'])
+  })
+
+  test('files without a catalog stop are reported, hidden files are ignored', () => {
+    const root = copyContent()
+    writeFileSync(path.join(root, scenesDir, 'PAR11.webp'), readFileSync(scenePath(root, 'PAR01')))
+    writeFileSync(path.join(root, scenesDir, 'PAR01.png'), 'png')
+    writeFileSync(path.join(root, scenesDir, 'notes.txt'), 'notes')
+    mkdirSync(path.join(root, scenesDir, 'drafts'))
+    writeFileSync(path.join(root, scenesDir, '.DS_Store'), 'finder metadata')
+    writeFileSync(path.join(root, scenesDir, '.PAR01.webp.swp'), 'editor swap')
+    assert.deepEqual(validateContent(root), [
+      'public/scenes/PAR01.png: not the scene of a catalog stop',
+      'public/scenes/PAR11.webp: not the scene of a catalog stop',
+      'public/scenes/drafts: not the scene of a catalog stop',
+      'public/scenes/notes.txt: not the scene of a catalog stop',
+    ])
+  })
+
+  test('a missing scenes folder is reported', () => {
+    const root = copyContent()
+    rmSync(path.join(root, scenesDir), { recursive: true })
+    assert.deepEqual(validateContent(root), ['public/scenes: directory not found'])
+  })
+
+  test('a scenes path that is a file is reported', () => {
+    const root = copyContent()
+    rmSync(path.join(root, scenesDir), { recursive: true })
+    writeFileSync(path.join(root, scenesDir), '')
+    assert.deepEqual(validateContent(root), ['public/scenes: cannot read (ENOTDIR)'])
+  })
+
+  test('scene checks wait until the catalog and route structure is valid', () => {
+    const root = copyContent()
+    rmSync(path.join(root, scenesDir), { recursive: true })
+    writeFileSync(path.join(root, routesDir, 'rome.json'), '{')
+    assert.deepEqual(validateContent(root).map((problem) => problem.replace(/ \(.+\)$/, '')), [
+      'src/content/routes/rome.json: invalid JSON',
+    ])
+  })
+})
+
+describe('placeholder list', () => {
+  test('a missing list is reported', () => {
+    const root = copyContent()
+    rmSync(path.join(root, placeholdersPath))
+    assert.deepEqual(validateContent(root), ['public/scenes/placeholders.json: file not found'])
+  })
+
+  test('a list that cannot be read is reported', () => {
+    const root = copyContent()
+    rmSync(path.join(root, placeholdersPath))
+    mkdirSync(path.join(root, placeholdersPath))
+    assert.deepEqual(validateContent(root), ['public/scenes/placeholders.json: cannot read (EISDIR)'])
+  })
+
+  test('invalid JSON is reported', () => {
+    const root = copyContent()
+    writeFileSync(path.join(root, placeholdersPath), '{ "stopIds": [')
+    assert.match(validateContent(root).join('\n'), /^public\/scenes\/placeholders\.json: invalid JSON \(.+\)$/)
+  })
+
+  for (const [label, listing, problem] of [
+    ['an array root', [], 'must be an object with "stopIds"'],
+    ['no stopIds', {}, '"stopIds" must be an array of strings'],
+    ['stopIds of numbers', { stopIds: ['PAR01', 1] }, '"stopIds" must be an array of strings'],
+    ['stopIds as a string', { stopIds: 'PAR01' }, '"stopIds" must be an array of strings'],
+  ] as const) {
+    test(`a list with ${label} is reported`, () => {
+      const root = copyContent()
+      writeJson(root, placeholdersPath, listing)
+      assert.deepEqual(validateContent(root), [`public/scenes/placeholders.json: ${problem}`])
+    })
+  }
+
+  test('duplicate and unknown IDs are reported once each', () => {
+    const root = copyContent()
+    writeJson(root, placeholdersPath, { stopIds: ['PAR01', 'XYZ01', 'PAR01', 'PAR02', 'XYZ01', 'PAR01'] })
+    assert.deepEqual(validateContent(root), [
+      'public/scenes/placeholders.json: PAR01 is listed more than once',
+      'public/scenes/placeholders.json: XYZ01 is listed more than once',
+      'public/scenes/placeholders.json: XYZ01 is not a catalog stop',
+    ])
+  })
+
+  test('a subset of the catalog passes, because a delivered final scene leaves the list', () => {
+    const root = copyContent()
+    writeJson(root, placeholdersPath, { stopIds: ['PAR02', 'B09'] })
+    assert.deepEqual(validateContent(root), [])
+    writeJson(root, placeholdersPath, { stopIds: [] })
+    assert.deepEqual(validateContent(root), [])
   })
 })
