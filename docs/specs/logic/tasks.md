@@ -52,5 +52,5 @@ Požadavky a scénáře jsou ve [spec.md](spec.md). Vývojář balíčku zaškrt
 
 ## Předání oblasti
 
-- [ ] Všechny balíčky sloučené do `area/logic`, lint, typecheck, test, build zelené
-- [ ] Review a QA oblasti bez blocker a major nálezů, `.handoff/REPORT.md`
+- [x] Všechny balíčky sloučené do `area/logic`, lint, typecheck, test, build zelené
+- [x] Review a QA oblasti bez blocker a major nálezů, `.handoff/REPORT.md`

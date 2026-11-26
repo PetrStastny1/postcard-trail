@@ -7,7 +7,7 @@
 - `src/game/logic/` nepoužívá DOM, `Date.now()`, `new Date()` bez argumentu, `Math.random()` ani úložiště. Čas dostává v ms, náhodu jako funkci `() => number` s hodnotou v `[0, 1)`, ID průchodu, pokusu o reklamu a karty jako řetězce.
 - `src/game/storage/` přistupuje k datům jen přes předaný `KeyValueStore` ze `src/platform/types.ts`.
 - Všechny stavy jsou neměnné hodnoty serializovatelné do JSON. Funkce vrací nový stav a vstup nemění.
-- ID (průchodu, pokusu o reklamu, trasy, zastávky, volby) jsou neprázdné řetězce. Logika prázdné ID odmítne výjimkou `Error` (chyba volajícího). Validace uloženého průchodu (S2) proto přijme každý stav, který vytvoří `startCityRun` nebo `startDailyRun` nad trasou splňující kontrakt `Route` (10 zastávek, každá se 4 různými volbami a správnou volbou mezi nimi) a který z něj vznikne přes `reduceRun`. U `createRun` to platí, jen když volající splní podmínky na `stops` uvedené v [Rozhraní](#rozhraní).
+- ID (průchodu, pokusu o reklamu, trasy, zastávky, volby) jsou neprázdné řetězce. Logika prázdné ID odmítne výjimkou `Error` (chyba volajícího). Validace uloženého průchodu (S2) proto přijme každý stav, který vytvoří `startCityRun` nad trasou splňující kontrakt `Route` (10 zastávek, každá se 4 různými volbami a správnou volbou mezi nimi), nebo `startDailyRun` nad takovou trasou a plánem z `dailyPlan` (platné datum UTC, `firstStopNumber` 1–8), a který z něj vznikne přes `reduceRun`. U `createRun` to platí, jen když volající splní podmínky na `stops` uvedené v [Rozhraní](#rozhraní).
 - Datum UTC je vždy řetězec `YYYY-MM-DD`.
 - Čísla zastávek pro hráče a měření jsou 1-based. Indexy v polích jsou 0-based a v názvech mají slovo `index`.
 
