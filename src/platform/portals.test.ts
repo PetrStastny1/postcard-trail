@@ -707,3 +707,138 @@ test('crazygames: sends no custom events and never requests a midgame ad', async
 
   assert.deepEqual(crazyGames.calls, ['loadingStart', 'loadingStop', 'gameplayStart', 'gameplayStop', 'gameplayStart', 'gameplayStop', 'requestAd rewarded'])
 })
+
+/** Lets promise reactions run while `setTimeout` is under the test's mocked clock. */
+async function flushPromises(): Promise<void> {
+  for (let turn = 0; turn < 3; turn++) await new Promise((resolve) => setImmediate(resolve))
+}
+
+/** A portal whose SDK script and SDK init finish only when the test says so. */
+interface SlowPortal {
+  adapter: PlatformAdapter
+  /** SDK calls, including `init`. */
+  calls: string[]
+  rewardedCall: string
+  finishScript(): void
+  finishSdkInit(): void
+}
+
+const slowPortals: { name: string; create(): SlowPortal }[] = [
+  {
+    name: 'poki',
+    create() {
+      const poki = fakePoki()
+      const script = deferred<PokiSdk>()
+      const sdkInit = deferred<unknown>()
+      poki.sdk.init = () => {
+        poki.calls.push('init')
+        return sdkInit.promise
+      }
+      return {
+        adapter: createPokiAdapter({ development: true, openStorage: () => new MemoryStorage(), loadSdk: () => script.promise }),
+        calls: poki.calls,
+        rewardedCall: 'rewardedBreak',
+        finishScript: () => script.resolve(poki.sdk),
+        finishSdkInit: () => sdkInit.resolve(undefined),
+      }
+    },
+  },
+  {
+    name: 'crazygames',
+    create() {
+      const crazyGames = fakeCrazyGames()
+      const script = deferred<CrazyGamesSdk>()
+      const sdkInit = deferred<unknown>()
+      crazyGames.sdk.init = () => {
+        crazyGames.calls.push('init')
+        return sdkInit.promise
+      }
+      return {
+        adapter: createCrazyGamesAdapter({ development: true, openStorage: () => new MemoryStorage(), loadSdk: () => script.promise }),
+        calls: crazyGames.calls,
+        rewardedCall: 'requestAd rewarded',
+        finishScript: () => script.resolve(crazyGames.sdk),
+        finishSdkInit: () => sdkInit.resolve(undefined),
+      }
+    },
+  },
+]
+
+/** Sends every kind of call the game makes and returns the rewarded request's callbacks. */
+async function playThrough(adapter: PlatformAdapter, tick: (milliseconds: number) => void): Promise<Callback[]> {
+  const callbacks: Callback[] = []
+  adapter.loadingStarted()
+  adapter.loadingFinished()
+  adapter.gameplayStart()
+  adapter.track(started)
+  adapter.gameplayStop()
+  requestAd(adapter, 'a1', callbacks)
+  tick(0)
+  await flushPromises()
+  return callbacks
+}
+
+for (const portal of slowPortals) {
+  for (const hanging of ['script', 'SDK init'] as const) {
+    test(`${portal.name}: with a hanging ${hanging} init() resolves after 5000 ms and not before`, async (t) => {
+      t.mock.timers.enable({ apis: ['setTimeout'] })
+      const slow = portal.create()
+      if (hanging === 'SDK init') slow.finishScript()
+      let resolved = false
+
+      void slow.adapter.init().then(() => {
+        resolved = true
+      })
+      await flushPromises()
+      t.mock.timers.tick(4999)
+      await flushPromises()
+      assert.equal(resolved, false)
+      t.mock.timers.tick(1)
+      await flushPromises()
+
+      assert.equal(resolved, true)
+      assert.equal(slow.adapter.rewardedAdsOffered(), false)
+      assert.deepEqual(slow.calls, hanging === 'SDK init' ? ['init'] : [])
+    })
+
+    test(`${portal.name}: ${hanging === 'script' ? 'a script' : 'an SDK init'} that finishes after the limit activates nothing`, async (t) => {
+      t.mock.timers.enable({ apis: ['setTimeout'] })
+      const slow = portal.create()
+      if (hanging === 'SDK init') slow.finishScript()
+
+      const initialised = slow.adapter.init()
+      await flushPromises()
+      t.mock.timers.tick(5000)
+      await initialised
+      slow.finishScript()
+      slow.finishSdkInit()
+      await flushPromises()
+      const callbacks = await playThrough(slow.adapter, (milliseconds) => t.mock.timers.tick(milliseconds))
+
+      assert.equal(slow.adapter.rewardedAdsOffered(), false)
+      assert.deepEqual(callbacks, [{ attemptId: 'a1', call: 'result', outcome: 'unavailable' }])
+      assert.deepEqual(slow.calls, hanging === 'SDK init' ? ['init'] : [])
+    })
+  }
+
+  test(`${portal.name}: an SDK ready just before the limit is used as usual`, async (t) => {
+    t.mock.timers.enable({ apis: ['setTimeout'] })
+    const slow = portal.create()
+
+    const initialised = slow.adapter.init()
+    t.mock.timers.tick(2000)
+    slow.finishScript()
+    await flushPromises()
+    t.mock.timers.tick(2999)
+    slow.finishSdkInit()
+    await initialised
+    t.mock.timers.tick(1)
+    const callbacks = await playThrough(slow.adapter, (milliseconds) => t.mock.timers.tick(milliseconds))
+
+    assert.equal(slow.adapter.rewardedAdsOffered(), true)
+    assert.deepEqual(callbacks, [])
+    assert.equal(slow.calls[0], 'init')
+    assert.ok(slow.calls.includes('gameplayStart'))
+    assert.equal(slow.calls.at(-1), slow.rewardedCall)
+  })
+}

@@ -1,5 +1,29 @@
 import type { RewardedAdOutcome, RewardedAdRequest } from './types.ts'
 
+/** Neither portal states a limit; without one a hanging SDK script or SDK init would keep `init()` pending forever. */
+export const SDK_INIT_TIMEOUT_MS = 5000
+
+/**
+ * Runs the whole SDK start-up (script and SDK init) under one limit counted from this call. Resolves with
+ * `connecting`'s result, or with `null` once the limit passes; a result that arrives later is dropped.
+ * `connecting` checks `expired()` before each further SDK call, so a late script starts nothing.
+ */
+export async function connectWithinLimit<Connection>(
+  connecting: (expired: () => boolean) => Promise<Connection | null>,
+): Promise<Connection | null> {
+  let expired = false
+  let timer: ReturnType<typeof setTimeout> | undefined
+  const limit = new Promise<null>((resolve) => {
+    timer = setTimeout(() => {
+      expired = true
+      resolve(null)
+    }, SDK_INIT_TIMEOUT_MS)
+  })
+  const connection = await Promise.race([connecting(() => expired), limit])
+  clearTimeout(timer)
+  return connection
+}
+
 export interface GameplaySdk {
   gameplayStart(): void
   gameplayStop(): void

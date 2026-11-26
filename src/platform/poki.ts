@@ -1,5 +1,5 @@
 import { createAnalyticsRecorder } from './analytics.ts'
-import { createPortalSession } from './portal.ts'
+import { connectWithinLimit, createPortalSession } from './portal.ts'
 import { loadScript } from './script.ts'
 import { createLocalStorageStore } from './storage.ts'
 import type { AnalyticsEvent, PlatformAdapter } from './types.ts'
@@ -69,20 +69,26 @@ export function createPokiAdapter({ development, openStorage, loadSdk }: PokiAda
     name: 'poki',
     store: createLocalStorageStore(openStorage),
     async init() {
-      let sdk: PokiSdk
-      try {
-        sdk = await loadSdk()
-      } catch {
-        // A blocked SDK is expected (ad blockers): the game runs without the portal.
-        return
-      }
-      try {
-        await sdk.init()
-        adsOffered = true
-      } catch {
-        // Poki asks games to continue after a failed init; the SDK still takes signals, only ads are off.
-      }
-      session.connect(sdk, sdk)
+      const connection = await connectWithinLimit(async (expired) => {
+        let sdk: PokiSdk
+        try {
+          sdk = await loadSdk()
+        } catch {
+          // A blocked SDK is expected (ad blockers): the game runs without the portal.
+          return null
+        }
+        if (expired()) return null
+        try {
+          await sdk.init()
+          return { sdk, adsOffered: true }
+        } catch {
+          // Poki asks games to continue after a failed init; the SDK still takes signals, only ads are off.
+          return { sdk, adsOffered: false }
+        }
+      })
+      if (!connection) return
+      adsOffered = connection.adsOffered
+      session.connect(connection.sdk, connection.sdk)
     },
     loadingStarted() {},
     loadingFinished() {

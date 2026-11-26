@@ -1,5 +1,5 @@
 import { createAnalyticsRecorder } from './analytics.ts'
-import { createPortalSession } from './portal.ts'
+import { connectWithinLimit, createPortalSession } from './portal.ts'
 import { loadScript } from './script.ts'
 import { createLocalStorageStore } from './storage.ts'
 import type { PlatformAdapter } from './types.ts'
@@ -60,15 +60,18 @@ export function createCrazyGamesAdapter({ development, openStorage, loadSdk }: C
     name: 'crazygames',
     store: createLocalStorageStore(openStorage),
     async init() {
-      let sdk: CrazyGamesSdk
-      try {
-        sdk = await loadSdk()
-        await sdk.init()
-      } catch {
-        // A blocked or failing SDK is expected (ad blockers): the game runs without the portal.
-        return
-      }
-      if (sdk.environment === 'disabled') return
+      const sdk = await connectWithinLimit(async (expired) => {
+        try {
+          const loaded = await loadSdk()
+          if (expired()) return null
+          await loaded.init()
+          return loaded
+        } catch {
+          // A blocked or failing SDK is expected (ad blockers): the game runs without the portal.
+          return null
+        }
+      })
+      if (!sdk || sdk.environment === 'disabled') return
       adsOffered = true
       session.connect(sdk, sdk.game)
     },

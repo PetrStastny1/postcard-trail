@@ -22,6 +22,7 @@ Závisí na balíčku 1.
 - [x] Společná pravidla požadavku na reklamu (S6.3–S6.5) a žádné průběžné reklamy (S5.7).
 - [x] `createPlatform()` vybírá adaptér podle `VITE_PLATFORM`, lokální build neobsahuje SDK (S1.1, S1.2).
 - [x] Unit testy s nahrazeným SDK (bez sítě).
+- [x] Limit 5 000 ms na celé `init()` portálového adaptéru, pozdní SDK nic neaktivuje (S5.8), testy s řízeným časem.
 
 ## Balíček 3: feedback (zvuk a vibrace)
 
