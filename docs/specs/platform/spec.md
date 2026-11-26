@@ -34,7 +34,8 @@ export interface Feedback {
    * Call at the start of the handler of every activating player input (`click`, `keydown`), not only the first
    * and not from `pointerdown`: browsers allow audio to start only on an activating input, and a resume that was
    * refused, never finished, or was cut by an iOS interruption is retried only on the next call. Creates the audio
-   * context if there is none and asks a halted one to resume; a cue played in the same handler still sounds.
+   * context if there is none and asks a halted one to resume; a cue played in the same listener before its first
+   * `await` still sounds.
    */
   unlock(): void
   play(cue: FeedbackCue): void
@@ -176,7 +177,7 @@ Tóny se plánují do kontextu ve stavu `running`, nebo když `unlock()` požád
 
 ## Otevřené body pro ředitele a app
 
-- App volá `feedback.unlock()` na začátku handleru každého aktivujícího vstupu hráče (`click`, `keydown`), ne jen prvního a ne z `pointerdown`. `unlock()` a `play()` téhož vstupu musí být ve stejném listeneru a před prvním `await`, jinak první podnět po startu nebo po přerušení nezazní. Rozhodnutí je v LOG.md („Platform: kdy app volá `feedback.unlock()`“). Jinak zvuk po odmítnutém nebo nedokončeném `resume()` či po přerušení na iOS do konce relace nezazní.
+- App volá `feedback.unlock()` na začátku handleru každého aktivujícího vstupu hráče (`click`, `keydown`), ne jen prvního a ne z `pointerdown`. `unlock()` a `play()` téhož vstupu musí být ve stejném listeneru a před prvním `await`, jinak první podnět po startu nebo po přerušení nezazní. Bez dalších volání by zvuk po odmítnutém nebo nedokončeném `resume()` či po přerušení na iOS do konce relace nezazní. Rozhodnutí je v LOG.md („Platform: kdy app volá `feedback.unlock()`“).
 - CrazyGames vyžaduje respektovat `SDK.game.settings.muteAudio` s předností před herním nastavením. Kontrakt `PlatformAdapter` ho nevystavuje. Návrh změny kontraktu je v předávací zprávě oblasti.
 - Poki doporučuje `commercialBreak()` při návratu z pauzy. Zadání nastavuje průběžné reklamy na 0 (§12, K5), adaptér je proto nevolá.
 - CrazyGames nechce `gameplayStop` při pouhé ztrátě fokusu. Hra se ale po skrytí stránky skutečně pozastaví a čeká na „Pokračovat“, takže `gameplayStop` při skrytí je oprávněný.
