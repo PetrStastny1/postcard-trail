@@ -1,0 +1,616 @@
+{
+  "id": "brussels",
+  "name": {
+    "en": "Brussels",
+    "cs": "Brusel"
+  },
+  "coordinates": {
+    "lat": 50.8467,
+    "lon": 4.3517
+  },
+  "postcardQuestionId": "BRU03",
+  "stops": [
+    {
+      "id": "BRU01",
+      "place": {
+        "en": "On the Heysel plateau",
+        "cs": "Na plošině Heysel"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/BRU01.webp",
+      "sceneAlt": {
+        "en": "Large metal spheres joined by diagonal and upright tubes",
+        "cs": "Velké kovové koule spojené šikmými i svislými trubkami"
+      },
+      "question": {
+        "en": "Which Brussels landmark can you see?",
+        "cs": "Kterou bruselskou dominantu máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Atomium",
+            "cs": "Atomium"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "European Parliament",
+            "cs": "Evropský parlament"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Basilica of Koekelberg",
+            "cs": "Bazilika v Koekelbergu"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Cinquantenaire Arch",
+            "cs": "Vítězný oblouk v Cinquantenaire"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On the Heysel plateau, you are beneath the steel spheres of the Atomium.",
+        "cs": "Na plošině Heysel stojíš pod kovovou konstrukcí Atomia."
+      },
+      "sourceUrls": [
+        "https://atomium.be/atomium_panorama?lang=en"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:The_Atomium_during_civil_twilight_(DSCF1135).jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "BRU02",
+      "place": {
+        "en": "Under the tower on the Grand-Place",
+        "cs": "Pod věží na Grand-Place"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/BRU02.webp",
+      "sceneAlt": {
+        "en": "A tall slender tower separates two ornate wings of unequal length",
+        "cs": "Vysoká štíhlá věž stojí mezi dvěma bohatě členěnými křídly rozdílné délky"
+      },
+      "question": {
+        "en": "Which prominent Brussels building has a tall slender tower set slightly off-centre between its wings?",
+        "cs": "Která známá bruselská budova má na rozdíl od sousedních cechovních domů vysokou štíhlou věž posunutou mezi křídly?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Brussels Town Hall",
+            "cs": "Bruselská radnice"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Royal Palace",
+            "cs": "Královský palác"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Brussels Stock Exchange",
+            "cs": "Bruselská burza"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "King’s House",
+            "cs": "Královský dům"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Under the tower on the Grand-Place, you can see two town hall wings of unequal length with a tower between them.",
+        "cs": "Pod věží na Grand-Place je dobře vidět dvě křídla radnice rozdílné délky s věží mezi nimi."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Brussels_Town_Hall"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Brussels,_townhall_oeg2043-00090_foto3_2015-06-07_08.38.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "BRU03",
+      "place": {
+        "en": "In the middle of the Grand-Place",
+        "cs": "Uprostřed Grand-Place"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/BRU03.webp",
+      "sceneAlt": {
+        "en": "Gilded ornaments on the guildhouse gables",
+        "cs": "Zlacené ornamenty na štítech cechovních domů"
+      },
+      "question": {
+        "en": "What is the famous Brussels square surrounded by ornate guildhouses called?",
+        "cs": "Jak se jmenuje slavné bruselské náměstí obklopené zdobenými cechovními domy?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Grand-Place",
+            "cs": "Grand-Place"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Place Royale",
+            "cs": "Place Royale"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Place du Grand Sablon",
+            "cs": "Place du Grand Sablon"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Place Flagey",
+            "cs": "Place Flagey"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "In the middle of the Grand-Place, you can see gilded ornaments on the guildhouse gables.",
+        "cs": "Uprostřed Grand-Place je dobře vidět zlacené ornamenty na štítech cechovních domů."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Grand-Place"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Grand-Place,_Brussels_-_panorama,_June_2018.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "BRU04",
+      "place": {
+        "en": "From the boulevard by the broad steps",
+        "cs": "Z bulváru kolem širokých schodů"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/BRU04.webp",
+      "sceneAlt": {
+        "en": "Two stone lions flank a broad staircase leading up to columns and a low triangular pediment",
+        "cs": "Dva kamenní lvi rámují dlouhé schodiště ke sloupům a nízkému trojúhelníkovému štítu"
+      },
+      "question": {
+        "en": "Which Brussels landmark are you passing?",
+        "cs": "Kterou bruselskou stavbu míjíš?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Royal Palace",
+            "cs": "Královský palác"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Brussels Stock Exchange",
+            "cs": "Bruselská burza"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Brussels Town Hall",
+            "cs": "Bruselská radnice"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "King’s House",
+            "cs": "Královský dům"
+          }
+        }
+      ],
+      "correctChoiceId": "b",
+      "feedback": {
+        "en": "Two stone lions flank the steps of the Brussels Stock Exchange.",
+        "cs": "Dva kamenní lvi stojí po stranách vstupu do Bruselské burzy."
+      },
+      "sourceUrls": [
+        "https://www.visit.brussels/en/visitors/plan-your-trip/strolling-through-the-centre-of-brussels"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Brussels_Stock_Exchange_(former).jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "BRU05",
+      "place": {
+        "en": "In the covered arcade by Rue du Marché aux Herbes",
+        "cs": "V kryté pasáži u Rue du Marché aux Herbes"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/BRU05.webp",
+      "sceneAlt": {
+        "en": "A continuous glass barrel vault above parallel rows of matching façades",
+        "cs": "Souvislý skleněný oblouk nad dvěma řadami stejně členěných fasád"
+      },
+      "question": {
+        "en": "Which Brussels arcade has this long barrel-shaped glass roof between rows of shopfronts?",
+        "cs": "Která bruselská pasáž má mezi pravidelnými průčelími obchodů dlouhou skleněnou klenbu?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Royal Saint-Hubert Galleries",
+            "cs": "Královské galerie sv. Huberta"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Galerie Bortier",
+            "cs": "Galerie Bortier"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Passage du Nord",
+            "cs": "Passage du Nord"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Grand Bazar Anspach",
+            "cs": "Grand Bazar Anspach"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "This covered shopping street with its long glazed vault is the Royal Saint-Hubert Galleries.",
+        "cs": "Krytá obchodní ulice s dlouhou skleněnou klenbou se jmenuje Královské galerie sv. Huberta."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Royal_Saint-Hubert_Galleries"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Galeries_Royales_Saint-Hubert_(Brussels)_-_Interior_view_of_the_Italianate_arcade_with_a_glass-paned_barrel-vaulted_roof_(3).jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "BRU06",
+      "place": {
+        "en": "At Grand Sablon",
+        "cs": "Na Grand Sablon"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/BRU06.webp",
+      "sceneAlt": {
+        "en": "Tall pointed windows, fine pinnacles and flying buttresses above a smaller square",
+        "cs": "Vysoká špičatá okna, jemné věžičky a výrazné opěrné oblouky nad menším náměstím"
+      },
+      "question": {
+        "en": "Which Brussels church can you see?",
+        "cs": "Který bruselský chrám vidíš?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Notre-Dame du Sablon",
+            "cs": "Notre-Dame du Sablon"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Cathedral of St Michael and St Gudula",
+            "cs": "Katedrála sv. Michaela a Guduly"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Basilica of Koekelberg",
+            "cs": "Bazilika v Koekelbergu"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Notre-Dame de Laeken",
+            "cs": "Notre-Dame de Laeken"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "At Grand Sablon, you can see tall pointed windows, fine pinnacles and flying buttresses above a smaller square.",
+        "cs": "Na Grand Sablon je dobře vidět vysoká špičatá okna, jemné věžičky a výrazné opěrné oblouky nad menším náměstím."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Church_of_Our_Blessed_Lady_of_the_Sablon"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Kościół_Notre-Dame_du_Sablon_w_Brukseli.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "BRU07",
+      "place": {
+        "en": "Through the railings at Petit Sablon",
+        "cs": "Při pohledu přes plot Petit Sablon"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/BRU07.webp",
+      "sceneAlt": {
+        "en": "A series of small bronze figures carrying tools on the individual posts",
+        "cs": "Série drobných bronzových postav s nástroji na jednotlivých sloupcích"
+      },
+      "question": {
+        "en": "Which Brussels garden has little figures of craftspeople topping the fence posts?",
+        "cs": "Který bruselský park poznáš podle figurek řemeslníků na sloupcích obvodového plotu?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Petit Sablon",
+            "cs": "Petit Sablon"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Parc du Cinquantenaire",
+            "cs": "Parc du Cinquantenaire"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Parc de Bruxelles",
+            "cs": "Parc de Bruxelles"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Parc de Laeken",
+            "cs": "Parc de Laeken"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Through the railings at Petit Sablon, you can see a series of small bronze figures carrying tools on the individual posts.",
+        "cs": "Při pohledu přes plot Petit Sablon je dobře vidět série drobných bronzových postav s nástroji na jednotlivých sloupcích."
+      },
+      "sourceUrls": [
+        "https://monument.heritage.brussels/files/cities/1000/documents/03-vol-c-fr-def_k.pdf"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Bruxelles_-_Square_du_Petit_Sablon.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "BRU08",
+      "place": {
+        "en": "From the top of the steps above the garden",
+        "cs": "Z horní hrany schodů nad zahradou"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/BRU08.webp",
+      "sceneAlt": {
+        "en": "Terraced steps and a formal garden aligned with the city hall spire in the distance",
+        "cs": "Terasové schody a pravidelná zahrada pod pohledovou osou na špičku radnice"
+      },
+      "question": {
+        "en": "Which Brussels space looks down over formal beds towards the city centre?",
+        "cs": "Který bruselský prostor má tento výhled přes pravidelné záhony dolů k městu?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Parc de Bruxelles",
+            "cs": "Parc de Bruxelles"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Cinquantenaire",
+            "cs": "Cinquantenaire"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Mont des Arts",
+            "cs": "Mont des Arts"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Place Flagey",
+            "cs": "Place Flagey"
+          }
+        }
+      ],
+      "correctChoiceId": "c",
+      "feedback": {
+        "en": "From the top of the steps above the garden, you can see terraced steps and a formal garden aligned with the city hall spire in the distance.",
+        "cs": "Z horní hrany schodů nad zahradou je dobře vidět terasové schody a pravidelná zahrada pod pohledovou osou na špičku radnice."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Mont_des_Arts"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Mont_des_Arts,_Brussels,_Belgium.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "BRU09",
+      "place": {
+        "en": "Outside the Old England corner building",
+        "cs": "Před nárožím Old England"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/BRU09.webp",
+      "sceneAlt": {
+        "en": "A dark glazed iron corner with delicate curves above a steep street",
+        "cs": "Tmavá kovová prosklená konstrukce s jemnými křivkami nad svažitou ulicí"
+      },
+      "question": {
+        "en": "Which Brussels museum occupies this dark glazed corner on the slope below Place Royale?",
+        "cs": "Které bruselské muzeum sídlí v tmavém proskleném nároží svírajícím svah pod Place Royale?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Musical Instruments Museum",
+            "cs": "Muzeum hudebních nástrojů"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Magritte Museum",
+            "cs": "Muzeum Magritta"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Belgian Comic Strip Center",
+            "cs": "Belgické centrum komiksu"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Brussels City Museum",
+            "cs": "Muzeum města Bruselu"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Outside the Old England corner building, you can see a dark glazed iron corner with delicate curves above a steep street.",
+        "cs": "Před nárožím Old England je dobře vidět tmavá kovová prosklená konstrukce s jemnými křivkami nad svažitou ulicí."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Musical_Instrument_Museum,_Brussels"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Old_England_facade,_Brussels_(DSCF7544).jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Tmavý kovový rám proskleného nároží Old England a zkosený roh svahu. Muzeum Magritta a Muzeum města stojí v kamenných budovách, centrum komiksu v jiném, širším tvaru."
+    },
+    {
+      "id": "BRU10",
+      "place": {
+        "en": "On Place Royale facing the park",
+        "cs": "Na Place Royale ve směru parku"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/BRU10.webp",
+      "sceneAlt": {
+        "en": "An equestrian statue on an open square between regular pale façades, aligned with a portico",
+        "cs": "Jezdecká socha na prostranství mezi pravidelnými světlými průčelími a portikus v její ose"
+      },
+      "question": {
+        "en": "Which Brussels square has a porch-fronted church and an equestrian statue on an axis of pale palace façades?",
+        "cs": "Které bruselské náměstí má v ose řad světlých palácových průčelí malý kostel s portikem a jezdeckou sochu?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Place Royale",
+            "cs": "Place Royale"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Grand-Place",
+            "cs": "Grand-Place"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Place du Grand Sablon",
+            "cs": "Place du Grand Sablon"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Place de la Monnaie",
+            "cs": "Place de la Monnaie"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On Place Royale, the equestrian statue stands against a symmetrical set of pale façades.",
+        "cs": "Na Place Royale se jezdecká socha promítá před symetrická světlá průčelí."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Place_Royale,_Brussels"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Brussels,_straatzicht_Place_Royale_met_%C3%A9glise_Saint-Jacques-sur-Coudenberg_oeg2043-01020_en_standbeeld_van_Godefroid_de_Bouillon_foto3_2015-06-07_13.53.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Jezdecká socha v širokém pravidelném prostoru s řadou světlých průčelí a portikem na ose. Grand-Place má cechovní štíty, Sablon nesouměrné zakončení a Monnaie divadelní průčelí."
+    }
+  ]
+}

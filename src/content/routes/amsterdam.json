@@ -1,0 +1,617 @@
+{
+  "id": "amsterdam",
+  "name": {
+    "en": "Amsterdam",
+    "cs": "Amsterdam"
+  },
+  "coordinates": {
+    "lat": 52.3667,
+    "lon": 4.8833
+  },
+  "postcardQuestionId": "AMS06",
+  "stops": [
+    {
+      "id": "AMS01",
+      "place": {
+        "en": "Outside Centraal station",
+        "cs": "Před nádražím Centraal"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/AMS01.webp",
+      "sceneAlt": {
+        "en": "A long brick façade with two towers and tram tracks in the foreground",
+        "cs": "Dlouhé cihlové průčelí se dvěma věžemi a tramvajové koleje v popředí"
+      },
+      "question": {
+        "en": "Which Amsterdam landmark do you see in the background?",
+        "cs": "Kterou amsterodamskou stavbu vidíš v pozadí?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Amsterdam Centraal",
+            "cs": "Amsterdam Centraal"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Rijksmuseum",
+            "cs": "Rijksmuseum"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Royal Palace",
+            "cs": "Královský palác"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Beurs van Berlage",
+            "cs": "Beurs van Berlage"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "From the waterfront, Amsterdam Centraal is recognisable by its twin towers.",
+        "cs": "Na nábřeží stojíš před nádražím Amsterdam Centraal, které z města poznáš podle dvojice věží."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Amsterdam_Centraal_station"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Amsterdam_Centraal_2016-09-13.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "AMS02",
+      "place": {
+        "en": "On the waterfront by the old harbour",
+        "cs": "Na nábřeží u starého přístavu"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/AMS02.webp",
+      "sceneAlt": {
+        "en": "A row of slightly leaning houses with decorative gables meets the water, with no pavement in front",
+        "cs": "Řada mírně nakloněných domů s ozdobnými štíty stojí přímo ve vodě, aniž by před nimi vedl chodník"
+      },
+      "question": {
+        "en": "Which Amsterdam waterfront is in the scene?",
+        "cs": "Které amsterodamské nábřeží vidíš?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Prinsengracht",
+            "cs": "Prinsengracht"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Herengracht",
+            "cs": "Herengracht"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Brouwersgracht",
+            "cs": "Brouwersgracht"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Damrak",
+            "cs": "Damrak"
+          }
+        }
+      ],
+      "correctChoiceId": "d",
+      "feedback": {
+        "en": "On Damrak, the tall narrow houses rise straight from the old harbour.",
+        "cs": "Na Damraku vyrůstají vysoké úzké domy přímo nad hladinou starého přístavu."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Damrak"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Amsterdam_Damrak_Canal_Dancing_Houses_Tour_Boat_2026.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "AMS03",
+      "place": {
+        "en": "Behind the palace on Nieuwezijds Voorburgwal",
+        "cs": "Za palácem na Nieuwezijds Voorburgwal"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/AMS03.webp",
+      "sceneAlt": {
+        "en": "A broad stone frontage has a figure bearing a globe above its pediment",
+        "cs": "Figuru s koulí na ramenou nese štít rozsáhlého kamenného průčelí"
+      },
+      "question": {
+        "en": "Which Amsterdam landmark has a globe-bearing statue above its rear façade?",
+        "cs": "Která amsterodamská dominanta má nad zadním průčelím sochu s velkou zeměkoulí?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Royal Palace at Dam Square",
+            "cs": "Královský palác na Damu"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Rijksmuseum",
+            "cs": "Rijksmuseum"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Concertgebouw",
+            "cs": "Concertgebouw"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Amsterdam Centraal",
+            "cs": "Amsterdam Centraal"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Behind the palace on Nieuwezijds Voorburgwal, you can see Atlas holding a large globe over the palace’s west pediment from Nieuwezijds Voorburgwal.",
+        "cs": "Za palácem na Nieuwezijds Voorburgwal je dobře vidět Atlas nese velký glóbus na západním tympanonu paláce při pohledu z Nieuwezijds Voorburgwal."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Royal_Palace_of_Amsterdam"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Royal_Palace_of_Amsterdam_44.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "AMS04",
+      "place": {
+        "en": "Heading from the centre towards the west canals",
+        "cs": "Při přechodu ze středu města k západním kanálům"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/AMS04.webp",
+      "sceneAlt": {
+        "en": "A high view of several concentric canal curves and rows of bridges, with houses between the canals",
+        "cs": "Zvýšený pohled na několik soustředných vodních oblouků a řady mostů s domy mezi nimi"
+      },
+      "question": {
+        "en": "What is the ring of canals around old Amsterdam called?",
+        "cs": "Jak se jmenuje pás soustředných kanálů kolem starého Amsterdamu?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Grachtengordel",
+            "cs": "Grachtengordel"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Jordaan",
+            "cs": "Jordaan"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "De Pijp",
+            "cs": "De Pijp"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Museumkwartier",
+            "cs": "Museumkwartier"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Around old Amsterdam, the Grachtengordel forms a belt of concentric canals.",
+        "cs": "Kolem starého Amsterdamu se kanály Grachtengordelu skládají do soustředných oblouků."
+      },
+      "sourceUrls": [
+        "https://www.canonvannederland.nl/en/grachtengordel"
+      ],
+      "photoReferenceUrls": [
+        "https://whc.unesco.org/en/documents/115081"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "AMS05",
+      "place": {
+        "en": "From the Prinsengracht canal",
+        "cs": "Od kanálu Prinsengracht"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/AMS05.webp",
+      "sceneAlt": {
+        "en": "A tall square tower with a colourful crown at its summit beside a canal",
+        "cs": "Vysoká hranatá věž s barevnou korunou na vrcholu vedle kanálu"
+      },
+      "question": {
+        "en": "Which church can you see?",
+        "cs": "Který chrám vidíš?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Oude Kerk",
+            "cs": "Oude Kerk"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Nieuwe Kerk",
+            "cs": "Nieuwe Kerk"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Westerkerk",
+            "cs": "Westerkerk"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Zuiderkerk",
+            "cs": "Zuiderkerk"
+          }
+        }
+      ],
+      "correctChoiceId": "c",
+      "feedback": {
+        "en": "From the Prinsengracht canal, you can see a tall square tower with a colourful crown at its summit beside a canal.",
+        "cs": "Od kanálu Prinsengracht je dobře vidět vysoká hranatá věž s barevnou korunou na vrcholu vedle kanálu."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Westerkerk"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Amsterdam_(NL),_Westerkerk_--_2015_--_7186.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "AMS06",
+      "place": {
+        "en": "Across the Prinsengracht",
+        "cs": "Na protější straně Prinsengrachtu"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/AMS06.webp",
+      "sceneAlt": {
+        "en": "A narrow old frontage at number 263 beside a modern glass entrance",
+        "cs": "Úzké staré průčelí s domovním číslem 263 a nový prosklený vstup vedle něj"
+      },
+      "question": {
+        "en": "Which building is in front of you?",
+        "cs": "Kterou stavbu máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Rembrandt House",
+            "cs": "Rembrandtův dům"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Van Gogh Museum",
+            "cs": "Muzeum Van Gogha"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Huis Marseille",
+            "cs": "Huis Marseille"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Anne Frank House",
+            "cs": "Dům Anne Frankové"
+          }
+        }
+      ],
+      "correctChoiceId": "d",
+      "feedback": {
+        "en": "On the Prinsengracht, the narrow front of the Anne Frank House stands next to the museum’s glass entrance.",
+        "cs": "Na Prinsengrachtu stojíš u domu Anne Frankové, jehož úzké průčelí je vedle proskleného vstupu do muzea."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Anne_Frank_House"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Amsterdam_(NL),_Anne-Frank-Huis_--_2015_--_7185.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "AMS07",
+      "place": {
+        "en": "In a quiet courtyard near Spui",
+        "cs": "V klidném dvoře poblíž Spui"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/AMS07.webp",
+      "sceneAlt": {
+        "en": "Houses around a lawn with the English Reformed Church and a dark timber gable",
+        "cs": "Domy kolem nepravidelného trávníku s anglickým reformovaným kostelem a tmavým dřevěným štítem domu"
+      },
+      "question": {
+        "en": "Which enclosed courtyard can you see?",
+        "cs": "Který uzavřený dvůr vidíš?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Begijnhof",
+            "cs": "Begijnhof"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Van Brienenhofje",
+            "cs": "Van Brienenhofje"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Karthuizerhof",
+            "cs": "Karthuizerhof"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Occohofje",
+            "cs": "Occohofje"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "In a quiet courtyard near Spui, you can see houses around a lawn with the English Reformed Church and a dark timber gable.",
+        "cs": "V klidném dvoře poblíž Spui je dobře vidět domy kolem nepravidelného trávníku s anglickým reformovaným kostelem a tmavým dřevěným štítem domu."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Begijnhof,_Amsterdam"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:BegijnhofAmsterdamPanorama.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "AMS08",
+      "place": {
+        "en": "On Museumplein by the museum entrance",
+        "cs": "Na Museumplein před vstupem do muzea"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/AMS08.webp",
+      "sceneAlt": {
+        "en": "A curved glass entrance beside a low pale rectangular wing",
+        "cs": "Zaoblený prosklený vstup a sousední nízký světlý hranol"
+      },
+      "question": {
+        "en": "Which Amsterdam cultural landmark has a low white wing and a curved glass entrance on Museumplein?",
+        "cs": "Kterou amsterodamskou kulturní stavbu poznáš podle plochého křídla s velkými bílými panely a proskleného zaobleného vstupu na Museumplein?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Van Gogh Museum",
+            "cs": "Muzeum Van Gogha"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Rijksmuseum",
+            "cs": "Rijksmuseum"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Concertgebouw",
+            "cs": "Concertgebouw"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "NEMO Science Museum",
+            "cs": "Muzeum Nemo"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On Museumplein the Van Gogh Museum has its curved glass entrance beside the Rietveld wing.",
+        "cs": "Na Museumplein vstoupíš do Muzea Van Gogha proskleným oblým vstupem vedle Rietveldova křídla."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Van_Gogh_Museum"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Van_Gogh_Museum,_Kurokawa_wing.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "AMS09",
+      "place": {
+        "en": "From the lawn on Museumplein",
+        "cs": "Z trávníku Museumplein"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/AMS09.webp",
+      "sceneAlt": {
+        "en": "Two towers with ornamental gables above a central arched entrance",
+        "cs": "Dvojice věží s ozdobnými štíty nad klenutým středním vstupem"
+      },
+      "question": {
+        "en": "Which museum has two gabled towers on the square and a vaulted cycle passage through its centre?",
+        "cs": "Které muzeum má na straně náměstí dvě věže se štíty a klenutý průjezd pro kola středem budovy?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Rijksmuseum",
+            "cs": "Rijksmuseum"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Stedelijk Museum",
+            "cs": "Stedelijk Museum"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Van Gogh Museum",
+            "cs": "Muzeum Van Gogha"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Amsterdam Museum",
+            "cs": "Amsterdamské muzeum"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "From the lawn on Museumplein, you can see two towers with ornamental gables above a central arched entrance.",
+        "cs": "Z trávníku Museumplein je dobře vidět dvojice věží s ozdobnými štíty nad klenutým středním vstupem."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Rijksmuseum"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:South_facade_of_the_Rijksmuseum_Amsterdam_(DSCF0528).jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Věžová dvojice s ozdobnými štíty, červené zdivo a průjezd pro kola uprostřed. Další muzea mají odlišný vstup bez této kombinace."
+    },
+    {
+      "id": "AMS10",
+      "place": {
+        "en": "At the south end of Museumplein",
+        "cs": "Na jižním konci Museumplein"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/AMS10.webp",
+      "sceneAlt": {
+        "en": "A pale concert hall with a triangular pediment and a lyre on its roofline",
+        "cs": "Světlý koncertní sál s trojúhelným štítem a lyrou ve střešní siluetě"
+      },
+      "question": {
+        "en": "Which concert hall above Museumplein has this classical front and a lyre on its roof?",
+        "cs": "Který koncertní sál nad Museumplein poznáš podle klasicistního průčelí s lyrou na střeše?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Concertgebouw",
+            "cs": "Concertgebouw"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Carré",
+            "cs": "Carré"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Muziekgebouw",
+            "cs": "Muziekgebouw"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Dutch National Opera",
+            "cs": "Nizozemská národní opera"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "At the south end of Museumplein, you can see a pale concert hall with a triangular pediment and a lyre on its roofline.",
+        "cs": "Na jižním konci Museumplein je dobře vidět světlý koncertní sál s trojúhelným štítem a lyrou ve střešní siluetě."
+      },
+      "sourceUrls": [
+        "https://www.concertgebouw.nl/ontdek/tip-loop-een-rondje-om-het-concertgebouw",
+        "https://en.wikipedia.org/wiki/Concertgebouw"
+      ],
+      "photoReferenceUrls": [
+        "https://www.concertgebouw.nl/ontdek/tip-loop-een-rondje-om-het-concertgebouw"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Konzervativní světle kamenné průčelí s trojúhelným štítem, lyrou na střeše a otevřený Museumplein. Divadlo Carré stojí na nábřeží, Muziekgebouw je moderní prosklený hranol a opera má jiné průčelí."
+    }
+  ]
+}

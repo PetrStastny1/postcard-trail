@@ -1,0 +1,624 @@
+{
+  "id": "budapest",
+  "name": {
+    "en": "Budapest",
+    "cs": "Budapešť"
+  },
+  "coordinates": {
+    "lat": 47.4983,
+    "lon": 19.0408
+  },
+  "postcardQuestionId": "B04",
+  "stops": [
+    {
+      "id": "B01",
+      "place": {
+        "en": "At the Citadella lookout on Gellért Hill",
+        "cs": "Na vyhlídce u Citadely na Gellértově vrchu"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/B01.webp",
+      "sceneAlt": {
+        "en": "A pale palace with long wings and a tall green dome rises above stone terraces on the hill across the valley",
+        "cs": "Na protějším kopci stojí světlý palác s dlouhými křídly a velkou zelenou kupolí nad kamennými terasami"
+      },
+      "question": {
+        "en": "Which Budapest landmark can you see on the hill across from you?",
+        "cs": "Kterou budapešťskou dominantu vidíš na protějším kopci?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Fisherman’s Bastion",
+            "cs": "Rybářská bašta"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Hungarian Parliament",
+            "cs": "Maďarský parlament"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Vajdahunyad Castle",
+            "cs": "Hrad Vajdahunyad"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Buda Castle",
+            "cs": "Budínský hrad"
+          }
+        }
+      ],
+      "correctChoiceId": "d",
+      "feedback": {
+        "en": "From Gellért Hill, you can see Buda Castle above its stone terraces.",
+        "cs": "Z Gellértova vrchu vidíš Budínský hrad nad kamennými terasami."
+      },
+      "sourceUrls": [
+        "https://whc.unesco.org/en/list/400/"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Buda_Castle_from_Citadella_-_panoramio.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "B02",
+      "place": {
+        "en": "From the upper Sikló platform",
+        "cs": "Od horního nástupiště Sikló"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/B02.webp",
+      "sceneAlt": {
+        "en": "A stepped car on a steep track between the upper station and the river",
+        "cs": "Stupňovitý vůz na prudkém sklonu kolejí mezi horní stanicí a řekou"
+      },
+      "question": {
+        "en": "Which Budapest attraction can you see?",
+        "cs": "Kterou budapešťskou atrakci máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Sikló",
+            "cs": "Sikló"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Libegő",
+            "cs": "Libegő"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Fogaskerekű",
+            "cs": "Fogaskerekű"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Gyermekvasút",
+            "cs": "Gyermekvasút"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "The Buda Castle Hill Funicular, Sikló, takes these steep tracks down towards the Chain Bridge.",
+        "cs": "Budínská hradní lanovka Sikló vede po strmých kolejích dolů k Řetězovému mostu."
+      },
+      "sourceUrls": [
+        "https://bkk.hu/en/visiting-budapest/special-transport-services/",
+        "https://en.wikipedia.org/wiki/Budapest_Castle_Hill_Funicular"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Budapest_Funicular_R01.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "B03",
+      "place": {
+        "en": "At the Buda entrance to the Chain Bridge",
+        "cs": "U budínského vstupu na Řetězový most"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/B03.webp",
+      "sceneAlt": {
+        "en": "A large reclining maned lion with a stone pier behind it",
+        "cs": "Velký ležící lev s hřívou a kamenný pilíř za ním"
+      },
+      "question": {
+        "en": "What is the bridge ahead called?",
+        "cs": "Jak se jmenuje most, ke kterému přicházíš?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Chain Bridge",
+            "cs": "Řetězový most"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Elizabeth Bridge",
+            "cs": "Alžbětin most"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Liberty Bridge",
+            "cs": "Most Svobody"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Margaret Bridge",
+            "cs": "Markétin most"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "At the Buda entrance to the Chain Bridge, you can see a large reclining maned lion with a stone pier behind it.",
+        "cs": "U budínského vstupu na Řetězový most je dobře vidět velký ležící lev s hřívou a kamenný pilíř za ním."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Sz%C3%A9chenyi_Chain_Bridge"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Lion-statue-Chain-Bridge-Budapest.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "B04",
+      "place": {
+        "en": "From the north pavement of the Chain Bridge",
+        "cs": "Ze severního chodníku Řetězového mostu"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/B04.webp",
+      "sceneAlt": {
+        "en": "A broad river beneath the bridge and a tall dome between spires on the east bank",
+        "cs": "Široká řeka pod mostem a vysoká kupole mezi věžemi na východním břehu"
+      },
+      "question": {
+        "en": "Which river flows through Budapest?",
+        "cs": "Která řeka protéká Budapeští?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Tisza",
+            "cs": "Tisa"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Drava",
+            "cs": "Dráva"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Sava",
+            "cs": "Sáva"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Danube",
+            "cs": "Dunaj"
+          }
+        }
+      ],
+      "correctChoiceId": "d",
+      "feedback": {
+        "en": "From the north pavement of the Chain Bridge, you can see the Danube and Parliament’s dome on the Pest bank.",
+        "cs": "Ze severního chodníku Řetězového mostu vidíš Dunaj a pešťský břeh s kupolí Parlamentu."
+      },
+      "sourceUrls": [
+        "https://whc.unesco.org/en/list/400/",
+        "https://en.wikipedia.org/wiki/Budapest#Cityscape"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Hungarian_Parliament_Building_(5995523311).jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "B05",
+      "place": {
+        "en": "On Kossuth Square",
+        "cs": "Na Kossuthově náměstí"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/B05.webp",
+      "sceneAlt": {
+        "en": "A high central dome and two pointed towers above a long stone façade",
+        "cs": "Vysoká střední kupole a dvě štíhlé věže nad dlouhým kamenným průčelím"
+      },
+      "question": {
+        "en": "Which building is in front of you?",
+        "cs": "Kterou stavbu máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Hungarian Parliament",
+            "cs": "Maďarský parlament"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Hungarian State Opera",
+            "cs": "Maďarská státní opera"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Hungarian National Gallery",
+            "cs": "Maďarská národní galerie"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Museum of Ethnography",
+            "cs": "Etnografické muzeum"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On Kossuth Square, you can see the land-facing front of Parliament with a large central dome flanked by pointed towers.",
+        "cs": "Na Kossuthově náměstí je dobře vidět pešťské průčelí sídla Parlamentu s centrální vysokou kupolí a párem špičatých věží."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Hungarian_Parliament_Building"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Parlement_hongrois_Kossuth_Lajos_t%C3%A9r.JPG"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "B06",
+      "place": {
+        "en": "From a high corner of Oktogon",
+        "cs": "Na vyvýšeném rohu Oktogonu"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/B06.webp",
+      "sceneAlt": {
+        "en": "Four chamfered corners alternating with four wide streets",
+        "cs": "Čtyři zkosená nároží střídající se se čtyřmi širokými ulicemi"
+      },
+      "question": {
+        "en": "Which Budapest junction has four chamfered corners where two broad avenues cross?",
+        "cs": "Které budapešťské prostranství tvoří čtyři zkosená nároží kolem křížení dvou širokých tříd?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Oktogon",
+            "cs": "Oktogon"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Kossuth Square",
+            "cs": "Kossuthovo náměstí"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Heroes’ Square",
+            "cs": "Náměstí hrdinů"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Liberty Square",
+            "cs": "Náměstí svobody"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "From above Oktogon, four chamfered corners and four street openings form an octagon.",
+        "cs": "Z vyvýšeného rohu Oktogonu vidíš, jak se čtyři zkosená nároží a čtyři ulice skládají do osmiúhelníku."
+      },
+      "sourceUrls": [
+        "https://www.bkv.hu/en/content/our_thematic_routes_with",
+        "https://en.wikipedia.org/wiki/Oktogon_(intersection)"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Oktogon_-_Budapest_001.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "B07",
+      "place": {
+        "en": "At the end of Andrássy Avenue",
+        "cs": "Na konci Andrássyho třídy"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/B07.webp",
+      "sceneAlt": {
+        "en": "Two opposing semicircular colonnades and a tall statue-topped column on the axis of an open square",
+        "cs": "Dvě protilehlé půlkruhové kolonády a vysoký sloup se sochou v ose velkého náměstí"
+      },
+      "question": {
+        "en": "What is the name of this square in Budapest?",
+        "cs": "Jak se jmenuje toto budapešťské náměstí?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Liberty Square",
+            "cs": "Náměstí svobody"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Kossuth Square",
+            "cs": "Kossuthovo náměstí"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Heroes’ Square",
+            "cs": "Náměstí hrdinů"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Elizabeth Square",
+            "cs": "Alžbětino náměstí"
+          }
+        }
+      ],
+      "correctChoiceId": "c",
+      "feedback": {
+        "en": "At the end of Andrássy Avenue, you are between the two colonnades on Heroes’ Square.",
+        "cs": "Na konci Andrássyho třídy stojíš na Náměstí hrdinů mezi dvojicí kolonád."
+      },
+      "sourceUrls": [
+        "https://ligetbudapest.hu/en/heroes-square",
+        "https://en.wikipedia.org/wiki/Heroes%27_Square_(Budapest)"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:HUN-2015-Budapest-Heroes’_Square.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "B08",
+      "place": {
+        "en": "Right beside the sculptural group on Heroes’ Square",
+        "cs": "Přímo u sousoší na Náměstí hrdinů"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/B08.webp",
+      "sceneAlt": {
+        "en": "A winged figure atop a column holds two separate metal objects, one topped with a small cross and the other with two bars",
+        "cs": "Okřídlená postava na sloupu nese v rukou dva oddělené kovové předměty, jeden s malým křížem nahoře a druhý se dvěma příčkami"
+      },
+      "question": {
+        "en": "Which Budapest monument has a winged figure holding a crown and a double cross atop its tall column?",
+        "cs": "Který budapešťský památník má na vysokém sloupu okřídlenou postavu s korunou a dvojitým křížem?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Millennium Monument",
+            "cs": "Památník tisíciletí"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Liberty Statue on Gellért Hill",
+            "cs": "Socha svobody na Gellértově vrchu"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Memorial to the Victims of the German Occupation",
+            "cs": "Památník obětem německé okupace"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Shoes on the Danube Bank",
+            "cs": "Boty na břehu Dunaje"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On Heroes’ Square, you can see the winged Gabriel holding a crown and a double cross.",
+        "cs": "Na Náměstí hrdinů vidíš, že okřídlený Gabriel drží korunu a dvojitý kříž."
+      },
+      "sourceUrls": [
+        "https://ligetbudapest.hu/en/visitor-information/statue-of-archangel-gabriel",
+        "https://en.wikipedia.org/wiki/Heroes%27_Square_(Budapest)"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Budapest,_H%C5%91s%C3%B6k_tere_G%C3%A1briel_arkangyal_szobor_2022_02.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "B09",
+      "place": {
+        "en": "On the Hősök tere platform",
+        "cs": "Na nástupišti Hősök tere"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/B09.webp",
+      "sceneAlt": {
+        "en": "A yellow train by a low-ceilinged platform with columns",
+        "cs": "Žlutý vlak u nástupiště s nízkým stropem a sloupy"
+      },
+      "question": {
+        "en": "Which metro line are you waiting for?",
+        "cs": "Na kterou linku metra právě čekáš?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "M1",
+            "cs": "M1"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "M2",
+            "cs": "M2"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "M3",
+            "cs": "M3"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "M4",
+            "cs": "M4"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Under Heroes’ Square at Hősök tere station, a yellow M1 train is pulling in.",
+        "cs": "Pod Náměstím hrdinů ve stanici Hősök tere právě přijíždí žlutý vlak linky M1."
+      },
+      "sourceUrls": [
+        "https://opendata.bkk.hu/data-sources",
+        "https://en.wikipedia.org/wiki/H%C5%91s%C3%B6k_tere_metro_station"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Budapest,_M1_metr%C3%B3,_H%C5%91s%C3%B6k_tere.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "changeable",
+      "changeableFact": "přiřazení linky ve statickém GTFS",
+      "distinguishingFeature": "Nízký strop a žlutá nízkoprofilová souprava u konkrétního nástupiště pod Náměstím hrdinů. M2–M4 používají vysoké vozy a jinak prostorově řešené stanice."
+    },
+    {
+      "id": "B10",
+      "place": {
+        "en": "By the bridge over the water in City Park",
+        "cs": "U můstku přes vodu v Městském parku"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/B10.webp",
+      "sceneAlt": {
+        "en": "Turrets and prominent castle gables right above park water",
+        "cs": "Věžičky a výrazné štíty hradu přímo nad parkovou vodou"
+      },
+      "question": {
+        "en": "Which Budapest castle has these turrets beside the water in a flat city park?",
+        "cs": "Který budapešťský hrad poznáš podle věžiček těsně u vody v rovinatém městském parku?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Vajdahunyad Castle",
+            "cs": "Hrad Vajdahunyad"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Buda Castle",
+            "cs": "Budínský hrad"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Fisherman’s Bastion",
+            "cs": "Rybářská bašta"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Citadella",
+            "cs": "Citadela"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Back above ground in City Park, you can see Vajdahunyad Castle and its turrets over the water.",
+        "cs": "Zpátky na povrchu v Městském parku vidíš hrad Vajdahunyad a jeho věžičky nad vodou."
+      },
+      "sourceUrls": [
+        "https://ligetbudapest.hu/en/vajdahunyad-castle",
+        "https://en.wikipedia.org/wiki/Vajdahunyad_Castle"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Vajdahunyad_vára_Budapest_September_2013.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Věžičky a štíty stojí u klidné vody v rovinatém městském parku. Budínský hrad, bašta a Citadela naopak leží vysoko nad městem."
+    }
+  ]
+}

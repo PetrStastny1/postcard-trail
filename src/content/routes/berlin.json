@@ -1,0 +1,616 @@
+{
+  "id": "berlin",
+  "name": {
+    "en": "Berlin",
+    "cs": "Berlín"
+  },
+  "coordinates": {
+    "lat": 52.5167,
+    "lon": 13.3833
+  },
+  "postcardQuestionId": "BER01",
+  "stops": [
+    {
+      "id": "BER01",
+      "place": {
+        "en": "On Pariser Platz",
+        "cs": "Na Pariser Platz"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/BER01.webp",
+      "sceneAlt": {
+        "en": "Six tall columns at the front and a four-horse chariot on a flat roof",
+        "cs": "Šest vysokých sloupů vpředu a čtyřspřeží na ploché střeše"
+      },
+      "question": {
+        "en": "Which building is in front of you?",
+        "cs": "Kterou stavbu máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Brandenburg Gate",
+            "cs": "Braniborská brána"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Arc de Triomphe",
+            "cs": "Vítězný oblouk"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Powder Gate",
+            "cs": "Prašná brána"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "India Gate",
+            "cs": "India Gate"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On Pariser Platz, you can see six tall columns at the front and a four-horse chariot on a flat roof.",
+        "cs": "Na Pariser Platz je dobře vidět šest vysokých sloupů vpředu a čtyřspřeží na ploché střeše."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Brandenburg_Gate"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Brandenburger_Tor_abends.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "BER02",
+      "place": {
+        "en": "Outside the Reichstag",
+        "cs": "Před Říšským sněmem"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/BER02.webp",
+      "sceneAlt": {
+        "en": "A transparent glass dome with a visible spiral ramp",
+        "cs": "Průhledná skleněná kupole s viditelnou spirálovou rampou"
+      },
+      "question": {
+        "en": "Which Berlin building has a glass dome with spiral ramps?",
+        "cs": "Kterou berlínskou stavbu poznáš podle prosklené kupole se spirálovými rampami?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Reichstag",
+            "cs": "Reichstag"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Berlin TV Tower",
+            "cs": "Berlínská televizní věž"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Berlin Cathedral",
+            "cs": "Berlínský dóm"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Berlin Central Station",
+            "cs": "Hlavní nádraží"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Outside the Reichstag, you can see a transparent glass dome with a visible spiral ramp.",
+        "cs": "Před Říšským sněmem je dobře vidět průhledná skleněná kupole s viditelnou spirálovou rampou."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Reichstag_dome"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:The_Reichstag_dome_(11851173483).jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "BER03",
+      "place": {
+        "en": "At a corner of the Holocaust Memorial",
+        "cs": "Na rohu u Památníku holokaustu"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/BER03.webp",
+      "sceneAlt": {
+        "en": "Grey rectangular blocks of varying heights in a grid",
+        "cs": "Šedé pravoúhlé bloky různých výšek v pravidelné síti"
+      },
+      "question": {
+        "en": "Which Berlin memorial can you see?",
+        "cs": "Který berlínský památník máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Memorial to the Murdered Jews of Europe",
+            "cs": "Památník zavražděných Židů Evropy"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "East Side Gallery",
+            "cs": "East Side Gallery"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Topography of Terror",
+            "cs": "Topografie teroru"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Kaiser Wilhelm Memorial Church",
+            "cs": "Pamětní kostel císaře Viléma"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "At a corner of the Holocaust Memorial, you can see grey rectangular blocks of varying heights in a grid.",
+        "cs": "Na rohu u Památníku holokaustu je dobře vidět šedé pravoúhlé bloky různých výšek v pravidelné síti."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Memorial_to_the_Murdered_Jews_of_Europe"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Memorial_to_the_Murdered_Jews_of_Europeabove.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "BER04",
+      "place": {
+        "en": "On Unter den Linden",
+        "cs": "Na třídě Unter den Linden"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/BER04.webp",
+      "sceneAlt": {
+        "en": "A rider on a high plinth in line with the avenue",
+        "cs": "Jezdecká socha na vysokém podstavci v ose ulice"
+      },
+      "question": {
+        "en": "Which Berlin avenue has this equestrian statue along its central axis?",
+        "cs": "Jak se jmenuje berlínská třída, jejíž osu doplňuje tato jezdecká socha?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Unter den Linden",
+            "cs": "Unter den Linden"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Kurfürstendamm",
+            "cs": "Kurfürstendamm"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Friedrichstraße",
+            "cs": "Friedrichstraße"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Karl-Marx-Allee",
+            "cs": "Karl-Marx-Allee"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On Unter den Linden, you can see a rider on a high plinth in line with the avenue.",
+        "cs": "Na třídě Unter den Linden je dobře vidět jezdecká socha na vysokém podstavci v ose ulice."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Equestrian_statue_of_Frederick_the_Great"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Berlin_UdL_monument_asv2018-05.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "BER05",
+      "place": {
+        "en": "Outside the State Opera on Bebelplatz",
+        "cs": "Před Státní operou na Bebelplatz"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/BER05.webp",
+      "sceneAlt": {
+        "en": "A pale pink and white portico opposite a curved building across the square",
+        "cs": "Jemně růžové a bílé průčelí s portikem naproti oblé budově přes náměstí"
+      },
+      "question": {
+        "en": "Which building is in front of you?",
+        "cs": "Kterou stavbu máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Berlin State Opera",
+            "cs": "Státní opera Unter den Linden"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Konzerthaus Berlin",
+            "cs": "Konzerthaus Berlin"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Deutsche Oper",
+            "cs": "Německá opera"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Komische Oper",
+            "cs": "Komická opera"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Outside the State Opera on Bebelplatz, you can see a pale pink and white portico opposite a curved building across the square.",
+        "cs": "Před Státní operou na Bebelplatz je dobře vidět jemně růžové a bílé průčelí s portikem naproti oblé budově přes náměstí."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Berlin_State_Opera"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Berlin_-_Staatsoper_Unter_den_Linden.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "BER06",
+      "place": {
+        "en": "On the bridge into Museum Island",
+        "cs": "Na mostě do Muzejního ostrova"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/BER06.webp",
+      "sceneAlt": {
+        "en": "A river channel by the island under the cathedral’s green dome",
+        "cs": "Rameno řeky u ostrova, nad nímž vystupuje zelená kupole berlínského dómu"
+      },
+      "question": {
+        "en": "Which river is in front of you?",
+        "cs": "Kterou řeku máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Havel",
+            "cs": "Havola"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Spree",
+            "cs": "Spréva"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Elbe",
+            "cs": "Labe"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Oder",
+            "cs": "Odra"
+          }
+        }
+      ],
+      "correctChoiceId": "b",
+      "feedback": {
+        "en": "On the bridge into Museum Island, you can see a river channel by the island under the cathedral’s green dome.",
+        "cs": "Na mostě do Muzejního ostrova je dobře vidět rameno řeky u ostrova, nad nímž vystupuje zelená kupole berlínského dómu."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Museum_Island"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Berlin_Museumsinsel_Fernsehturm.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "BER07",
+      "place": {
+        "en": "In the Lustgarten",
+        "cs": "Na Lustgartenu"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/BER07.webp",
+      "sceneAlt": {
+        "en": "A large green dome with smaller domes beyond a wide lawn",
+        "cs": "Velká zelená kupole s menšími kupolemi před rozlehlým trávníkem"
+      },
+      "question": {
+        "en": "Which church can you see?",
+        "cs": "Který chrám vidíš?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "St Mary’s Church",
+            "cs": "Kostel Panny Marie"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "St Hedwig’s Cathedral",
+            "cs": "Katedrála sv. Hedviky"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Berlin Cathedral",
+            "cs": "Berlínský dóm"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "French Cathedral",
+            "cs": "Francouzský dóm"
+          }
+        }
+      ],
+      "correctChoiceId": "c",
+      "feedback": {
+        "en": "In the Lustgarten, you can see a large green dome with smaller domes beyond a wide lawn.",
+        "cs": "Na Lustgartenu je dobře vidět velká zelená kupole s menšími kupolemi před rozlehlým trávníkem."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Berlin_Cathedral"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:141227_Berliner_Dom.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "BER08",
+      "place": {
+        "en": "Outside the city hall in the old centre",
+        "cs": "Před radnicí v historickém centru"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/BER08.webp",
+      "sceneAlt": {
+        "en": "A broad red-brick block with a tall central clock tower",
+        "cs": "Rozsáhlý červený cihlový blok s vysokou střední hodinovou věží"
+      },
+      "question": {
+        "en": "Which building is in front of you?",
+        "cs": "Kterou stavbu máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Spandau Town Hall",
+            "cs": "Stará radnice ve Spandau"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Schöneberg Town Hall",
+            "cs": "Radnice Schöneberg"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Köpenick Town Hall",
+            "cs": "Radnice Köpenick"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Red City Hall",
+            "cs": "Rudá radnice"
+          }
+        }
+      ],
+      "correctChoiceId": "d",
+      "feedback": {
+        "en": "Outside the city hall in the old centre, you can see a broad red-brick block with a tall central clock tower.",
+        "cs": "Před radnicí v historickém centru je dobře vidět rozsáhlý červený cihlový blok s vysokou střední hodinovou věží."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Rotes_Rathaus"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:2009-07-26-berlin-by-RalfR-36.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "BER09",
+      "place": {
+        "en": "In the middle of Alexanderplatz",
+        "cs": "Uprostřed Alexanderplatzu"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/BER09.webp",
+      "sceneAlt": {
+        "en": "A rotating polygonal clock ring with planetary orbits above it",
+        "cs": "Otočný mnohostěnný hodinový prstenec s kruhy drah planet nad ním"
+      },
+      "question": {
+        "en": "Which Berlin square pairs a world clock with this view of the TV tower?",
+        "cs": "Které berlínské náměstí poznáš podle světových hodin a televizní věže v jednom výhledu?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Alexanderplatz",
+            "cs": "Alexanderplatz"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Potsdamer Platz",
+            "cs": "Potsdamer Platz"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Pariser Platz",
+            "cs": "Pariser Platz"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Gendarmenmarkt",
+            "cs": "Gendarmenmarkt"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "In the middle of Alexanderplatz, you can see a rotating polygonal clock ring with planetary orbits above it.",
+        "cs": "Uprostřed Alexanderplatzu je dobře vidět otočný mnohostěnný hodinový prstenec s kruhy drah planet nad ním."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/World_Clock_(Alexanderplatz)"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Reloj_Mundial,_Berlín,_Alemania,_2016-04-22,_DD_46-48_HDR.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Současný výhled na vysokou televizní věž, mnohostěn Světových hodin a otevřenou dlažbu Alexanderplatzu. Ostatní náměstí tuto sestavu nemají."
+    },
+    {
+      "id": "BER10",
+      "place": {
+        "en": "By the fountain between the Red Town Hall and St Mary’s Church",
+        "cs": "U fontány mezi Rudou radnicí a Marienkirche"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/BER10.webp",
+      "sceneAlt": {
+        "en": "A figure with a trident above a round basin, four figures around the rim and a red tower in the distance",
+        "cs": "Postava s trojzubcem nad kruhovou mísou, u okraje čtyři další postavy a v dálce červená radniční věž"
+      },
+      "question": {
+        "en": "Which fountain lies between the Red Town Hall and the TV tower, with four figures around a wide basin?",
+        "cs": "Která fontána stojí mezi Rudou radnicí a televizní věží a má čtyři postavy u okraje velké mísy?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Neptune Fountain",
+            "cs": "Neptunova fontána"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Fairy Tale Fountain",
+            "cs": "Fontána pohádek"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "World Fountain",
+            "cs": "Fontána světové koule"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Fountain at Strausberger Platz",
+            "cs": "Fontána na Strausberger Platz"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On the open space by the Red Town Hall, the Neptune Fountain has a trident-bearing figure and four river figures.",
+        "cs": "Na volném prostranství u Rudé radnice poznáš Neptunovu fontánu podle boha s trojzubcem a čtyř říčních postav."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Neptunbrunnen_(Berlin)"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Neptunbrunnen_B-Mitte_06-2017.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Trojzubec uprostřed a čtyři postavy na okraji mísy, s Rudou radnicí v dohledu. Ostatní kašny postrádají tuto kombinaci figury, mísy a náměstí."
+    }
+  ]
+}

@@ -1,0 +1,616 @@
+{
+  "id": "vienna",
+  "name": {
+    "en": "Vienna",
+    "cs": "Vídeň"
+  },
+  "coordinates": {
+    "lat": 48.2083,
+    "lon": 16.3725
+  },
+  "postcardQuestionId": "VIE01",
+  "stops": [
+    {
+      "id": "VIE01",
+      "place": {
+        "en": "On Stephansplatz",
+        "cs": "Na Stephansplatzu"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/VIE01.webp",
+      "sceneAlt": {
+        "en": "Colourful zigzag bands of tiles below a tall narrow spire",
+        "cs": "Barevné lomené pásy keramických tašek pod štíhlou věží"
+      },
+      "question": {
+        "en": "Which Vienna church has this steep patterned roof and tall slender spire?",
+        "cs": "Který vídeňský chrám poznáš podle barevně vzorované šikmé střechy a vysoké štíhlé věže?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "St Stephen’s Cathedral",
+            "cs": "Dóm sv. Štěpána"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Votivkirche",
+            "cs": "Votivkirche"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Karlskirche",
+            "cs": "Karlskirche"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Peterskirche",
+            "cs": "Peterskirche"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On Stephansplatz, you can see colourful zigzag bands of tiles below a tall narrow spire.",
+        "cs": "Na Stephansplatzu je dobře vidět barevné lomené pásy keramických tašek pod štíhlou věží."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/St._Stephen%27s_Cathedral,_Vienna"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Wien_-_Stephansdom_(1).JPG"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "VIE02",
+      "place": {
+        "en": "At a table in a traditional Viennese café near Graben",
+        "cs": "U stolku v tradiční vídeňské kavárně poblíž Grabenu"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/VIE02.webp",
+      "sceneAlt": {
+        "en": "A slice of chocolate cake with a thin orange layer through the middle and whipped cream on the side",
+        "cs": "Trojúhelníkový řez čokoládového dortu s tenkým oranžovým proužkem uprostřed a šlehačkou vedle"
+      },
+      "question": {
+        "en": "What is the dessert in the image called?",
+        "cs": "Jak se jmenuje zákusek na obrázku?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Linzer Torte",
+            "cs": "Linecký dort"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Esterházy Torte",
+            "cs": "Esterházyho dort"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Sachertorte",
+            "cs": "Sachrův dort"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Dobos Torte",
+            "cs": "Dobosův dort"
+          }
+        }
+      ],
+      "correctChoiceId": "c",
+      "feedback": {
+        "en": "In a Viennese café, Sachertorte is served with whipped cream and has an apricot layer inside.",
+        "cs": "Ve vídeňské kavárně se Sachrův dort s meruňkovou vrstvou podává se šlehačkou."
+      },
+      "sourceUrls": [
+        "https://www.wien.info/en/dine-drink/viennese-cuisine/recipes/sweets-desserts/sachertorte-357042"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Sachertorte_DSC03027_retouched.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "VIE03",
+      "place": {
+        "en": "In the pedestrian area between Graben and Petersplatz",
+        "cs": "V pěší zóně mezi Grabenem a Petersplatzem"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/VIE03.webp",
+      "sceneAlt": {
+        "en": "A stone column with clouds and gilded figures in the middle of a pedestrian street",
+        "cs": "Kamenný sloup s oblaky a zlatými postavami uprostřed pěší zóny"
+      },
+      "question": {
+        "en": "Which Vienna street has a white plague column with gilded figures in its pedestrian area?",
+        "cs": "Kterou vídeňskou ulici poznáš podle bílého morového sloupu s pozlacenými postavami v pěší zóně?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Graben",
+            "cs": "Graben"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Kärntner Straße",
+            "cs": "Kärntner Straße"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Mariahilfer Straße",
+            "cs": "Mariahilfer Straße"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Ringstraße",
+            "cs": "Ringstraße"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "The plague column rises between the buildings along Graben.",
+        "cs": "Uprostřed Grabenu vystupuje mezi fasádami morový sloup."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Plague_Column,_Vienna"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Wien_Graben_Pests%C3%A4ule_Ostseite.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "VIE04",
+      "place": {
+        "en": "On Michaelerplatz",
+        "cs": "Na Michaelerplatzu"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/VIE04.webp",
+      "sceneAlt": {
+        "en": "A symmetrical gateway flanked by large sculptural groups",
+        "cs": "Symetrická brána s páry mohutných sochařských sestav u vstupu"
+      },
+      "question": {
+        "en": "What is the Vienna palace with the curving St Michael’s Wing and sculpted gateway called?",
+        "cs": "Jak se jmenuje vídeňský palác s prohnutým Michaelským křídlem a bohatě zdobenou bránou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Hofburg",
+            "cs": "Hofburg"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Schönbrunn",
+            "cs": "Schönbrunn"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Belvedere",
+            "cs": "Belvedere"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Palais Liechtenstein",
+            "cs": "Palais Liechtenstein"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On Michaelerplatz, you can see a symmetrical gateway flanked by large sculptural groups.",
+        "cs": "Na Michaelerplatzu je dobře vidět symetrická brána s páry mohutných sochařských sestav u vstupu."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Hofburg"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Michaelertrakt,_Hofburg,_Viena,_Austria,_2020-01-31,_DD_08-10_PAN.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "VIE05",
+      "place": {
+        "en": "On Heldenplatz",
+        "cs": "Na Heldenplatzu"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/VIE05.webp",
+      "sceneAlt": {
+        "en": "A curved palace façade beyond a lawn and equestrian statue",
+        "cs": "Prohnutá palácová fasáda za loukou a jezdeckou sochou"
+      },
+      "question": {
+        "en": "Which Vienna square has a broad lawn and equestrian statues in front of the curved wing of the Hofburg?",
+        "cs": "Které vídeňské náměstí má před zakřiveným křídlem Hofburgu velký trávník s jezdeckými sochami?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Heldenplatz",
+            "cs": "Heldenplatz"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Michaelerplatz",
+            "cs": "Michaelerplatz"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Schwarzenbergplatz",
+            "cs": "Schwarzenbergplatz"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Karlsplatz",
+            "cs": "Karlsplatz"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On Heldenplatz, you can see a curved palace façade beyond a lawn and equestrian statue.",
+        "cs": "Na Heldenplatzu je dobře vidět prohnutá palácová fasáda za loukou a jezdeckou sochou."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Hofburg"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Wien_-_Neue_Hofburg.JPG"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "VIE06",
+      "place": {
+        "en": "In the square by Parliament",
+        "cs": "Na náměstí před parlamentem"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/VIE06.webp",
+      "sceneAlt": {
+        "en": "A Greek-style portico with a tall helmeted figure holding a spear in front",
+        "cs": "Řecký portikus a vysoká socha s přilbou a kopím před ním"
+      },
+      "question": {
+        "en": "Which building is in front of you?",
+        "cs": "Kterou stavbu máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Vienna City Hall",
+            "cs": "Vídeňská radnice"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Vienna Stock Exchange",
+            "cs": "Burzovní palác"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Austrian Parliament",
+            "cs": "Rakouský parlament"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Kunsthistorisches Museum",
+            "cs": "Muzeum dějin umění"
+          }
+        }
+      ],
+      "correctChoiceId": "c",
+      "feedback": {
+        "en": "In the square by Parliament, you can see a Greek-style portico with a tall helmeted figure holding a spear in front.",
+        "cs": "Na náměstí před parlamentem je dobře vidět řecký portikus a vysoká socha s přilbou a kopím před ním."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Austrian_Parliament_Building"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Wien_-_Parlamentsgebäude.JPG"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "VIE07",
+      "place": {
+        "en": "Outside City Hall on the Ringstraße",
+        "cs": "Před radnicí u Ringstraße"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/VIE07.webp",
+      "sceneAlt": {
+        "en": "A wide façade with a slender central tower and smaller side spires",
+        "cs": "Rozsáhlé průčelí se štíhlou centrální věží a menšími bočními špicemi"
+      },
+      "question": {
+        "en": "Which building is in front of you?",
+        "cs": "Kterou stavbu máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Burgtheater",
+            "cs": "Burgtheater"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Vienna State Opera",
+            "cs": "Vídeňská státní opera"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Postal Savings Bank",
+            "cs": "Poštovní spořitelna"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Vienna City Hall",
+            "cs": "Vídeňská radnice"
+          }
+        }
+      ],
+      "correctChoiceId": "d",
+      "feedback": {
+        "en": "Outside City Hall on the Ringstraße, you can see a wide façade with a slender central tower and smaller side spires.",
+        "cs": "Před radnicí u Ringstraße je dobře vidět rozsáhlé průčelí se štíhlou centrální věží a menšími bočními špicemi."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Vienna_City_Hall"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Wien_Rathaus_hochauflösend.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "VIE08",
+      "place": {
+        "en": "From the Opernring corner across the street",
+        "cs": "U rohu Opernringu při pohledu přes ulici"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/VIE08.webp",
+      "sceneAlt": {
+        "en": "A long arcade across the front loggia with two riders above it",
+        "cs": "Dlouhá řada oblouků v přední lodžii a dvě sochy jezdců nad ní"
+      },
+      "question": {
+        "en": "Which building is in front of you?",
+        "cs": "Kterou stavbu máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Vienna State Opera",
+            "cs": "Vídeňská státní opera"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Volksoper",
+            "cs": "Volksoper"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Theater an der Wien",
+            "cs": "Theater an der Wien"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Burgtheater",
+            "cs": "Burgtheater"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "From the Opernring corner across the street, you can see a long arcade across the front loggia with two riders above it.",
+        "cs": "U rohu Opernringu při pohledu přes ulici je dobře vidět dlouhá řada oblouků v přední lodžii a dvě sochy jezdců nad ní."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Vienna_State_Opera"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Wiener_Staatsoper_Front.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "VIE09",
+      "place": {
+        "en": "By the station on Karlsplatz",
+        "cs": "U stanice na Karlově náměstí"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/VIE09.webp",
+      "sceneAlt": {
+        "en": "Twin green and white pavilions with shallow vaulted roofs and gilded floral ornament",
+        "cs": "Dvojice zelenobílých pavilonů s mělkou klenbou a zlatým květinovým dekorem"
+      },
+      "question": {
+        "en": "Which station gives its name to these twin green and white pavilions by Otto Wagner?",
+        "cs": "Jaká stanice dala jméno těmto dvěma zelenobílým pavilonům Otty Wagnera?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Karlsplatz",
+            "cs": "Karlsplatz"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Stadtpark",
+            "cs": "Stadtpark"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Kettenbrückengasse",
+            "cs": "Kettenbrückengasse"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Schönbrunn",
+            "cs": "Schönbrunn"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "By the station on Karlsplatz, you can see flat gilded floral motifs on Otto Wagner’s pavilion.",
+        "cs": "U stanice na Karlově náměstí je dobře vidět ploché zlaté květinové ornamenty v detailech pavilonu Otty Wagnera."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Karlsplatz_Stadtbahn_Station"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Otto_Wagner_Pavillon_-_Karlsplatz.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Dvojice zelenobílých pavilonů s mělkými klenbami a zlatým květinovým dekorem v parku. Z nabídnutých stanic má právě tato místo se dvěma odpovídajícími pavilony."
+    },
+    {
+      "id": "VIE10",
+      "place": {
+        "en": "Outside the museum on Karlsplatz",
+        "cs": "Před muzeem na Karlově náměstí"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/VIE10.webp",
+      "sceneAlt": {
+        "en": "An older pale façade below a broad dark overhang, with open space in front",
+        "cs": "Starší světlá fasáda pod širokým tmavým vodorovným přesahem a otevřený prostor před ní"
+      },
+      "question": {
+        "en": "Which museum on Karlsplatz has a dark projecting extension above its older stone façade?",
+        "cs": "Které muzeum na Karlově náměstí má nad starším kamenným průčelím tmavou vysunutou nástavbu?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Wien Museum",
+            "cs": "Vídeňské muzeum"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "MAK Museum",
+            "cs": "Muzeum MAK"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Albertina",
+            "cs": "Albertina"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Leopold Museum",
+            "cs": "Muzeum Leopold"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On Karlsplatz the Wien Museum has a dark extension above its older stone frontage.",
+        "cs": "Na Karlově náměstí má Vídeňské muzeum tmavou nástavbu nad původním kamenným průčelím."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Wien_Museum"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Au%C3%9Fenansicht_des_Wien_Museums,_Karlsplatz,_Wien.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Dvě vrstvy stavby jsou čitelné společně: původní nízká kamenná fasáda a moderní horní blok. MAK, Albertina a muzeum Leopold nemají stejnou přístavbu ani toto prostranství před vstupem."
+    }
+  ]
+}
