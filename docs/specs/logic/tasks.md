@@ -13,10 +13,10 @@ Požadavky a scénáře jsou ve [spec.md](spec.md). Vývojář balíčku zaškrt
 
 ## Balíček 2: Postup hráče (`progress`)
 
-- [ ] Hvězdy, nejlepší výsledek, odemykání podle pořadí katalogu (P1–P3)
-- [ ] Pohlednice, idempotentní dokončení, souhrn města (P4–P6)
-- [ ] Součty, další krok, slučování (P7–P9)
-- [ ] Testy scénářů ze spec.md §3, Rozhraní doplněné
+- [x] Hvězdy, nejlepší výsledek, odemykání podle pořadí katalogu (P1–P3)
+- [x] Pohlednice, idempotentní dokončení, souhrn města (P4–P6)
+- [x] Součty, další krok, slučování (P7–P9)
+- [x] Testy scénářů ze spec.md §3, Rozhraní doplněné
 
 ## Balíček 3: Denní výzva (`daily`), po balíčcích 1 a 2
 

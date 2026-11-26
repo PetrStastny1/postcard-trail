@@ -213,15 +213,21 @@ export function canUseSkip(run: RunState): boolean // dostupnost podle R12, bez 
 
 ```ts
 export type Stars = 0 | 1 | 2 | 3
+/** City IDs in both arrays and the `bestStars` keys are unique and sorted ascending, so equal progress has one JSON form. */
 export interface Progress { completedCityIds: string[]; bestStars: Record<string, Stars>; postcardCityIds: string[] }
+export interface CompletedCityRun { cityId: string; correct: number }
+export interface CityRunSummary { progress: Progress; stars: Stars; postcardEarned: boolean; newlyUnlockedCityId: string | null }
+export interface ProgressTotals { completedCities: number; releasedCities: number; stars: number; maxStars: number; postcards: number }
 export const emptyProgress: Progress
 export function starsFor(correct: number): Stars
-export function applyCompletedCityRun(progress: Progress, run: { cityId: string; correct: number }, catalog: Catalog): { progress: Progress; stars: Stars; postcardEarned: boolean; newlyUnlockedCityId: string | null }
-export function unlockedCityIds(progress: Progress, catalog: Catalog): string[]
-export function progressTotals(progress: Progress, catalog: Catalog): { completedCities: number; releasedCities: number; stars: number; maxStars: number; postcards: number }
+export function applyCompletedCityRun(progress: Progress, run: CompletedCityRun, catalog: Catalog): CityRunSummary
+export function unlockedCityIds(progress: Progress, catalog: Catalog): string[] // v pořadí katalogu
+export function progressTotals(progress: Progress, catalog: Catalog): ProgressTotals
 export function nextCityToPlay(progress: Progress, catalog: Catalog): string | null // null = mapa
 export function mergeProgress(a: Progress, b: Progress): Progress
 ```
+
+`applyCompletedCityRun` je `mergeProgress` s postupem jednoho města. `stars` jsou hvězdy tohoto průchodu (ne nejlepší), `postcardEarned` je `true` jen při první pohlednici města, `newlyUnlockedCityId` je město odemčené tímto dokončením, které předtím odemčené nebylo. `mergeProgress` vrací pole i klíče `bestStars` seřazené a bez duplicit, takže je komutativní podle `deepEqual` i podle `JSON.stringify` a `mergeProgress(a, a)` je shodné s `a` pro každý postup v tomto tvaru.
 
 ### `src/game/logic/daily.ts`
 
