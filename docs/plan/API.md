@@ -39,6 +39,7 @@ Logika je čistá: bez DOM, bez `Date.now()`, `Math.random()` a bez přístupu k
 - Lokální adaptér ve vývojovém režimu (`import.meta.env.DEV`, tedy i v e2e) čte chování reklamy z parametru adresy `?ad=completed|cancelled|unavailable|interrupted|duplicate|late` a `?ads=none` pro předem známou nedostupnost. V produkčním buildu bez SDK hlásí nedostupnost. Události měření drží v paměti a ve vývojovém režimu je vystaví pro export a testy.
 - `store` lokálního adaptéru je `localStorage` pod klíčem s prefixem `postcard-trail:`.
 - `src/game/feedback/`: zvuk (Web Audio syntéza) a vibrace pro podněty `choice`, `correct`, `wrong`, `postcard`. Hlasitost, ztlumení po dobu reklamy a respektování nastavení.
+- Portálové ztlumení: app po `await init()` přečte `portalAudioMuted()`, předá ho feedbacku a odebírá změny přes `onPortalAudioMutedChange()`. Ve feedbacku je to samostatný důvod ztlumení, který nepřepisuje uložené herní nastavení zvuku a má před ním přednost.
 
 ## Prostředí oblastí
 

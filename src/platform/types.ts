@@ -63,7 +63,10 @@ export interface KeyValueStore {
 export interface PlatformAdapter {
   readonly name: PlatformName
   readonly store: KeyValueStore
-  /** Loads and initialises the SDK. Resolves even when the SDK is blocked; the game then runs without ads. */
+  /**
+   * Loads and initialises the SDK. Resolves even when the SDK is blocked or does not answer within
+   * the adapter's time limit (5 s); the game then runs without ads.
+   */
   init(): Promise<void>
   loadingStarted(): void
   loadingFinished(): void
@@ -81,4 +84,12 @@ export interface PlatformAdapter {
   track(event: AnalyticsEvent): void
   /** Events tracked in this session. Recorded by every adapter in development builds, empty in production builds. */
   recordedEvents(): readonly AnalyticsEvent[]
+  /**
+   * The portal asks the game to mute its audio (CrazyGames `game.settings.muteAudio`), with priority over
+   * the game's own sound setting. Valid after `init()` resolves. False without an SDK, after a failed or
+   * timed-out `init()` and on every platform other than CrazyGames. Vibration is not affected.
+   */
+  portalAudioMuted(): boolean
+  /** Called only when `portalAudioMuted()` actually changes. Never called where the portal reports no changes. */
+  onPortalAudioMutedChange(listener: (muted: boolean) => void): void
 }
