@@ -442,3 +442,16 @@ test('a link without angle brackets is imported as a source', () => {
     'https://commons.wikimedia.org/wiki/File:Tour_Eiffel_Wikimedia_Commons_(cropped).jpg',
   ])
 })
+
+test('a link without angle brackets keeps parentheses in its address', () => {
+  const root = copySources({ withCatalog: true })
+  editFile(root, 'docs/game/cities/paris.md', (source) =>
+    source.replace(
+      '(<https://commons.wikimedia.org/wiki/File:Tour_Eiffel_Wikimedia_Commons_(cropped).jpg>)',
+      '(https://commons.wikimedia.org/wiki/File:Tour_Eiffel_Wikimedia_Commons_(cropped).jpg)',
+    ),
+  )
+  assert.deepEqual(readContent(root).routes[0].stops[0].photoReferenceUrls, [
+    'https://commons.wikimedia.org/wiki/File:Tour_Eiffel_Wikimedia_Commons_(cropped).jpg',
+  ])
+})
