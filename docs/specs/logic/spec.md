@@ -130,26 +130,31 @@ Fáze: `loading` (scéna se načítá, čas neběží; zbývající čas je limi
 
 ### Požadavky
 
-- **S1 Oddíly.** Data se ukládají po oddílech pod samostatnými klíči: nastavení, postup, denní výsledky, aktivní průchod. Hodnota každého klíče je JSON s číslem verze schématu a daty oddílu. Aktuální verze schématu je 1.
-- **S2 Validace po oddílech.** Každý oddíl se při čtení validuje zvlášť. Nevalidní nebo chybějící oddíl se nahradí výchozím stavem, ostatní oddíly se použijí. V postupu a denních výsledcích se zachovají validní záznamy a zahodí jen nevalidní (např. neplatné hvězdy jednoho města nezahodí ostatní města).
-- **S3 Verze.** Oddíl se známou starší verzí se migruje na aktuální. Oddíl s vyšší než aktuální verzí se nepoužije ani nepřepíše; hra pro něj pracuje v paměti a hlásí stejné jednorázové upozornění jako při nedostupném úložišti (rozhodnutí v LOG.md). Chybějící, nečíselná nebo nevalidní verze znamená poškozená data, která se smí přepsat.
-- **S4 Slučování odměn.** Zápis postupu a denních výsledků nejdřív přečte uložený stav a sloučí ho podle P9 a D6, aby souběžná karta odměny nepřepsala.
-- **S5 Jeden aktivní průchod.** Úložiště drží nejvýš jeden aktivní průchod. Zahození smaže jen aktivní průchod, odměny zůstanou.
-- **S6 Vlastnictví mezi kartami.** Aktivní průchod nese ID karty, která ho naposled výslovně začala nebo obnovila. Karta, která není vlastníkem, průchod nepřepíše ani nesmaže. Čistá funkce nad uloženými daty a ID karty určí, zda karta průchod vlastní; app ji volá při událostech `storage` a `visibilitychange`.
-- **S7 Dokončení.** Uložení dokončeného průchodu zapíše odměny (městský postup nebo denní výsledek) a smaže aktivní průchod. Opakované uložení téhož dokončení nic nezduplikuje.
-- **S8 Nedostupné úložiště.** Když `read` nebo `write` vyhodí výjimku, hra pokračuje v paměti a upozornění se nabídne právě jednou za relaci.
-- **S9 Nastavení.** Jazyk (`en` výchozí), zvuk zapnutý, hlasitost 0,6, vibrace zapnuté, bez animací vypnuto, nečasovaný režim vypnutý, seznam už zobrazených jednorázových nápověd.
+- **S1 Oddíly.** Data se ukládají po oddílech pod samostatnými klíči `settings`, `progress`, `daily-results` a `active-run` (bez prefixu `postcard-trail:`, ten přidává adaptér). Hodnota každého klíče je JSON `{ "version": 1, "data": … }`. Aktuální verze schématu je 1. Data aktivního průchodu jsou `{ ownerTabId, run }`, nebo `null`, když žádný průchod není. `KeyValueStore` nemá mazání, proto se průchod maže zápisem `null`.
+- **S2 Validace po oddílech.** Každý oddíl se při čtení validuje zvlášť. Nevalidní nebo chybějící oddíl se nahradí výchozím stavem, ostatní oddíly se použijí. V nastavení se nevalidní pole nahradí výchozím a ostatní pole zůstanou. V postupu a denních výsledcích se zachovají validní záznamy a zahodí jen nevalidní (město s hvězdami mimo 0–3, prázdné nebo nečíselné ID, datum, které není skutečné datum `YYYY-MM-DD`, počet správných mimo celá čísla 0–3). Načtený postup a denní výsledky mají normalizovaný tvar výstupu `mergeProgress` a `mergeDailyResults`. Aktivní průchod, který neprojde validací tvaru `RunState` (rozsah `stopIndex`, čtyři různé volby se správnou volbou, výčtové hodnoty) nebo konzistence jeho polí, nebo nemá ID vlastníka, se nepoužije a platí jako žádný průchod. Konzistence: `mode: 'daily'` má právě 3 zastávky a vyplněné `daily`, `mode: 'city'` má právě 10 zastávek a `daily: null`; počet výsledků je `stopIndex` ve fázích `loading` a `question` a `stopIndex + 1` ve fázích `feedback` a `summary`; `hiddenChoiceIds` jsou jen volby aktuální zastávky a nikdy ne její správná volba; `correct` se rovná počtu výsledků `correct` (tedy nepřesahuje počet výsledků). Poškozený průchod tak nejde dohrát ani dokončit s výsledkem, který by načtení denních výsledků zahodilo.
+- **S3 Verze.** Verze 1 je první, starší verze neexistují, proto se nic nemigruje. Oddíl s celočíselnou verzí vyšší než 1 se nepoužije ani nepřepíše; hra pro něj do konce relace pracuje v paměti (co v relaci zapíše, to čte zpět) a nabídne stejné jednorázové upozornění jako při nedostupném úložišti (rozhodnutí v LOG.md). Novější verze se zjišťuje i před zápisem oddílu, který ještě nebyl načtený. Chybějící, nečíselná nebo nevalidní verze (`0`, záporná, `"1"`, `1.5`, `null`) a nečitelný JSON znamenají poškozená data, která se nahradí výchozími, smí se přepsat a upozornění nevyvolají.
+- **S4 Slučování odměn.** Zápis postupu a denních výsledků nejdřív přečte uložený stav a sloučí ho podle P9 a D6, aby souběžná karta odměny nepřepsala. Nastavení se neslučuje, platí poslední zápis.
+- **S5 Jeden aktivní průchod.** Úložiště drží nejvýš jeden aktivní průchod. Začátek nového průchodu nahradí předchozí. Zahození smaže jen aktivní průchod, odměny a nastavení zůstanou.
+- **S6 Vlastnictví mezi kartami.** Aktivní průchod nese ID karty (dodává app), která ho naposled výslovně začala (`startRun`) nebo obnovila (`resumeRun`, akce „Pokračovat“). Samotné načtení stránky průchod nepřebírá. Kontrolní bod, zahození a dokončení se provedou jen tehdy, když uložený průchod má stejné ID průchodu a vlastníkem je tato karta; jinak se nic nezapíše a metoda vrátí `notOwner`. Čistá funkce `ownsActiveRun` nad uloženou hodnotou klíče `active-run` a ID karty určí, zda karta průchod vlastní; app ji volá při událostech `storage` (`newValue`). Rozhodující pro app je tato událost: když `ownsActiveRun(event.newValue, tabId)` vrátí `false`, karta průchod zastaví bez ohledu na `isActiveRunOwner()`. `isActiveRunOwner()` vrací vlastnictví podle dat, která tato instance právě vidí (úložiště, u oddílu v paměti podle S8 jeho paměťová kopie), a app ho může použít navíc při `visibilitychange`; `false` z kteréhokoli z obou zdrojů znamená zastavit, `true` z `isActiveRunOwner()` nepřebíjí událost `storage`.
+- **S7 Dokončení.** Dokončení městského průchodu sloučí odměny s uloženým postupem přes `applyCompletedCityRun`, zapíše postup, pak smaže aktivní průchod a vrátí souhrn města. Dokončení denního průchodu zapíše výsledek k datu startu průchodu přes `recordDailyRun` a smaže průchod; postup nemění. Druhé dokončení téhož průchodu vrátí `notOwner` (průchod už není aktivní) a nic nepřidá; dokončení obnoveného průchodu, jehož odměny už jsou uložené, nic nezduplikuje a nevrátí novou pohlednici ani nové odemčení. Dokončení nedokončeného průchodu nebo průchodu jiného režimu vyhodí `Error` (chyba volajícího).
+- **S8 Nedostupné úložiště.** Když `read` nebo `write` vyhodí výjimku, výjimka neprojde ven, dotčený oddíl se do konce relace drží v paměti (poslední přečtená nebo zapsaná hodnota) a do úložiště se už nezapisuje. Upozornění (`takeUnavailableNotice()`) se nabídne právě jednou za relaci, i když selže víc operací nebo se přidá novější verze podle S3. Je-li v paměti oddíl `active-run`, `isActiveRunOwner()` a kontroly vlastnictví v S6 se vyhodnocují nad paměťovou kopií, takže převzetí jinou kartou nevidí; kontrolní body, zahození i dokončení se pak zapisují jen do paměti této karty a úložiště ani stav jiné karty nezmění. Převzetí jinou kartou se taková karta dozví jen z události `storage` podle S6.
+- **S9 Nastavení.** Jazyk (`en` výchozí, `en` nebo `cs`), zvuk zapnutý, hlasitost 0,6 (0–1), vibrace zapnuté, bez animací vypnuto, nečasovaný režim vypnutý, seznam už zobrazených jednorázových nápověd (prázdný, bez duplicit).
+- **S10 Obnova.** Obnovený průchod se vrací přes `restoreRun`: vždy v pauze a bez probíhajícího pokusu o reklamu, se stejnou zastávkou, fází, časem, žolíky, výsledky a pořadím voleb. Obnovená podoba se uloží jako kontrolní bod nového vlastníka.
 
 ### Scénáře
 
-- Prázdné úložiště → výchozí stav všech oddílů.
-- Poškozený JSON v postupu, validní nastavení → nastavení zachované, postup výchozí.
-- Postup s jedním městem s hvězdami 7 a jedním validním → validní město zachované.
-- Oddíl postupu s verzí 2 → nepoužit, po zápisu jiného oddílu i po zápisu postupu zůstane uložená hodnota beze změny, upozornění jednou.
-- Dvě karty nad stejným úložištěm: karta A dokončí Paříž, karta B (se starým stavem v paměti) dokončí Londýn → uložené obě pohlednice.
+- Prázdné úložiště → výchozí nastavení, prázdný postup, prázdné denní výsledky, žádný aktivní průchod, žádné upozornění.
+- Poškozený JSON v postupu, validní nastavení → nastavení zachované, postup výchozí. Neznámý jazyk, hlasitost 1,5 a nebooleovské vibrace → tato pole výchozí, ostatní zachovaná.
+- Postup s jedním městem s hvězdami 7 a jedním validním → validní město zachované. Denní výsledky s neplatným datem nebo počtem mimo 0–3 → zahozené jen tyto záznamy.
+- Nevalidní tvar aktivního průchodu → žádný aktivní průchod, odměny zůstanou.
+- Oddíl postupu s verzí 2 → nepoužit, po zápisu jiného oddílu i po dokončení města zůstane uložená hodnota beze změny, v relaci se čte dokončené město, upozornění jednou. Verze `0`, `"1"`, `1.5` → postup výchozí a přepsatelný, bez upozornění.
+- Dvě karty nad stejným úložištěm: karta A dokončí Paříž, karta B (se starým stavem v paměti) dokončí Londýn → uložené obě pohlednice a obě města.
 - Dva denní výsledky stejného data z různých karet → zůstane první uložený.
-- Karta B obnoví průchod → karta A už není vlastník a její zápis průchodu se neprovede.
-- `KeyValueStore`, jehož metody vyhazují → hra běží v paměti, upozornění jednou, data v rámci relace se čtou zpět.
+- Nulové skóre přes úložiště → Paříž dokončená, právě jedna pohlednice, odemčený Londýn. Opakované dokončení i dokončení po obnově souhrnu → bez nové pohlednice a odemčení.
+- Karta A začne průchod, karta B ho obnoví → `ownsActiveRun` vrátí pro A `false` a pro B `true`, kontrolní bod, zahození i dokončení z A vrátí `notOwner` a uložený stav zůstane stavem B. Totéž u denního průchodu: dokončení z A vrátí `notOwner` a `daily-results` zůstanou beze změny. Dokončení průchodu s jiným ID než aktivní → bez odměn.
+- Aktivní průchod s nekonzistentními poli (denní se 4 nebo 5 zastávkami a `correct` 5, denní bez `daily`, městský se 3 zastávkami nebo s `daily`, počet výsledků neodpovídá `stopIndex` a fázi, skrytá volba z jiné zastávky nebo správná volba, všechny volby skryté, `correct` neodpovídá výsledkům nebo je 4 v denním) → žádný aktivní průchod. Konzistentní průchody ve všech fázích se načtou beze změny.
+- Výchozí `shownHintIds` vrácené z `loadSettings()` změněné na místě → další načtení vrátí opět `[]`.
+- `KeyValueStore`, jehož metody vyhazují (obě, jen zápis, jen čtení) → hra běží v paměti, data v rámci relace se čtou zpět, upozornění jednou.
 
 ## Rozhraní
 
@@ -257,4 +262,51 @@ export function dailyUnlocked(progress: Progress): boolean
 
 ### `src/game/storage/`
 
-Doplní balíček 4.
+```ts
+// schema.ts
+export const schemaVersion = 1
+export const storageKeys = { settings: 'settings', progress: 'progress', dailyResults: 'daily-results', activeRun: 'active-run' } as const
+export type StorageKey = (typeof storageKeys)[keyof typeof storageKeys]
+export interface Settings {
+  locale: Locale // ze src/content/types.ts
+  soundEnabled: boolean
+  volume: number // 0–1
+  vibrationEnabled: boolean
+  reducedMotion: boolean
+  untimed: boolean
+  shownHintIds: string[]
+}
+export const defaultSettings: Settings // en, zvuk ano, 0.6, vibrace ano, bez animací ne, nečasovaný ne, []
+export interface ActiveRun { ownerTabId: string; run: RunState }
+export type DecodedSection = { status: 'usable'; data: unknown } | { status: 'newer' } | { status: 'damaged' }
+export function encodeSection(data: unknown): string // {"version":1,"data":…}
+export function decodeSection(stored: string | null): DecodedSection
+export function parseSettings(data: unknown): Settings // po polích, vždy nové pole shownHintIds
+export function parseProgress(data: unknown): Progress // po záznamech, normalizované přes mergeProgress
+export function parseDailyResults(data: unknown): DailyResults // po záznamech, normalizované přes mergeDailyResults
+export function parseActiveRun(data: unknown): ActiveRun | null
+export function ownsActiveRun(storedActiveRun: string | null, tabId: string): boolean // čistá, např. nad StorageEvent.newValue
+
+// gameStorage.ts
+export type RunWriteResult = 'written' | 'notOwner'
+export type CityRunCompletion = { status: 'completed'; summary: CityRunSummary } | { status: 'notOwner' }
+export type DailyRunCompletion = { status: 'completed'; dailyResults: DailyResults } | { status: 'notOwner' }
+export class GameStorage {
+  constructor(store: KeyValueStore, tabId: string)
+  loadSettings(): Settings
+  saveSettings(settings: Settings): void // bez slučování, poslední zápis platí
+  loadProgress(): Progress
+  loadDailyResults(): DailyResults
+  loadActiveRun(): RunState | null // uložený průchod beze změny vlastníka, např. pro nabídku „Pokračovat“
+  isActiveRunOwner(): boolean // nad daty, která instance vidí, včetně paměťové náhrady; rozhoduje událost storage (S6)
+  startRun(run: RunState): void // nahradí předchozí průchod, karta se stane vlastníkem
+  resumeRun(): RunState | null // restoreRun(uložený), karta se stane vlastníkem
+  saveRunCheckpoint(run: RunState): RunWriteResult
+  discardRun(runId: string): RunWriteResult
+  completeCityRun(run: RunState, catalog: Catalog): CityRunCompletion // vyhodí Error, není-li run dokončený městský průchod
+  completeDailyRun(run: RunState): DailyRunCompletion // vyhodí Error, není-li run dokončený denní průchod
+  takeUnavailableNotice(): boolean // true právě jednou za relaci po selhání úložiště nebo novější verzi
+}
+```
+
+Jedna instance `GameStorage` patří jedné kartě (jedné relaci stránky). Neuchovává postup ani výsledky v paměti, každé čtení jde do `KeyValueStore`; jen oddíl, jehož čtení nebo zápis selhal nebo má novější verzi, se do konce relace čte a zapisuje v paměti instance. `parse*` a `decodeSection` jsou veřejné kvůli `GameStorage`, app je nepotřebuje. `loadProgress()` a `loadDailyResults()` (a `parseProgress`, `parseDailyResults`) mohou vrátit sdílené hodnoty `emptyProgress` a `emptyDailyResults` z `logic`, proto se vrácené hodnoty nesmí měnit na místě; změny jdou přes funkce z `logic`, které vracejí nové hodnoty. `loadSettings()` vrací vždy nové pole `shownHintIds`. `RunWriteResult` `notOwner` znamená, že uložený průchod má jiné ID nebo jiného vlastníka; app pak průchod v této kartě zastaví.
