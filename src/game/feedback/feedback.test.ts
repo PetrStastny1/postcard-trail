@@ -1,6 +1,3 @@
-/// <reference types="node" />
-// Temporary: tsconfig.json has no Node types and this directive adds them to the whole tsconfig.json program,
-// not just this file. Remove it once the director changes the tsconfig setup.
 import assert from 'node:assert/strict'
 import { afterEach, beforeEach, test } from 'node:test'
 import { createFeedback, type FeedbackCue } from './index.ts'
