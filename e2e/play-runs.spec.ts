@@ -191,3 +191,17 @@ test('a reload in the middle of a run continues at the same stop', async ({ page
   await expect(page.locator('.play-title')).toHaveText('Paris · 4/10')
   await expect(page.locator('.streak')).toHaveText('Streak 3')
 })
+
+test('a route that fails to load offers Try again and Home, and the retry starts the run', async ({ page }) => {
+  let failing = true
+  await page.route('**/src/content/routes/paris.json*', (route) => (failing ? route.abort() : route.continue()))
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Play' }).click()
+  await expect(page.getByRole('alert')).toHaveText(/The route could not load\./)
+  await expect(page.getByRole('button', { name: 'Home', exact: true })).toBeVisible()
+  expect(await savedSection(page, 'active-run')).toBeUndefined()
+  failing = false
+  await page.getByRole('button', { name: 'Try again' }).click()
+  await expectState(page, 'question')
+  await expect(page.locator('.play-title')).toHaveText('Paris · 1/10')
+})

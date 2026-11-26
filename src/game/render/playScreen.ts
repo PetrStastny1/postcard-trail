@@ -153,7 +153,6 @@ export function createPlayScreen(handlers: PlayHandlers): PlayScreen {
     retry.textContent = t('play.retry')
     errorHome.textContent = t('window.home')
     zoom.setAttribute('aria-label', t('play.zoom'))
-    frame.querySelector('.scene-art')?.remove()
     caption?.remove()
     // Shown visually only: the image's alt text carries the same description for screen readers.
     caption = view.scene.placeholder ? element('p', { class: 'scene-caption', 'aria-hidden': 'true' }, stop.sceneAlt[locale]) : null
@@ -250,12 +249,14 @@ export function createPlayScreen(handlers: PlayHandlers): PlayScreen {
     root.dataset.untimed = String(run.untimed)
     if (state !== 'result') delete root.dataset.verdict
 
-    if (sceneState.image && sceneState.image.parentElement !== frame) {
+    if (!sceneState.image) {
+      frame.querySelector('.scene-art')?.remove()
+    } else if (sceneState.image.parentElement !== frame) {
       frame.querySelector('.scene-art')?.remove()
       sceneState.image.className = 'scene-art'
       sceneState.image.alt = stop.sceneAlt[view.locale]
       frame.prepend(sceneState.image)
-    } else if (sceneState.image) {
+    } else {
       sceneState.image.alt = stop.sceneAlt[view.locale]
     }
 

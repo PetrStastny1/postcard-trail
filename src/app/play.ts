@@ -93,8 +93,9 @@ export function startPlay({ session, catalog, route, run, mount, openSettings, g
     listener: {
       changed(changedRun) {
         showFiftyFiftyHintOnce(changedRun)
-        render()
+        // A new stop starts with its own scene loading, so the previous image is never shown with the new question.
         if (changedRun.round !== loadedRound) void loadScene()
+        else render()
       },
       finished: goHome,
       ownerLost: showElsewhere,
