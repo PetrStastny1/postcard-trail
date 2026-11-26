@@ -1,6 +1,6 @@
 # Postup oblasti content
 
-Požadavky jsou v [spec.md](spec.md). Balíčky jdou za sebou, protože každý staví na datech předchozího.
+Požadavky jsou v [spec.md](spec.md). WP1 je první, protože ostatní stavějí na jeho datech. WP2 a WP3 běží souběžně a nesahají na stejné soubory. WP4 navazuje na oba.
 
 ## WP1 Import (`wp/content/import`)
 
@@ -19,8 +19,12 @@ Požadavky jsou v [spec.md](spec.md). Balíčky jdou za sebou, protože každý 
 ## WP3 Validátor (`wp/content/validator`)
 
 - [ ] Strukturální kontrola JSON před věcnými a čitelný výpis chyb, parametr `--root` (R4).
-- [ ] Kontroly 1–11 z R4 s testy na poškozených datech.
+- [ ] Kontroly 1–10 z R4 s testy na poškozených datech.
 - [ ] Test, který spustí validátor jako proces nad vadnými daty a ověří nenulový exit.
+
+## WP4 Validace scén (`wp/content/scene-checks`)
+
+- [ ] Kontrola 11 z R4 ve validátoru s testy na poškozených scénách.
 
 ## Předání oblasti
 
