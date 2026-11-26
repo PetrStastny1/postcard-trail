@@ -4,12 +4,12 @@ Požadavky a scénáře jsou ve [spec.md](spec.md). Vývojář zaškrtává hoto
 
 ## Balíček 1: local (lokální adaptér, úložiště, záznam událostí)
 
-- [ ] Typ `VITE_PLATFORM` pro `import.meta.env` v `src/platform/` (bez `any`).
-- [ ] Úložiště s prefixem `postcard-trail:` nad `localStorage` (P2, S2.1–S2.3).
-- [ ] Záznam událostí měření pro všechny adaptéry (P3, S3.1–S3.3).
-- [ ] Lokální adaptér se simulací reklamy podle tabulky P4 (S4.1–S4.5).
-- [ ] `createPlatform()` v `src/platform/index.ts` vybírá lokální adaptér (P1).
-- [ ] Unit testy přes veřejné funkce adaptéru pro všechny řádky tabulky P4 a produkční režim.
+- [x] Typ `VITE_PLATFORM` pro `import.meta.env` v `src/platform/` (bez `any`).
+- [x] Úložiště s prefixem `postcard-trail:` nad `localStorage` (P2, S2.1–S2.3).
+- [x] Záznam událostí měření pro všechny adaptéry (P3, S3.1–S3.3).
+- [x] Lokální adaptér se simulací reklamy podle tabulky P4 (S4.1–S4.5).
+- [x] `createPlatform()` v `src/platform/index.ts` vybírá lokální adaptér (P1).
+- [x] Unit testy přes veřejné funkce adaptéru pro všechny řádky tabulky P4 a produkční režim.
 
 ## Balíček 2: portals (Poki, CrazyGames, výběr při buildu)
 
