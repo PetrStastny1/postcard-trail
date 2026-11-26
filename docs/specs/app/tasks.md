@@ -4,13 +4,13 @@ Požadavky jsou ve [spec.md](spec.md). Vývojář balíčku zaškrtává hotové
 
 ## Balíček 1: Kostra a nastavení (`shell`)
 
-- [ ] Spuštění: platforma, `init`, signály načítání, feedback, portálové ztlumení, `GameStorage` s ID karty, odemčení zvuku na každém vstupu, export událostí ve vývoji (A1, A4, A5 export)
-- [ ] Načítání v `index.html` s chybou a opakováním, upozornění na nedostupné úložiště (A2, A3)
-- [ ] Texty `src/i18n/en.json` a `cs.json`, přepínání jazyka a `lang` dokumentu (A12)
-- [ ] Úvod s logem, animací a postupem (C1 bez napojení „Hrát“, mapy, sbírky a denní výzvy)
-- [ ] Nastavení se všemi volbami a okamžitým účinkem (A12, A13)
-- [ ] Rám okna s × a „Úvod“, dialog s držením a vracením fokusu, Escape (A14)
-- [ ] Sdílený e2e pomocník kontroly rozvržení (rozměry, 44 px, překryv, vodorovné posouvání) a e2e testy balíčku
+- [x] Spuštění: platforma, `init`, signály načítání, feedback, portálové ztlumení, `GameStorage` s ID karty, odemčení zvuku na každém vstupu, export událostí ve vývoji (A1, A4, A5 export)
+- [x] Načítání v `index.html` s chybou a opakováním, upozornění na nedostupné úložiště (A2, A3)
+- [x] Texty `src/i18n/en.json` a `cs.json`, přepínání jazyka a `lang` dokumentu (A12)
+- [x] Úvod s logem, animací a postupem (C1 bez napojení „Hrát“, mapy, sbírky a denní výzvy)
+- [x] Nastavení se všemi volbami a okamžitým účinkem (A12, A13)
+- [x] Rám okna s × a „Úvod“, dialog s držením a vracením fokusu, Escape (A14)
+- [x] Sdílený e2e pomocník kontroly rozvržení (rozměry, 44 px, překryv, vodorovné posouvání) a e2e testy balíčku
 
 ## Balíček 2: Hra (`play`), po balíčku 1
 
