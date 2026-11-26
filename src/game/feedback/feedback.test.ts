@@ -525,3 +525,115 @@ test('S9.3 without navigator.vibrate nothing throws', () => {
   Reflect.deleteProperty(globalThis, 'navigator')
   assert.doesNotThrow(() => feedback.play('postcard'))
 })
+
+test('S8.5 S9.2 portal mute silences at once, stops new tones and keeps vibration', () => {
+  const feedback = createFeedback(allOn)
+  feedback.unlock()
+  const context = onlyContext()
+  context.currentTime = 11
+  feedback.setPortalMuted(true)
+  assert.deepEqual(context.master().gain.events.slice(-2), [
+    { kind: 'cancel', value: Number.NaN, time: 11 },
+    { kind: 'set', value: 0, time: 11 },
+  ])
+  feedback.play('correct')
+  feedback.play('postcard')
+  assert.equal(context.oscillators.length, 0)
+  assert.deepEqual(vibrations, [25, 35])
+
+  feedback.setVibrationEnabled(false)
+  feedback.play('correct')
+  assert.deepEqual(vibrations, [25, 35], 'vibration still follows its own setting')
+})
+
+for (const sound of [true, false]) {
+  test(`S8.5 lifting the portal mute restores ${sound ? '0.6' : 'silence'} with sound ${sound ? 'on' : 'off'}`, () => {
+    const feedback = createFeedback({ sound, vibration: true })
+    feedback.unlock()
+    const context = onlyContext()
+    feedback.setPortalMuted(true)
+    feedback.setPortalMuted(false)
+    assert.equal(context.master().gain.lastValue(), sound ? 0.6 : 0)
+    feedback.play('choice')
+    assert.equal(context.oscillators.length, sound ? 1 : 0)
+  })
+}
+
+test('S8.5 turning sound on during the portal mute keeps silence until the mute is lifted', () => {
+  const feedback = createFeedback({ sound: false, vibration: true })
+  feedback.unlock()
+  const context = onlyContext()
+  feedback.setPortalMuted(true)
+  feedback.setSoundEnabled(true)
+  assert.equal(context.master().gain.lastValue(), 0)
+  feedback.play('choice')
+  assert.equal(context.oscillators.length, 0)
+
+  feedback.setPortalMuted(false)
+  assert.equal(context.master().gain.lastValue(), 0.6)
+})
+
+test('S8.5 turning sound off during the portal mute keeps silence after it is lifted', () => {
+  const feedback = createFeedback(allOn)
+  feedback.unlock()
+  const context = onlyContext()
+  feedback.setPortalMuted(true)
+  feedback.setSoundEnabled(false)
+  feedback.setPortalMuted(false)
+  assert.equal(context.master().gain.lastValue(), 0)
+})
+
+test('S8.5 restoring after an ad keeps the portal mute, lifting it then restores the level', () => {
+  const feedback = createFeedback(allOn)
+  feedback.unlock()
+  const context = onlyContext()
+  feedback.setPortalMuted(true)
+  feedback.muteForAd()
+  feedback.restoreAfterAd()
+  assert.equal(context.master().gain.lastValue(), 0)
+  feedback.play('choice')
+  assert.equal(context.oscillators.length, 0)
+
+  feedback.setPortalMuted(false)
+  assert.equal(context.master().gain.lastValue(), 0.6)
+  feedback.play('choice')
+  assert.equal(context.oscillators.length, 1)
+})
+
+test('S8.5 lifting the portal mute during an ad takes effect only after restore', () => {
+  const feedback = createFeedback(allOn)
+  feedback.unlock()
+  const context = onlyContext()
+  feedback.setPortalMuted(true)
+  feedback.muteForAd()
+  feedback.setPortalMuted(false)
+  assert.equal(context.master().gain.lastValue(), 0)
+  feedback.play('choice')
+  assert.equal(context.oscillators.length, 0)
+  assert.deepEqual(vibrations, [])
+
+  feedback.restoreAfterAd()
+  assert.equal(context.master().gain.lastValue(), 0.6)
+})
+
+test('S8.5 a portal mute set before unlock starts the new context silent', () => {
+  const feedback = createFeedback(allOn)
+  feedback.setPortalMuted(true)
+  feedback.unlock()
+  const context = onlyContext()
+  assert.equal(context.master().gain.lastValue(), 0)
+  feedback.play('choice')
+  assert.equal(context.oscillators.length, 0)
+
+  feedback.setPortalMuted(false)
+  assert.equal(context.master().gain.lastValue(), 0.6)
+})
+
+test('S8.5 without Web Audio the portal mute does not throw', () => {
+  Reflect.deleteProperty(globalThis, 'AudioContext')
+  const feedback = createFeedback(allOn)
+  feedback.unlock()
+  assert.doesNotThrow(() => feedback.setPortalMuted(true))
+  feedback.play('correct')
+  assert.deepEqual(vibrations, [25])
+})

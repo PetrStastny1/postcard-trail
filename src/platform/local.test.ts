@@ -233,3 +233,19 @@ test('without a request the adapter schedules nothing, and its signals do nothin
   assert.equal(adapter.name, 'local')
   assert.deepEqual(adapter.recordedEvents(), [])
 })
+
+for (const development of [true, false]) {
+  test(`S10.5 portalAudioMuted() is always false and the listener is never called (${development ? 'development' : 'production'})`, async () => {
+    const adapter = createLocalAdapter({ development, search: '?ad=completed&muteAudio=true', openStorage: () => new MemoryStorage() })
+    const changes: boolean[] = []
+    adapter.onPortalAudioMutedChange((muted) => changes.push(muted))
+
+    assert.equal(adapter.portalAudioMuted(), false)
+    await adapter.init()
+    requestAd(adapter, 'a1', [])
+    advance(SETTLE_MS)
+
+    assert.equal(adapter.portalAudioMuted(), false)
+    assert.deepEqual(changes, [])
+  })
+}

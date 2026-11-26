@@ -11,6 +11,11 @@ export interface CrazyGamesAdError {
   message?: string
 }
 
+export interface CrazyGamesSettings {
+  muteAudio: boolean
+  disableChat: boolean
+}
+
 /** The part of the CrazyGames SDK v3 the game uses. */
 export interface CrazyGamesSdk {
   init(): Promise<unknown>
@@ -21,6 +26,10 @@ export interface CrazyGamesSdk {
     loadingStop(): void
     gameplayStart(): void
     gameplayStop(): void
+    /** Read after `init()` resolves; in the `local` environment `?muteAudio=true` forces the value. */
+    readonly settings: CrazyGamesSettings
+    /** Called on every settings change, also when only `disableChat` changes. */
+    addSettingsChangeListener(listener: (settings: CrazyGamesSettings) => void): void
   }
   readonly ad: {
     requestAd(
@@ -56,6 +65,8 @@ export function createCrazyGamesAdapter({ development, openStorage, loadSdk }: C
   const session = createPortalSession<CrazyGamesSdk>()
   let adsOffered = false
   let loadingSignal: 'start' | 'stop' | null = null
+  let portalAudioMuted = false
+  const portalAudioMutedListeners: ((muted: boolean) => void)[] = []
 
   return {
     name: 'crazygames',
@@ -75,6 +86,13 @@ export function createCrazyGamesAdapter({ development, openStorage, loadSdk }: C
       if (!sdk || sdk.environment === 'disabled') return
       adsOffered = true
       session.connect(sdk, sdk.game)
+      // Not routed through the session: the SDK calls the game here, so a running spot does not block it.
+      sdk.game.addSettingsChangeListener(({ muteAudio }) => {
+        if (muteAudio === portalAudioMuted) return
+        portalAudioMuted = muteAudio
+        for (const listener of portalAudioMutedListeners) listener(muteAudio)
+      })
+      portalAudioMuted = sdk.game.settings.muteAudio
     },
     loadingStarted() {
       if (loadingSignal === 'start') return
@@ -118,5 +136,9 @@ export function createCrazyGamesAdapter({ development, openStorage, loadSdk }: C
     },
     track: analytics.record,
     recordedEvents: analytics.recordedEvents,
+    portalAudioMuted: () => portalAudioMuted,
+    onPortalAudioMutedChange(listener) {
+      portalAudioMutedListeners.push(listener)
+    },
   }
 }

@@ -21,6 +21,8 @@ export interface Feedback {
   muteForAd(): void
   /** Call when the attempt has a result (or is abandoned). */
   restoreAfterAd(): void
+  /** Portal mute (`PlatformAdapter.portalAudioMuted()`); call after `init()` and from `onPortalAudioMutedChange`. */
+  setPortalMuted(muted: boolean): void
 }
 
 interface Tone {
@@ -76,6 +78,8 @@ export function createFeedback(settings: FeedbackSettings): Feedback {
   let soundEnabled = settings.sound
   let vibrationEnabled = settings.vibration
   let mutedForAd = false
+  // Kept apart from `soundEnabled` so the player's saved setting returns once the portal lifts its mute.
+  let portalMuted = false
   let audio: { context: AudioContext; master: GainNode } | undefined
   let audioUnavailable = false
   // A new or resumed context reaches 'running' only asynchronously; a cue played in the same input handler must still sound.
@@ -84,7 +88,7 @@ export function createFeedback(settings: FeedbackSettings): Feedback {
   let resumeRequestedInThisTask = false
 
   function masterLevel(): number {
-    return soundEnabled && !mutedForAd ? MASTER_VOLUME : 0
+    return soundEnabled && !mutedForAd && !portalMuted ? MASTER_VOLUME : 0
   }
 
   function applyMasterLevel(): void {
@@ -155,7 +159,7 @@ export function createFeedback(settings: FeedbackSettings): Feedback {
       const vibrationMs = CUE_VIBRATION_MS[cue]
       if (vibrationEnabled && vibrationMs !== undefined) vibrate(vibrationMs)
       // A halted context keeps its clock still, so tones scheduled during a long pause would all sound at once on resume.
-      if (!audio || !soundEnabled || (audio.context.state !== 'running' && !resumeRequestedInThisTask)) return
+      if (!audio || !soundEnabled || portalMuted || (audio.context.state !== 'running' && !resumeRequestedInThisTask)) return
       for (const tone of CUE_TONES[cue]) playTone(audio.context, audio.master, tone)
     },
 
@@ -175,6 +179,11 @@ export function createFeedback(settings: FeedbackSettings): Feedback {
 
     restoreAfterAd() {
       mutedForAd = false
+      applyMasterLevel()
+    },
+
+    setPortalMuted(muted) {
+      portalMuted = muted
       applyMasterLevel()
     },
   }
