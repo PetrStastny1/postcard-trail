@@ -24,8 +24,6 @@ export interface RunControllerOptions {
   listener: RunListener
 }
 
-export type RunController = ReturnType<typeof createRunController>
-
 /**
  * Drives one run without the DOM: measures the time between counted actions, saves a checkpoint after every change,
  * tracks the events, plays the cues and sends the gameplay signals. Once stopped (left, finished or taken over by
