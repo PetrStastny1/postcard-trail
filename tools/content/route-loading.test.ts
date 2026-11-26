@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { readFileSync, readdirSync } from 'node:fs'
+import { readFileSync, readdirSync, statSync } from 'node:fs'
 import path from 'node:path'
 import { test } from 'node:test'
 
@@ -19,7 +19,7 @@ test('the first catalog date appears only in src/content/catalog.json and tests'
     .effectiveUtcDate as string
   const matches = ['src', 'tools']
     .flatMap((dir) => readdirSync(path.join(repoRoot, dir), { recursive: true, encoding: 'utf8' }).map((file) => path.join(dir, file)))
-    .filter((file) => /\.(ts|json)$/.test(file) && !file.endsWith('.test.ts'))
+    .filter((file) => statSync(path.join(repoRoot, file)).isFile() && !file.endsWith('.test.ts'))
     .filter((file) => readFileSync(path.join(repoRoot, file), 'utf8').includes(firstDate))
   assert.deepEqual(matches, ['src/content/catalog.json'])
 })

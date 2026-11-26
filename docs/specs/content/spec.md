@@ -35,7 +35,7 @@ Mapování:
 | `**CS**`, `**EN**` | `question` (text do posledního `?` včetně) a čtyři volby oddělené ` · ` nebo ` / `; tučná je správná |
 | `**Po odpovědi CS**`, `**After answering EN**` | `feedback` |
 | `**Stabilní**` / `**Může se změnit (<fakt>)**` | `stability` `stable` / `changeable`, u `changeable` `changeableFact` = text v závorce. Poznámka za tučným `**Stabilní**` (OSL, „doložený galerijní výjev“) se nepřenáší. |
-| odkazy `[text](<url>)` na řádku stálosti a v odrážce, která obsahuje jen odkazy (LIS10) | `photoReferenceUrls` = odkazy, jejichž text začíná „fotografický podklad“, `sourceUrls` = ostatní, v pořadí zdroje |
+| odkazy `[text](<url>)` nebo `[text](url)` na řádku stálosti a v odrážce, která obsahuje jen odkazy (LIS10) | `photoReferenceUrls` = odkazy, jejichž text začíná „fotografický podklad“, `sourceUrls` = ostatní, v pořadí zdroje |
 | `**Rozlišovací znak**` | `distinguishingFeature` |
 | `**Scéna**` | nepřenáší se, je to výrobní pokyn pro ilustraci |
 

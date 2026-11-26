@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { after, describe, test } from 'node:test'
 import type { Catalog, Route } from '../../src/content/types.ts'
-import { readContent } from './import.ts'
+import { ContentImportError, importContent, readContent } from './import.ts'
 
 const repoRoot = path.resolve(import.meta.dirname, '../..')
 const importScript = path.join(repoRoot, 'tools/content/import.ts')
@@ -252,10 +252,21 @@ describe('content:import command', () => {
     assert.match(result.stderr, /there is no version to add/)
   })
 
-  test('refuses an invalid effective date', () => {
-    const result = runImport(copySources({ withCatalog: false }), '--effective-date=2027-02-30')
-    assert.equal(result.status, 1)
-    assert.match(result.stderr, /--effective-date must be a valid YYYY-MM-DD date/)
+  for (const invalidDate of ['2027-02-30', '2027-13-01', '2027-01-32', '27-01-01']) {
+    test(`refuses the invalid effective date ${invalidDate}`, () => {
+      const root = copySources({ withCatalog: false })
+      const result = runImport(root, `--effective-date=${invalidDate}`)
+      assert.equal(result.status, 1)
+      assert.match(result.stderr, /--effective-date must be a valid YYYY-MM-DD date/)
+      assert.doesNotMatch(result.stderr, /^\s+at /m, 'no stack trace')
+      assert.equal(existsSync(path.join(root, 'src')), false)
+    })
+  }
+
+  test('the exported importContent also refuses an invalid effective date', () => {
+    const root = copySources({ withCatalog: false })
+    assert.throws(() => importContent({ root, effectiveDate: '2027-13-01' }), ContentImportError)
+    assert.equal(existsSync(path.join(root, 'src')), false)
   })
 })
 
@@ -358,4 +369,76 @@ describe('content:import on a broken source', () => {
     assert.match(result.stderr, /docs\/game\/cities\/oslo\.md: file not found \(listed in docs\/game\/BRIEF\.md §5\)/)
     assert.equal(existsSync(path.join(root, 'src')), false)
   })
+
+  const brokenFiles: { name: string; file: string; content: (source: string) => string; message: RegExp }[] = [
+    {
+      name: 'a null coordinates table',
+      file: 'tools/content/city-coordinates.json',
+      content: () => 'null',
+      message: /city-coordinates\.json: must be an object keyed by city ID/,
+    },
+    {
+      name: 'a null coordinates row',
+      file: 'tools/content/city-coordinates.json',
+      content: (source) => JSON.stringify({ ...JSON.parse(source), oslo: null }),
+      message: /city-coordinates\.json: oslo needs numeric lat, lon and a non-empty source/,
+    },
+    {
+      name: 'a null catalog',
+      file: 'src/content/catalog.json',
+      content: () => 'null',
+      message: /catalog\.json: "versions" must be an array/,
+    },
+    {
+      name: 'a catalog version without orderedCityIds',
+      file: 'src/content/catalog.json',
+      content: () => JSON.stringify({ cities: [], versions: [{ effectiveUtcDate: '2026-12-01' }] }),
+      message: /catalog\.json: versions\[0\] needs "effectiveUtcDate" \(YYYY-MM-DD\) and "orderedCityIds"/,
+    },
+    {
+      name: 'a catalog version with a numeric effectiveUtcDate',
+      file: 'src/content/catalog.json',
+      content: () => JSON.stringify({ cities: [], versions: [{ effectiveUtcDate: 20261201, orderedCityIds: releasedCityIds }] }),
+      message: /catalog\.json: versions\[0\] needs "effectiveUtcDate"/,
+    },
+    {
+      name: 'a rank used twice in BRIEF §5',
+      file: 'docs/game/BRIEF.md',
+      content: (source) => source.replace('| 11 | [Lisabon]', '| 1 | [Lisabon]'),
+      message: /BRIEF\.md: §5 release table uses rank 1 twice/,
+    },
+    {
+      name: 'a city listed twice in BRIEF §5',
+      file: 'docs/game/BRIEF.md',
+      content: (source) => source.replace('[Lisabon](cities/lisbon.md)', '[Lisabon](cities/paris.md)'),
+      message: /BRIEF\.md: §5 release table lists paris twice/,
+    },
+  ]
+
+  for (const broken of brokenFiles) {
+    test(`stops on ${broken.name} without writing files`, () => {
+      const root = copySources({ withCatalog: true })
+      editFile(root, broken.file, broken.content)
+      const editedCatalog = readFileSync(path.join(root, 'src/content/catalog.json'), 'utf8')
+
+      const result = runImport(root)
+      assert.equal(result.status, 1)
+      assert.match(result.stderr, broken.message)
+      assert.doesNotMatch(result.stderr, /^\s+at /m, 'no stack trace')
+      assert.equal(existsSync(path.join(root, 'src/content/routes')), false)
+      assert.equal(readFileSync(path.join(root, 'src/content/catalog.json'), 'utf8'), editedCatalog)
+    })
+  }
+})
+
+test('a link without angle brackets is imported as a source', () => {
+  const root = copySources({ withCatalog: true })
+  editFile(root, 'docs/game/cities/paris.md', (source) =>
+    source.replace('(<https://en.wikipedia.org/wiki/Eiffel_Tower>)', '(https://en.wikipedia.org/wiki/Eiffel_Tower)'),
+  )
+  const paris = readContent(root).routes[0]
+  assert.deepEqual(paris.stops[0].sourceUrls, ['https://en.wikipedia.org/wiki/Eiffel_Tower'])
+  assert.deepEqual(paris.stops[0].photoReferenceUrls, [
+    'https://commons.wikimedia.org/wiki/File:Tour_Eiffel_Wikimedia_Commons_(cropped).jpg',
+  ])
 })

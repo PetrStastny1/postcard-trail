@@ -48,11 +48,8 @@ const photoReferenceLinkText = 'fotografický podklad'
 
 /** Problems in the content sources. The CLI prints them without a stack trace. */
 export class ContentImportError extends Error {
-  readonly problems: string[]
-
   constructor(problems: string[]) {
     super(`Content import failed:\n${problems.join('\n')}`)
-    this.problems = problems
   }
 }
 
@@ -71,6 +68,20 @@ interface ParsedQuestion {
   question: string
   labels: string[]
   correctIndex: number
+}
+
+function isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+function isCalendarDate(year: number, month: number, day: number): boolean {
+  const date = new Date(Date.UTC(year, month - 1, day))
+  return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day
+}
+
+function isIsoDate(value: unknown): value is string {
+  const match = typeof value === 'string' ? value.match(/^(\d{4})-(\d{2})-(\d{2})$/) : null
+  return match !== null && isCalendarDate(Number(match[1]), Number(match[2]), Number(match[3]))
 }
 
 function parseJson(relativePath: string, source: string): unknown {
@@ -93,9 +104,13 @@ function readReleasedCityIds(root: string): string[] {
   const section = brief.match(/^## 5\.[^\n]*\n([\s\S]*?)(?=^## )/m)?.[1]
   if (!section) throw new ContentImportError([`${briefPath}: section "## 5." not found`])
   const cityIdsByRank = new Map<number, string>()
+  const problems: string[] = []
   for (const [, rank, cityId] of section.matchAll(/\|\s*(\d+)\s*\|\s*\[[^\]]+\]\(cities\/([a-z-]+)\.md\)/g)) {
+    if (cityIdsByRank.has(Number(rank))) problems.push(`${briefPath}: §5 release table uses rank ${rank} twice`)
+    if ([...cityIdsByRank.values()].includes(cityId)) problems.push(`${briefPath}: §5 release table lists ${cityId} twice`)
     cityIdsByRank.set(Number(rank), cityId)
   }
+  if (problems.length > 0) throw new ContentImportError(problems)
   const cityIds = Array.from({ length: cityIdsByRank.size }, (_, index) => cityIdsByRank.get(index + 1))
   if (cityIds.length === 0 || cityIds.some((cityId) => cityId === undefined)) {
     throw new ContentImportError([`${briefPath}: §5 release table must number cities 1..n without gaps`])
@@ -104,15 +119,20 @@ function readReleasedCityIds(root: string): string[] {
 }
 
 function readCoordinates(root: string): Record<string, CityCoordinates> {
-  const table = parseJson(coordinatesPath, readSource(root, coordinatesPath)) as Record<string, CityCoordinates>
+  const table = parseJson(coordinatesPath, readSource(root, coordinatesPath))
+  if (!isObject(table)) throw new ContentImportError([`${coordinatesPath}: must be an object keyed by city ID`])
   const problems: string[] = []
   for (const [cityId, row] of Object.entries(table)) {
     const valid =
-      Number.isFinite(row.lat) && Number.isFinite(row.lon) && typeof row.source === 'string' && row.source !== ''
+      isObject(row) &&
+      Number.isFinite(row.lat) &&
+      Number.isFinite(row.lon) &&
+      typeof row.source === 'string' &&
+      row.source !== ''
     if (!valid) problems.push(`${coordinatesPath}: ${cityId} needs numeric lat, lon and a non-empty source`)
   }
   if (problems.length > 0) throw new ContentImportError(problems)
-  return table
+  return table as Record<string, CityCoordinates>
 }
 
 /** Splits `CS text / EN text.` and drops the list item's closing full stop. */
@@ -142,9 +162,8 @@ function parseVerifiedOn(value: string): string | undefined {
   const match = value.match(/^(\d{1,2})\. (\d{1,2})\. (\d{4})\./)
   if (!match) return undefined
   const [day, month, year] = match.slice(1).map(Number)
-  const date = new Date(Date.UTC(year, month - 1, day))
-  if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day) return undefined
-  return date.toISOString().slice(0, 10)
+  if (!isCalendarDate(year, month, day)) return undefined
+  return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
 }
 
 function parseStop(file: string, section: string, verifiedOn: string, problems: string[]): Stop | undefined {
@@ -171,7 +190,9 @@ function parseStop(file: string, section: string, verifiedOn: string, problems: 
         if (stability) stopProblems.push('stability line appears twice')
         stability = stabilityMatch[2] === undefined ? {} : { changeableFact: stabilityMatch[2] }
       }
-      for (const [, text, url] of line.matchAll(/\[([^\]]+)\]\(<([^>]+)>\)/g)) links.push({ text, url })
+      for (const [, text, bracketedUrl, bareUrl] of line.matchAll(/\[([^\]]+)\]\((?:<([^>]+)>|([^)\s]+))\)/g)) {
+        links.push({ text, url: bracketedUrl ?? bareUrl })
+      }
       continue
     }
     const fieldMatch = line.match(/^- \*\*(.+?)\*\* — (.+)$/)
@@ -306,12 +327,27 @@ export function readContent(root: string = repoRoot): ImportedContent {
 
 function readVersions(root: string): CatalogVersion[] {
   if (!existsSync(path.join(root, catalogPath))) return []
-  const catalog = parseJson(catalogPath, readSource(root, catalogPath)) as Partial<Catalog>
-  if (!Array.isArray(catalog.versions)) throw new ContentImportError([`${catalogPath}: "versions" must be an array`])
-  return catalog.versions
+  const catalog = parseJson(catalogPath, readSource(root, catalogPath))
+  const versions = isObject(catalog) ? catalog.versions : undefined
+  if (!Array.isArray(versions)) throw new ContentImportError([`${catalogPath}: "versions" must be an array`])
+  const problems = versions.flatMap((version, index) => {
+    const valid =
+      isObject(version) &&
+      isIsoDate(version.effectiveUtcDate) &&
+      Array.isArray(version.orderedCityIds) &&
+      version.orderedCityIds.every((cityId) => typeof cityId === 'string')
+    return valid
+      ? []
+      : [`${catalogPath}: versions[${index}] needs "effectiveUtcDate" (YYYY-MM-DD) and "orderedCityIds" (string[])`]
+  })
+  if (problems.length > 0) throw new ContentImportError(problems)
+  return versions as CatalogVersion[]
 }
 
 function nextVersions(versions: CatalogVersion[], cityIds: string[], effectiveDate: string | undefined) {
+  if (effectiveDate !== undefined && !isIsoDate(effectiveDate)) {
+    throw new ContentImportError([`--effective-date must be a valid YYYY-MM-DD date, found "${effectiveDate}"`])
+  }
   const latest = versions.at(-1)
   const unchanged = latest !== undefined && latest.orderedCityIds.join() === cityIds.join()
   if (unchanged) {
@@ -367,14 +403,7 @@ function parseCommandLine(): { root?: string; effectiveDate?: string } {
     options: { root: { type: 'string' }, 'effective-date': { type: 'string' } },
     allowPositionals: false,
   })
-  const effectiveDate = values['effective-date']
-  if (effectiveDate !== undefined) {
-    const valid =
-      /^\d{4}-\d{2}-\d{2}$/.test(effectiveDate) &&
-      new Date(`${effectiveDate}T00:00:00Z`).toISOString().startsWith(effectiveDate)
-    if (!valid) throw new ContentImportError([`--effective-date must be a valid YYYY-MM-DD date, found "${effectiveDate}"`])
-  }
-  return { root: values.root && path.resolve(values.root), effectiveDate }
+  return { root: values.root && path.resolve(values.root), effectiveDate: values['effective-date'] }
 }
 
 if (import.meta.main) {
