@@ -3,6 +3,7 @@ import path from 'node:path'
 import { parseArgs } from 'node:util'
 import { chromium } from '@playwright/test'
 import type { Catalog, Route } from '../../src/content/types.ts'
+import { maxSceneBytes, sceneSize } from './scene-limits.ts'
 
 const repoRoot = path.resolve(import.meta.dirname, '../..')
 
@@ -12,8 +13,6 @@ const tokensPath = 'src/styles/tokens.css'
 const scenesDir = 'public/scenes'
 const placeholdersPath = 'public/scenes/placeholders.json'
 
-export const sceneSize = 1280
-export const maxSceneBytes = 150_000
 // Flat shapes compress well, so the first quality is usually far below the limit; lower ones are a fallback.
 const webpQualities = [0.85, 0.7, 0.55, 0.4]
 

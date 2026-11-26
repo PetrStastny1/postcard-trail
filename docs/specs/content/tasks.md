@@ -24,7 +24,7 @@ Požadavky jsou v [spec.md](spec.md). WP1 je první, protože ostatní stavějí
 
 ## WP4 Validace scén (`wp/content/scene-checks`)
 
-- [ ] Kontrola 11 z R4 ve validátoru s testy na poškozených scénách.
+- [x] Kontrola 11 z R4 ve validátoru s testy na poškozených scénách.
 
 ## Předání oblasti
 
