@@ -26,7 +26,7 @@ export function titleScreen({ totals, dailyUnlocked, onOpenSettings }: TitleOpti
   const settings = secondaryButton('title-settings', t('title.settings'))
   settings.addEventListener('click', onOpenSettings)
 
-  // The condition is the button's description only; hidden from the name, so a screen reader reads it once.
+  // The condition sits under the menu as the button's description only; hidden from the name, so a screen reader reads it once.
   const daily = element(
     'button',
     {
@@ -36,9 +36,11 @@ export function titleScreen({ totals, dailyUnlocked, onOpenSettings }: TitleOpti
       'data-locked': !dailyUnlocked,
       'aria-describedby': dailyUnlocked ? undefined : 'title-daily-condition',
     },
-    element('span', { class: 'title-daily-name' }, t('title.daily')),
-    ...(dailyUnlocked ? [] : [element('span', { id: 'title-daily-condition', class: 'title-daily-condition', 'aria-hidden': 'true' }, t('title.dailyLocked'))]),
+    t('title.daily'),
   )
+  const dailyCondition = dailyUnlocked
+    ? []
+    : [element('p', { id: 'title-daily-condition', class: 'title-daily-condition', 'aria-hidden': 'true' }, t('title.dailyLocked'))]
 
   const progress = element(
     'ul',
@@ -63,7 +65,7 @@ export function titleScreen({ totals, dailyUnlocked, onOpenSettings }: TitleOpti
   )
 
   // In landscape the panel scrolls on its own when a short viewport cannot hold it.
-  const panel = element('div', { class: 'title-panel' }, play, menu, progress)
+  const panel = element('div', { class: 'title-panel' }, play, menu, ...dailyCondition, progress)
   markMoreContent(panel)
 
   return element('main', { class: 'title' }, logo, titleScene(), panel)

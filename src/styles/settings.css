@@ -1,9 +1,8 @@
 .settings {
-  --side: max(var(--space-4), env(safe-area-inset-left), env(safe-area-inset-right));
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
-  padding: var(--space-4) var(--side) max(var(--space-4), env(safe-area-inset-bottom));
+  padding: var(--space-4) var(--window-side) max(var(--space-4), env(safe-area-inset-bottom));
 }
 
 .setting-heading {

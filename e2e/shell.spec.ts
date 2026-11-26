@@ -43,7 +43,7 @@ test.describe('title screen', () => {
     await expect(page.locator('.title-progress li')).toHaveText(['0/20 cities', /^0\/60 ★/, '0 postcards'])
   })
 
-  test('the locked daily tile reads as unavailable and spans the menu row without stretching the open tiles', async ({ page }) => {
+  test('the locked daily tile keeps its place in the 2 × 2 menu and its condition is one line under the menu', async ({ page }) => {
     for (const size of [
       { width: 375, height: 812 },
       { width: 568, height: 320 },
@@ -54,12 +54,23 @@ test.describe('title screen', () => {
       const daily = page.locator('.title-daily')
       await expect(daily).toHaveCSS('border-top-style', 'dashed')
       await expect(daily).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
-      await expect(daily.locator('.title-daily-name')).toHaveCSS('color', 'rgb(58, 67, 102)')
-      await expect(daily.locator('.title-daily-condition')).toHaveCSS('text-wrap', 'balance')
-      const menuWidth = (await page.locator('.title-menu').boundingBox())!.width
-      expect(Math.abs((await daily.boundingBox())!.width - menuWidth)).toBeLessThan(1)
-      const openHeights = await page.locator('.title-menu button:not(.title-daily)').evaluateAll((tiles) => tiles.map((tile) => tile.getBoundingClientRect().height))
-      expect(new Set(openHeights).size).toBe(1)
+      await expect(daily).toHaveCSS('color', 'rgb(58, 67, 102)')
+      const tiles = await page.locator('.title-menu button').evaluateAll((buttons) => buttons.map((button) => button.getBoundingClientRect().toJSON() as DOMRect))
+      const [, , collection, dailyTile] = tiles
+      expect(Math.abs(dailyTile.top - collection.top)).toBeLessThan(1)
+      expect(dailyTile.left).toBeGreaterThan(collection.right)
+      expect(new Set(tiles.map((tile) => Math.round(tile.height))).size).toBe(1)
+      expect(new Set(tiles.map((tile) => Math.round(tile.width))).size).toBe(1)
+
+      const condition = page.locator('.title-daily-condition')
+      await expect(condition).toHaveCSS('text-wrap', 'balance')
+      await expect(condition).toHaveCSS('font-size', '14px')
+      await expect(condition).toHaveCSS('color', 'rgb(58, 67, 102)')
+      const conditionBox = (await condition.boundingBox())!
+      const menuBox = (await page.locator('.title-menu').boundingBox())!
+      expect(conditionBox.y).toBeGreaterThanOrEqual(menuBox.y + menuBox.height)
+      const lineHeight = await condition.evaluate((node) => parseFloat(getComputedStyle(node).lineHeight))
+      expect(conditionBox.height).toBeLessThan(lineHeight * 1.5)
     }
   })
 
@@ -467,12 +478,18 @@ test.describe('short landscape screens show the whole title and settings without
       })
     })
 
-    test('title at 640 × 360', async ({ page }) => {
-      await page.setViewportSize({ width: 640, height: 360 })
-      await openTitle(page)
-      await expect(page.getByText('This browser is not saving the game.')).toBeVisible()
-      for (const state of await wholeInView(page, titleParts)) expect(state).toBe('whole')
-    })
+    for (const size of [
+      { width: 568, height: 320 },
+      { width: 640, height: 360 },
+    ]) {
+      test(`title at ${size.width} × ${size.height}`, async ({ page }) => {
+        await page.setViewportSize(size)
+        await openTitle(page)
+        await expect(page.getByText('This browser is not saving the game.')).toBeVisible()
+        for (const state of await wholeInView(page, `${titleParts}, .title-daily-condition`)) expect(state).toBe('whole')
+        await expect(page.locator('.title-panel')).not.toHaveClass(/has-more/)
+      })
+    }
   })
 })
 
@@ -487,10 +504,11 @@ test.describe('the has-more signal on the title panel with the storage notice', 
     })
   })
 
-  test('title at 568 × 320 fades the panel edge exactly while content is cut below it', async ({ page }) => {
+  test('title at 568 × 320 with 200 % text fades the panel edge exactly while content is cut below it', async ({ page }) => {
     await page.setViewportSize({ width: 568, height: 320 })
     await openTitle(page)
     await expect(page.getByText('This browser is not saving the game.')).toBeVisible()
+    await page.evaluate(() => (document.documentElement.style.fontSize = '200%'))
     const panel = page.locator('.title-panel')
     const contentCut = () =>
       panel.evaluate((node) => {
@@ -521,6 +539,7 @@ test.describe('the has-more signal on the title panel with the storage notice', 
   test('the layout check still demands the signal when content is cut', async ({ page }) => {
     await page.setViewportSize({ width: 568, height: 320 })
     await openTitle(page)
+    await page.evaluate(() => (document.documentElement.style.fontSize = '200%'))
     const panel = page.locator('.title-panel')
     await expect(panel).toHaveClass(/has-more/)
     await panel.evaluate((node) => node.classList.remove('has-more'))
@@ -549,7 +568,7 @@ for (const size of [
     await page.getByRole('button', { name: 'Settings' }).click()
     const dialog = page.getByRole('dialog')
     await expect(dialog).toHaveCSS('border-top-left-radius', '20px')
-    const closeLeft = (await dialog.locator('.window-bar .icon-button svg').boundingBox())!.x
+    const closeLeft = (await dialog.getByRole('button', { name: 'Close' }).boundingBox())!.x
     const contentLefts = await dialog.locator('.setting-heading, .setting-choices, .setting-list').evaluateAll((parts) => parts.map((part) => part.getBoundingClientRect().left))
     for (const left of contentLefts) expect(Math.abs(left - closeLeft)).toBeLessThanOrEqual(2)
   })

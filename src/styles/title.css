@@ -44,10 +44,14 @@
   font-size: var(--text-question);
 }
 
-/* Two columns while a tile is wide enough for its longest word (7.5em scales with the text size), else one. */
+/*
+ * Two columns while a tile is wide enough for its longest word (7.5em scales with the text size), else one.
+ * Equal rows, so a label that wraps to two lines makes every tile as tall as its own.
+ */
 .title-menu {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(max(7.5em, calc(50% - var(--space-1))), 1fr));
+  grid-auto-rows: 1fr;
   gap: var(--space-2);
 }
 
@@ -56,20 +60,8 @@
   padding: var(--space-2) var(--space-3);
 }
 
-.title-daily {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-1);
-}
-
-/*
- * Locked until the first city: drawn as unavailable (dashed edge, soft name, no fill), and across the whole row so its
- * taller two-line content does not stretch the open tile beside it.
- */
+/* Locked until the first city: drawn as unavailable (dashed edge, soft name, no fill) in its own place in the grid. */
 .title-daily[data-locked] {
-  grid-column: 1 / -1;
   border-style: dashed;
   border-color: var(--color-ink-soft);
   background: transparent;
@@ -77,10 +69,11 @@
 }
 
 .title-daily-condition {
+  margin: 0;
   color: var(--color-ink-soft);
   font-size: var(--text-small);
-  font-weight: var(--weight-regular);
   line-height: var(--leading-tight);
+  text-align: center;
   text-wrap: balance;
 }
 
@@ -172,6 +165,11 @@
 
   .title-panel {
     gap: var(--space-2);
+  }
+
+  /* Labels wrap to two lines in the narrow column here; tighter tiles keep the panel whole with the storage notice. */
+  .title-menu .secondary {
+    padding-block: var(--space-1);
   }
 }
 
