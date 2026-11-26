@@ -376,6 +376,9 @@ test('only a finished daily run can be recorded', () => {
   assert.throws(() => recordDailyRun(emptyDailyResults, unfinished))
   const cityRun = finish(startCityRun({ route: paris, runId: 'city-1', untimed: false, random: () => 0.5 }))
   assert.throws(() => recordDailyRun(emptyDailyResults, cityRun))
+  const cityModeWithDaily: RunState = { ...finish(dailyRun(planFor(twentyCities, '2026-12-03'))), mode: 'city' }
+  assert.equal(cityModeWithDaily.phase, 'summary')
+  assert.throws(() => recordDailyRun(emptyDailyResults, cityModeWithDaily))
 })
 
 test('merging results from two tabs keeps the stored result per date and unites the dates in one JSON form', () => {

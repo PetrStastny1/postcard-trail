@@ -85,7 +85,7 @@ export function startDailyRun(options: { route: Route; plan: DailyPlan; runId: s
 
 /** Records a finished daily run under its start date; a date that already has a result keeps it. */
 export function recordDailyRun(results: DailyResults, run: RunState): DailyResults {
-  if (run.daily === null || run.phase !== 'summary') {
+  if (run.mode !== 'daily' || run.daily === null || run.phase !== 'summary') {
     throw new Error('Only a finished daily run has a daily result.')
   }
   return mergeDailyResults(results, { [run.daily.utcDate]: { cityId: run.cityId, correct: run.correct } })
