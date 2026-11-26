@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { createCrazyGamesAdapter, type CrazyGamesAdError, type CrazyGamesSdk } from './crazygames.ts'
+import { createCrazyGamesAdapter, loadCrazyGamesSdk, type CrazyGamesAdError, type CrazyGamesSdk } from './crazygames.ts'
 import { createPokiAdapter, type PokiSdk } from './poki.ts'
 import type { AnalyticsEvent, PlatformAdapter, RewardedAdOutcome } from './types.ts'
 
@@ -431,6 +431,23 @@ test('poki: a late onStart is forwarded after the result', async () => {
   ])
 })
 
+test('poki: a rewardedBreak that throws ends unavailable and frees the SDK', async () => {
+  const poki = fakePoki()
+  poki.sdk.rewardedBreak = () => {
+    throw new Error('rewardedBreak failed')
+  }
+  const adapter = createPokiAdapter({ development: true, openStorage: () => new MemoryStorage(), loadSdk: () => Promise.resolve(poki.sdk) })
+  await adapter.init()
+  const callbacks: Callback[] = []
+
+  requestAd(adapter, 'a1', callbacks)
+  await settle()
+  adapter.gameplayStart()
+
+  assert.deepEqual(callbacks, [{ attemptId: 'a1', call: 'result', outcome: 'unavailable' }])
+  assert.deepEqual(poki.calls, ['gameplayStart'])
+})
+
 test('poki: measure follows the S7.1 table and skips ad outcomes and daily completion', async () => {
   const poki = fakePoki()
   const adapter = createPokiAdapter({ development: false, openStorage: () => new MemoryStorage(), loadSdk: () => Promise.resolve(poki.sdk) })
@@ -687,6 +704,35 @@ test('crazygames: a requestAd that throws ends unavailable and frees the SDK', a
 
   assert.deepEqual(callbacks, [{ attemptId: 'a1', call: 'result', outcome: 'unavailable' }])
   assert.deepEqual(crazyGames.calls, ['gameplayStart'])
+})
+
+test('crazygames: a script that defines CrazyGames without SDK counts as an SDK that did not load', async (t) => {
+  // Stands in for the browser: the injected script "loads" and leaves a CrazyGames global without SDK.
+  const fakeDocument = {
+    createElement: () => ({
+      addEventListener(type: string, listener: () => void) {
+        if (type === 'load') setTimeout(listener, 0)
+      },
+    }),
+    head: { append() {} },
+  }
+  Object.defineProperty(globalThis, 'document', { value: fakeDocument, configurable: true })
+  Object.defineProperty(globalThis, 'window', { value: { CrazyGames: {} }, configurable: true })
+  t.after(() => {
+    Reflect.deleteProperty(globalThis, 'document')
+    Reflect.deleteProperty(globalThis, 'window')
+  })
+
+  await assert.rejects(loadCrazyGamesSdk(), /did not define CrazyGames\.SDK/)
+
+  const adapter = createCrazyGamesAdapter({ development: true, openStorage: () => new MemoryStorage(), loadSdk: loadCrazyGamesSdk })
+  await adapter.init()
+  const callbacks: Callback[] = []
+  requestAd(adapter, 'a1', callbacks)
+  await settle()
+
+  assert.equal(adapter.rewardedAdsOffered(), false)
+  assert.deepEqual(callbacks, [{ attemptId: 'a1', call: 'result', outcome: 'unavailable' }])
 })
 
 test('crazygames: sends no custom events and never requests a midgame ad', async () => {

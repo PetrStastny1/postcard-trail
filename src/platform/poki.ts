@@ -104,15 +104,21 @@ export function createPokiAdapter({ development, openStorage, loadSdk }: PokiAda
     requestRewardedAd(request) {
       session.requestRewardedAd(request, adsOffered, (sdk, spot) => {
         let started = false
-        sdk
-          .rewardedBreak(() => {
+        let rewardedBreak: Promise<boolean>
+        try {
+          rewardedBreak = sdk.rewardedBreak(() => {
             started = true
             spot.started()
           })
-          .then(
-            (rewarded) => spot.finished(rewarded ? 'completed' : started ? 'cancelled' : 'unavailable'),
-            () => spot.finished('unavailable'),
-          )
+        } catch {
+          // Without this result the spot would stay open and block every later gameplay signal.
+          spot.finished('unavailable')
+          return
+        }
+        rewardedBreak.then(
+          (rewarded) => spot.finished(rewarded ? 'completed' : started ? 'cancelled' : 'unavailable'),
+          () => spot.finished('unavailable'),
+        )
       })
     },
     track(event) {

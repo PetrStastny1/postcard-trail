@@ -32,14 +32,15 @@ export interface CrazyGamesSdk {
 
 declare global {
   interface Window {
-    CrazyGames?: { SDK: CrazyGamesSdk }
+    CrazyGames?: { SDK?: CrazyGamesSdk }
   }
 }
 
 export async function loadCrazyGamesSdk(): Promise<CrazyGamesSdk> {
   await loadScript(CRAZYGAMES_SDK_URL)
-  if (!window.CrazyGames) throw new Error('The CrazyGames SDK script did not define CrazyGames.SDK')
-  return window.CrazyGames.SDK
+  const sdk = window.CrazyGames?.SDK
+  if (!sdk) throw new Error('The CrazyGames SDK script did not define CrazyGames.SDK')
+  return sdk
 }
 
 export interface CrazyGamesAdapterOptions {
