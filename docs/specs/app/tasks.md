@@ -14,13 +14,13 @@ Požadavky jsou ve [spec.md](spec.md). Vývojář balíčku zaškrtává hotové
 
 ## Balíček 2: Hra (`play`), po balíčku 1
 
-- [ ] Začátek městského průchodu, „Hrát“ a „Pokračovat“ na úvodu, lazy-load trasy (A16)
-- [ ] Herní obrazovka podle prototypu, načítání, chyba, zástupný popisek, přednačtení další scény (B1–B5)
-- [ ] Volba, výsledek, odpočet, žolíky 50:50 a +10 s, nápovědy (B6, B7, B12)
-- [ ] Pauza bez přeskočení za video, zvětšení scény (B8, B10)
-- [ ] Čas, kontrolní body, viditelnost, vlastnictví mezi kartami, obnova, hotový průchod po obnovení (A6–A11, B11)
-- [ ] Konec průchodu a měření (A5, B13; do balíčku 4 vede konec na úvod)
-- [ ] E2E testy balíčku včetně kontrol `check-layout` a testu, že otázka neukazuje `Stop.place`
+- [x] Začátek městského průchodu, „Hrát“ a „Pokračovat“ na úvodu, lazy-load trasy (A16)
+- [x] Herní obrazovka podle prototypu, načítání, chyba, zástupný popisek, přednačtení další scény (B1–B5)
+- [x] Volba, výsledek, odpočet, žolíky 50:50 a +10 s, nápovědy (B6, B7, B12)
+- [x] Pauza bez přeskočení za video, zvětšení scény (B8, B10)
+- [x] Čas, kontrolní body, viditelnost, vlastnictví mezi kartami, obnova, hotový průchod po obnovení (A6–A11, B11)
+- [x] Konec průchodu a měření (A5, B13; do balíčku 4 vede konec na úvod)
+- [x] E2E testy balíčku včetně kontrol `check-layout` a testu, že otázka neukazuje `Stop.place`
 
 ## Balíček 3: Přeskočení za video (`skip`), po balíčku 2
 
