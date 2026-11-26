@@ -34,6 +34,15 @@ Požadavky a scénáře jsou ve [spec.md](spec.md). Vývojář balíčku zaškrt
 - [x] Paměťová náhrada a jednorázové upozornění (S8)
 - [x] Testy scénářů ze spec.md §5 nad paměťovým `KeyValueStore` v testu, Rozhraní doplněné
 
+## Opravy nálezů z review a QA oblasti
+
+- [x] Test nezávislosti pořadí voleb na popiscích a jazyce pro městský i denní průchod (R18, K2)
+- [x] Zachování uloženého průchodu při selhaném zápisu odměn (S7, S8)
+- [x] Validace fáze `summary` jen na poslední zastávce a shody `stopId` výsledků se zastávkami (S2)
+- [x] Prázdná ID odmítnutá v logice, shodně s validací úložiště (Obecné zásady, R13, Rozhraní)
+- [x] Test přeskočení u 3. otázky denní výzvy pro začátky 1, 2 a 6 (R12)
+- [x] Podmínka volajícího pro `elapsedMs` (R3, Rozhraní)
+
 ## Předání oblasti
 
 - [ ] Všechny balíčky sloučené do `area/logic`, lint, typecheck, test, build zelené

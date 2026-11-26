@@ -79,6 +79,9 @@ export function createRun(options: {
   stops: RunStop[]
   daily?: DailyRunInfo
 }): RunState {
+  const ids = [options.runId, options.cityId, ...options.stops.flatMap((stop) => [stop.stopId, stop.correctChoiceId, ...stop.choiceIds])]
+  // The save rejects empty IDs, so a run with one could not be restored.
+  if (ids.includes('')) throw new Error('Run, city, stop and choice IDs must not be empty.')
   return {
     runId: options.runId,
     mode: options.mode,
@@ -173,6 +176,8 @@ export function reduceRun(run: RunState, action: RunAction): RunState {
       return run.paused ? { ...run, paused: false, skipAttemptId: null } : run
 
     case 'requestSkip':
+      // An empty ID would not survive the save, and `null` already means no attempt.
+      if (action.attemptId === '') throw new Error('An ad attempt ID must not be empty.')
       return canUseSkip(run) && run.skipAttemptId === null ? { ...run, skipAttemptId: action.attemptId } : run
 
     case 'next': {

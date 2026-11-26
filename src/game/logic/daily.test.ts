@@ -18,7 +18,7 @@ import {
   type DailyResults,
 } from './daily.ts'
 import { emptyProgress, unlockedCityIds, type Progress } from './progress.ts'
-import { currentStop, reduceRun, restoreRun, startCityRun, type RunState } from './run.ts'
+import { canUseSkip, currentStop, reduceRun, restoreRun, startCityRun, type RunState } from './run.ts'
 
 const text = { en: 'x', cs: 'x' }
 
@@ -291,6 +291,60 @@ test('daily choice orders are the FNV-1a permutation of date, city and stop', ()
       ['PAR03-b', 'PAR03-d', 'PAR03-a', 'PAR03-c'],
     ],
   )
+})
+
+/** The same route with its own English and Czech texts, so only the labels and the language differ. */
+function relabeled(source: Route, tag: string): Route {
+  const label = (field: string) => ({ en: `${tag} english ${field}`, cs: `${tag} česky ${field}` })
+  return {
+    ...source,
+    name: label(source.id),
+    stops: source.stops.map((routeStop) => ({
+      ...routeStop,
+      place: label(`${routeStop.id} place`),
+      sceneAlt: label(`${routeStop.id} scene`),
+      question: label(`${routeStop.id} question`),
+      feedback: label(`${routeStop.id} feedback`),
+      choices: [
+        { ...routeStop.choices[0], label: label(routeStop.choices[0].id) },
+        { ...routeStop.choices[1], label: label(routeStop.choices[1].id) },
+        { ...routeStop.choices[2], label: label(routeStop.choices[2].id) },
+        { ...routeStop.choices[3], label: label(routeStop.choices[3].id) },
+      ],
+    })),
+  }
+}
+
+test('the daily choice order does not depend on labels or language and the run holds no text or locale', () => {
+  const plan = planFor(twentyCities, firstEffectiveUtcDate)
+  const first = dailyRun(plan, relabeled(paris, 'Alpha'))
+  const second = dailyRun(plan, relabeled(paris, 'Omega'))
+  assert.deepEqual(
+    second.stops.map((runStop) => runStop.choiceIds),
+    first.stops.map((runStop) => runStop.choiceIds),
+  )
+  assert.deepEqual(first.stops.map((runStop) => runStop.choiceIds), dailyRun(plan).stops.map((runStop) => runStop.choiceIds))
+  for (const run of [first, second]) {
+    const json = JSON.stringify(run)
+    assert.doesNotMatch(json, /Alpha|Omega|english|česky/)
+    assert.doesNotMatch(json, /"(en|cs|locale)"/)
+  }
+})
+
+test('a daily run starting at stop 1, 2 or 6 allows skip for a video only on its third question', () => {
+  for (const firstStopNumber of [1, 2, 6]) {
+    let run = dailyRun({ utcDate: '2027-01-05', catalogEffectiveUtcDate: firstEffectiveUtcDate, cityId: 'paris', firstStopNumber })
+    const skipAvailability: boolean[] = []
+    for (let stopIndex = 0; stopIndex < 3; stopIndex++) {
+      run = reduceRun(run, { type: 'sceneReady', round: run.round })
+      const paused = reduceRun(run, { type: 'pause', round: run.round, elapsedMs: 0 })
+      skipAvailability.push(canUseSkip(paused))
+      run = reduceRun(run, { type: 'choose', round: run.round, choiceId: currentStop(run).correctChoiceId, elapsedMs: 1_000 })
+      run = reduceRun(run, { type: 'next', round: run.round })
+    }
+    assert.deepEqual(skipAvailability, [false, false, true], `first stop ${firstStopNumber}`)
+    assert.equal(run.phase, 'summary')
+  }
 })
 
 test('the same date and catalog give the same city, stops and choice order twice', () => {

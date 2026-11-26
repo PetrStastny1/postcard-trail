@@ -156,6 +156,43 @@ test('two different random sources give a different choice order on at least one
   }
 })
 
+/** The same route with its own English and Czech texts, so only the labels and the language differ. */
+function relabeled(source: Route, tag: string): Route {
+  const label = (field: string) => ({ en: `${tag} english ${field}`, cs: `${tag} česky ${field}` })
+  return {
+    ...source,
+    name: label(source.id),
+    stops: source.stops.map((routeStop) => ({
+      ...routeStop,
+      place: label(`${routeStop.id} place`),
+      sceneAlt: label(`${routeStop.id} scene`),
+      question: label(`${routeStop.id} question`),
+      feedback: label(`${routeStop.id} feedback`),
+      choices: [
+        { ...routeStop.choices[0], label: label(routeStop.choices[0].id) },
+        { ...routeStop.choices[1], label: label(routeStop.choices[1].id) },
+        { ...routeStop.choices[2], label: label(routeStop.choices[2].id) },
+        { ...routeStop.choices[3], label: label(routeStop.choices[3].id) },
+      ],
+    })),
+  }
+}
+
+test('the choice order does not depend on labels or language and the run holds no text or locale', () => {
+  const first = startCityRun({ route: relabeled(paris, 'Alpha'), runId: 'run-1', untimed: false, random: seeded(7) })
+  const second = startCityRun({ route: relabeled(paris, 'Omega'), runId: 'run-1', untimed: false, random: seeded(7) })
+  assert.deepEqual(
+    second.stops.map((runStop) => runStop.choiceIds),
+    first.stops.map((runStop) => runStop.choiceIds),
+  )
+  assert.ok(first.stops.some((runStop, index) => runStop.choiceIds.join() !== paris.stops[index].choices.map((choice) => choice.id).join()))
+  for (const run of [first, second]) {
+    const json = JSON.stringify(run)
+    assert.doesNotMatch(json, /Alpha|Omega|english|česky/)
+    assert.doesNotMatch(json, /"(en|cs|locale)"/)
+  }
+})
+
 const budapest = route('budapest', 'B')
 budapest.stops[8] = {
   ...stop('B09'),
@@ -537,6 +574,20 @@ test('a new run of the same route has a new ID, new permutations and nothing fro
   assert.equal(restarted.streak, 0)
   assert.equal(restarted.bestStreak, 0)
   assert.equal(restarted.phase, 'loading')
+})
+
+test('a run with an empty run, city, stop or choice ID and a skip request with an empty attempt ID are rejected', () => {
+  const stops = cityRun().stops
+  const base = { runId: 'run-1', mode: 'city' as const, cityId: 'paris', untimed: false, stops }
+  assert.throws(() => createRun({ ...base, runId: '' }), Error)
+  assert.throws(() => createRun({ ...base, cityId: '' }), Error)
+  assert.throws(() => createRun({ ...base, stops: [{ ...stops[0], stopId: '' }, ...stops.slice(1)] }), Error)
+  assert.throws(() => createRun({ ...base, stops: [...stops.slice(0, 9), { ...stops[9], choiceIds: ['', 'b', 'c', 'd'] }] }), Error)
+  assert.throws(() => startCityRun({ route: paris, runId: '', untimed: false, random: () => 0 }), Error)
+
+  const paused = pausedQuestion(atStopIndex(cityRun(), 2))
+  assert.throws(() => reduceRun(paused, { type: 'requestSkip', round: paused.round, attemptId: '' }), Error)
+  assert.equal(reduceRun(paused, { type: 'requestSkip', round: paused.round, attemptId: 'ad-1' }).skipAttemptId, 'ad-1')
 })
 
 test('the reducer does not change the run it receives', () => {

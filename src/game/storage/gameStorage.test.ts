@@ -308,6 +308,25 @@ test('an active run without the shape of RunState is not used and the rewards st
   assert.equal(missingOwner.loadActiveRun(), null)
 })
 
+test('a run the reducer builds from the shortest IDs it accepts, with a pending ad attempt, is stored and loaded back', () => {
+  for (const run of [cityRun('paris', 'r'), dailyRun('2026-12-02', 'r')]) {
+    let state = run
+    for (let index = 0; index < 2; index++) {
+      state = reduceRun(state, { type: 'sceneReady', round: state.round })
+      state = reduceRun(state, { type: 'choose', round: state.round, choiceId: currentStop(state).correctChoiceId, elapsedMs: 1_000 })
+      state = reduceRun(state, { type: 'next', round: state.round })
+    }
+    state = reduceRun(state, { type: 'sceneReady', round: state.round })
+    state = reduceRun(state, { type: 'pause', round: state.round, elapsedMs: 0 })
+    state = reduceRun(state, { type: 'requestSkip', round: state.round, attemptId: 'a' })
+    assert.equal(state.skipAttemptId, 'a')
+
+    const store = memoryStore()
+    new GameStorage(store, 't').startRun(state)
+    assert.deepEqual(new GameStorage(store, 't').loadActiveRun(), state)
+  }
+})
+
 test('an active run whose fields contradict each other is not used', () => {
   const city = cityRun('london', 'run-1')
   const daily = dailyRun('2026-12-02', 'run-2')
@@ -334,6 +353,10 @@ test('an active run whose fields contradict each other is not used', () => {
     { ...answered, untimed: true, hiddenChoiceIds: [...answered.stops[1].choiceIds] },
     { ...answered, correct: 2 },
     { ...finishedDaily, correct: 4 },
+    { ...feedback, phase: 'summary' },
+    { ...finish(daily, 3), stopIndex: 1, results: finishedDaily.results.slice(0, 2), correct: 2 },
+    { ...answered, results: [{ ...answered.results[0], stopId: 'LON02' }] },
+    { ...finishedDaily, results: [...finishedDaily.results].reverse() },
   ]
   for (const brokenRun of broken) {
     const storage = new GameStorage(memoryStore({ 'active-run': v1({ ownerTabId: 'tab-a', run: brokenRun }) }), 'tab-a')
@@ -701,6 +724,86 @@ test('a store whose writes fail keeps the written data readable in the session a
   assert.equal(store.values.get('progress'), v1(progress))
   assert.equal(storage.takeUnavailableNotice(), true)
   assert.equal(storage.takeUnavailableNotice(), false)
+})
+
+/** Writes to `failingKey` throw until `healed`, as after a full quota is freed by a reload. */
+function storeFailingWritesTo(failingKey: string): TestStore & { healed: boolean } {
+  const store = memoryStore()
+  const partial = {
+    values: store.values,
+    healed: false,
+    read: store.read,
+    write: (key: string, value: string) => {
+      if (key === failingKey && !partial.healed) throw new Error('QuotaExceededError')
+      store.write(key, value)
+    },
+  }
+  return partial
+}
+
+function storedRun(store: TestStore): unknown {
+  return (JSON.parse(store.values.get('active-run') ?? '') as { data: { run: unknown } | null }).data?.run
+}
+
+test('a city run whose progress write fails stays stored and completes once after a reload', () => {
+  const store = storeFailingWritesTo('progress')
+  const storage = new GameStorage(store, 'tab-a')
+  const run = finish(cityRun('paris', 'run-1'), 9)
+  storage.startRun(run)
+
+  const first = storage.completeCityRun(run, catalog)
+  assert.equal(first.status === 'completed' && first.summary.postcardEarned, true)
+  assert.equal(store.values.has('progress'), false)
+  assert.deepEqual(storedRun(store), run)
+  assert.equal(storage.loadActiveRun(), null)
+  assert.deepEqual(storage.completeCityRun(run, catalog), { status: 'notOwner' })
+  assert.deepEqual(storage.loadProgress().postcardCityIds, ['paris'])
+  assert.equal(storage.takeUnavailableNotice(), true)
+
+  store.healed = true
+  const reloaded = new GameStorage(store, 'tab-reloaded')
+  const restored = reloaded.resumeRun()
+  assert.ok(restored)
+  assert.equal(restored.phase, 'summary')
+  const again = reloaded.completeCityRun(restored, catalog)
+  assert.deepEqual(again, {
+    status: 'completed',
+    summary: {
+      progress: { completedCityIds: ['paris'], bestStars: { paris: 3 }, postcardCityIds: ['paris'] },
+      stars: 3,
+      postcardEarned: true,
+      newlyUnlockedCityId: 'london',
+    },
+  })
+  assert.equal(store.values.get('progress'), v1(again.status === 'completed' ? again.summary.progress : null))
+  assert.equal(storedRun(store), undefined)
+  assert.deepEqual(reloaded.completeCityRun(restored, catalog), { status: 'notOwner' })
+  assert.equal(reloaded.takeUnavailableNotice(), false)
+})
+
+test('a daily run whose result write fails stays stored and records one result after a reload', () => {
+  const store = storeFailingWritesTo('daily-results')
+  const storage = new GameStorage(store, 'tab-a')
+  const run = finish(dailyRun('2026-12-02', 'run-1'), 2)
+  storage.startRun(run)
+
+  assert.equal(storage.completeDailyRun(run).status, 'completed')
+  assert.equal(store.values.has('daily-results'), false)
+  assert.deepEqual(storedRun(store), run)
+  assert.equal(storage.loadActiveRun(), null)
+  assert.deepEqual(storage.loadDailyResults(), { '2026-12-02': { cityId: 'rome', correct: 2 } })
+
+  store.healed = true
+  const reloaded = new GameStorage(store, 'tab-reloaded')
+  const restored = reloaded.resumeRun()
+  assert.ok(restored)
+  assert.deepEqual(reloaded.completeDailyRun(restored), {
+    status: 'completed',
+    dailyResults: { '2026-12-02': { cityId: 'rome', correct: 2 } },
+  })
+  assert.equal(store.values.get('daily-results'), v1({ '2026-12-02': { cityId: 'rome', correct: 2 } }))
+  assert.equal(storedRun(store), undefined)
+  assert.deepEqual(reloaded.completeDailyRun(restored), { status: 'notOwner' })
 })
 
 test('a store whose reads fail still keeps session data readable', () => {
