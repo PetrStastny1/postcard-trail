@@ -4,6 +4,9 @@ import { emptyDailyResults, mergeDailyResults, utcDateOf, type DailyResults } fr
 import { emptyProgress, mergeProgress, type Progress, type Stars } from '../logic/progress.ts'
 import type { DailyRunInfo, RunPhase, RunState, RunStop, StopOutcome, StopResult } from '../logic/run.ts'
 
+const cityStopCount = 10
+const dailyStopCount = 3
+
 /** Version 1 is the first schema, so there is nothing older to migrate. */
 export const schemaVersion = 1
 
@@ -80,7 +83,7 @@ export function parseSettings(data: unknown): Settings {
     vibrationEnabled: typeof vibrationEnabled === 'boolean' ? vibrationEnabled : defaultSettings.vibrationEnabled,
     reducedMotion: typeof reducedMotion === 'boolean' ? reducedMotion : defaultSettings.reducedMotion,
     untimed: typeof untimed === 'boolean' ? untimed : defaultSettings.untimed,
-    shownHintIds: isStringArray(shownHintIds) ? [...new Set(shownHintIds)] : defaultSettings.shownHintIds,
+    shownHintIds: isStringArray(shownHintIds) ? [...new Set(shownHintIds)] : [...defaultSettings.shownHintIds],
   }
 }
 
@@ -124,35 +127,34 @@ export function ownsActiveRun(storedActiveRun: string | null, tabId: string): bo
   return section.status === 'usable' && parseActiveRun(section.data)?.ownerTabId === tabId
 }
 
+/** Checks the shape of `RunState` and the consistency between its fields that `reduceRun` keeps. */
 function isRunState(value: unknown): value is RunState {
   if (!isRecord(value)) return false
-  const { stops, stopIndex, results } = value
+  const { stops, stopIndex, phase, results, hiddenChoiceIds } = value
+  if (!Array.isArray(stops) || !stops.every(isRunStop) || !isCount(stopIndex) || stopIndex >= stops.length) return false
+  if (!isRunPhase(phase) || !Array.isArray(results) || !results.every(isStopResult)) return false
+  const stop = stops[stopIndex]
+  const answeredStops = phase === 'loading' || phase === 'question' ? stopIndex : stopIndex + 1
   return (
     isNonEmptyString(value.runId) &&
-    (value.mode === 'city' ? value.daily === null : value.mode === 'daily' && isDailyRunInfo(value.daily)) &&
+    (value.mode === 'city'
+      ? stops.length === cityStopCount && value.daily === null
+      : value.mode === 'daily' && stops.length === dailyStopCount && isDailyRunInfo(value.daily)) &&
     isNonEmptyString(value.cityId) &&
     typeof value.untimed === 'boolean' &&
-    Array.isArray(stops) &&
-    stops.length > 0 &&
-    stops.every(isRunStop) &&
-    isCount(stopIndex) &&
-    stopIndex < stops.length &&
     isCount(value.round) &&
     value.round >= 1 &&
-    isRunPhase(value.phase) &&
     typeof value.remainingMs === 'number' &&
     value.remainingMs >= 0 &&
     typeof value.paused === 'boolean' &&
-    isStringArray(value.hiddenChoiceIds) &&
+    isStringArray(hiddenChoiceIds) &&
+    hiddenChoiceIds.every((choiceId) => stop.choiceIds.includes(choiceId) && choiceId !== stop.correctChoiceId) &&
     Array.isArray(value.usedLifelines) &&
     value.usedLifelines.every(isLifelineKind) &&
     new Set(value.usedLifelines).size === value.usedLifelines.length &&
     (value.skipAttemptId === null || isNonEmptyString(value.skipAttemptId)) &&
-    Array.isArray(results) &&
-    results.length <= stops.length &&
-    results.every(isStopResult) &&
-    isCount(value.correct) &&
-    value.correct <= results.length &&
+    results.length === answeredStops &&
+    value.correct === results.filter((result) => result.outcome === 'correct').length &&
     isCount(value.streak) &&
     isCount(value.bestStreak)
   )

@@ -159,6 +159,16 @@ test('an empty store gives the default settings, empty rewards and no active run
   assert.equal(storage.takeUnavailableNotice(), false)
 })
 
+test('loaded default settings are a fresh value that changing does not leak into later loads', () => {
+  const storage = new GameStorage(memoryStore(), 'tab-a')
+  storage.loadSettings().shownHintIds.push('pause')
+  assert.deepEqual(storage.loadSettings().shownHintIds, [])
+  assert.deepEqual(defaultSettings.shownHintIds, [])
+  const invalidHints = new GameStorage(memoryStore({ settings: v1({ shownHintIds: 'pause' }) }), 'tab-a')
+  invalidHints.loadSettings().shownHintIds.push('pause')
+  assert.deepEqual(invalidHints.loadSettings().shownHintIds, [])
+})
+
 test('broken progress JSON keeps valid settings and falls back to empty progress', () => {
   const settings: Settings = { ...defaultSettings, locale: 'cs', volume: 0.2, shownHintIds: ['pause'] }
   const storage = new GameStorage(memoryStore({ settings: v1(settings), progress: '{"version":1,"data":' }), 'tab-a')
@@ -296,6 +306,44 @@ test('an active run without the shape of RunState is not used and the rewards st
   }
   const missingOwner = new GameStorage(memoryStore({ 'active-run': v1({ run }) }), 'tab-a')
   assert.equal(missingOwner.loadActiveRun(), null)
+})
+
+test('an active run whose fields contradict each other is not used', () => {
+  const city = cityRun('london', 'run-1')
+  const daily = dailyRun('2026-12-02', 'run-2')
+  const answered = midRun(city)
+  const feedback = reduceRun(reduceRun(city, { type: 'sceneReady', round: 1 }), {
+    type: 'choose',
+    round: 1,
+    choiceId: city.stops[0].correctChoiceId,
+    elapsedMs: 1_000,
+  })
+  const finishedDaily = finish(daily, 3)
+  const broken = [
+    { ...daily, stops: stops('ROM', 4) },
+    { ...finish({ ...daily, stops: stops('ROM', 5) }, 5) },
+    { ...daily, daily: null },
+    { ...city, stops: stops('LON', 3) },
+    { ...city, daily: daily.daily },
+    { ...answered, results: [] },
+    { ...answered, results: [...answered.results, ...answered.results] },
+    { ...feedback, results: [] },
+    { ...finishedDaily, results: finishedDaily.results.slice(1) },
+    { ...answered, hiddenChoiceIds: ['LON01-a'] },
+    { ...answered, hiddenChoiceIds: [answered.stops[1].correctChoiceId] },
+    { ...answered, untimed: true, hiddenChoiceIds: [...answered.stops[1].choiceIds] },
+    { ...answered, correct: 2 },
+    { ...finishedDaily, correct: 4 },
+  ]
+  for (const brokenRun of broken) {
+    const storage = new GameStorage(memoryStore({ 'active-run': v1({ ownerTabId: 'tab-a', run: brokenRun }) }), 'tab-a')
+    assert.equal(storage.loadActiveRun(), null, JSON.stringify(brokenRun).slice(0, 120))
+    assert.equal(storage.isActiveRunOwner(), false)
+  }
+  for (const consistentRun of [city, daily, answered, feedback, finishedDaily, finish(city, 0)]) {
+    const storage = new GameStorage(memoryStore({ 'active-run': v1({ ownerTabId: 'tab-a', run: consistentRun }) }), 'tab-a')
+    assert.deepEqual(storage.loadActiveRun(), consistentRun)
+  }
 })
 
 test('a section from a newer schema is neither used nor overwritten and is kept in memory', () => {
@@ -538,6 +586,22 @@ test('the tab that resumes the run owns it and the previous tab can no longer wr
   assert.equal(store.read(storageKeys.progress), null)
 
   assert.equal(tabB.saveRunCheckpoint(midRun(resumedByB)), 'written')
+})
+
+test('completing a daily run from a tab that no longer owns it writes no daily result', () => {
+  const earlierResults = v1({ '2026-12-01': { cityId: 'paris', correct: 2 } })
+  const store = memoryStore({ 'daily-results': earlierResults })
+  const tabA = new GameStorage(store, 'tab-a')
+  const tabB = new GameStorage(store, 'tab-b')
+  const run = dailyRun('2026-12-02', 'run-1')
+  tabA.startRun(run)
+  assert.ok(tabB.resumeRun())
+  const storedByB = store.read(storageKeys.activeRun)
+
+  assert.deepEqual(tabA.completeDailyRun(finish(run, 3)), { status: 'notOwner' })
+  assert.equal(store.read(storageKeys.dailyResults), earlierResults)
+  assert.equal(store.read(storageKeys.activeRun), storedByB)
+  assert.deepEqual(tabA.loadDailyResults(), { '2026-12-01': { cityId: 'paris', correct: 2 } })
 })
 
 test('completing a run that is no longer the active one adds no rewards', () => {
