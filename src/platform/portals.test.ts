@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { createCrazyGamesAdapter, loadCrazyGamesSdk, type CrazyGamesAdError, type CrazyGamesSdk } from './crazygames.ts'
-import { createPokiAdapter, type PokiSdk } from './poki.ts'
+import { createPokiAdapter, loadPokiSdk, type PokiSdk } from './poki.ts'
 import type { AnalyticsEvent, PlatformAdapter, RewardedAdOutcome } from './types.ts'
 
 class MemoryStorage implements Storage {
@@ -338,6 +338,51 @@ test('poki: after a failed PokiSDK.init() signals still reach the SDK but ads ar
 
   assert.equal(adapter.rewardedAdsOffered(), false)
   assert.deepEqual(poki.calls, ['gameLoadingFinished', 'gameplayStart', 'measure city prague start', 'gameplayStop'])
+  assert.deepEqual(callbacks, [{ attemptId: 'a1', call: 'result', outcome: 'unavailable' }])
+})
+
+test('poki: a request after a failed PokiSDK.init() stops running gameplay and ends unavailable', async () => {
+  const poki = fakePoki('rejects')
+  const adapter = createPokiAdapter({ development: true, openStorage: () => new MemoryStorage(), loadSdk: () => Promise.resolve(poki.sdk) })
+  const callbacks: Callback[] = []
+
+  await adapter.init()
+  adapter.gameplayStart()
+  requestAd(adapter, 'a1', callbacks)
+  assert.deepEqual(callbacks, [])
+  await settle()
+  adapter.gameplayStart()
+
+  assert.deepEqual(poki.calls, ['gameplayStart', 'gameplayStop', 'gameplayStart'])
+  assert.deepEqual(callbacks, [{ attemptId: 'a1', call: 'result', outcome: 'unavailable' }])
+})
+
+test('poki: a script that does not define PokiSDK counts as an SDK that did not load', async (t) => {
+  // Stands in for the browser: the injected script "loads" and leaves no PokiSDK global.
+  const fakeDocument = {
+    createElement: () => ({
+      addEventListener(type: string, listener: () => void) {
+        if (type === 'load') setTimeout(listener, 0)
+      },
+    }),
+    head: { append() {} },
+  }
+  Object.defineProperty(globalThis, 'document', { value: fakeDocument, configurable: true })
+  Object.defineProperty(globalThis, 'window', { value: {}, configurable: true })
+  t.after(() => {
+    Reflect.deleteProperty(globalThis, 'document')
+    Reflect.deleteProperty(globalThis, 'window')
+  })
+
+  await assert.rejects(loadPokiSdk(), /did not define PokiSDK/)
+
+  const adapter = createPokiAdapter({ development: true, openStorage: () => new MemoryStorage(), loadSdk: loadPokiSdk })
+  await adapter.init()
+  const callbacks: Callback[] = []
+  requestAd(adapter, 'a1', callbacks)
+  await settle()
+
+  assert.equal(adapter.rewardedAdsOffered(), false)
   assert.deepEqual(callbacks, [{ attemptId: 'a1', call: 'result', outcome: 'unavailable' }])
 })
 
@@ -683,6 +728,27 @@ test('crazygames: after adsDisabled ads stay off for the session without calling
 
   assert.equal(adapter.rewardedAdsOffered(), false)
   assert.deepEqual(crazyGames.calls, ['requestAd rewarded'])
+  assert.deepEqual(callbacks, [
+    { attemptId: 'a1', call: 'result', outcome: 'unavailable' },
+    { attemptId: 'a2', call: 'result', outcome: 'unavailable' },
+  ])
+})
+
+test('crazygames: a request after adsDisabled stops running gameplay and ends unavailable', async () => {
+  const crazyGames = fakeCrazyGames()
+  const adapter = createCrazyGamesAdapter({ development: true, openStorage: () => new MemoryStorage(), loadSdk: () => Promise.resolve(crazyGames.sdk) })
+  await adapter.init()
+  const callbacks: Callback[] = []
+
+  requestAd(adapter, 'a1', callbacks)
+  crazyGames.ads[0]?.adError(adError('adsDisabled'))
+  await settle()
+  adapter.gameplayStart()
+  requestAd(adapter, 'a2', callbacks)
+  await settle()
+  adapter.gameplayStart()
+
+  assert.deepEqual(crazyGames.calls, ['requestAd rewarded', 'gameplayStart', 'gameplayStop', 'gameplayStart'])
   assert.deepEqual(callbacks, [
     { attemptId: 'a1', call: 'result', outcome: 'unavailable' },
     { attemptId: 'a2', call: 'result', outcome: 'unavailable' },

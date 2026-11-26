@@ -114,7 +114,7 @@ Platí pro adaptéry Poki a CrazyGames.
 
 - **S6.1** Poki: `rewardedAdsOffered()` je `true` po vyřešeném `init()` adaptéru, ve kterém se `PokiSDK.init()` vyřešilo do 5 000 ms (S5.8), jinak `false`. `requestRewardedAd` zavolá `PokiSDK.rewardedBreak(onStart)`. Výsledek `true` → `completed`; `false` po spuštění spotu → `cancelled`; `false` bez spuštění nebo zamítnutý promise → `unavailable`. Když `rewardedBreak` synchronně vyhodí výjimku, požadavek skončí `unavailable`.
 - **S6.2** CrazyGames: `rewardedAdsOffered()` je `true` po vyřešeném `init()` adaptéru, ve kterém `SDK.init()` uspělo do 5 000 ms (S5.8) v prostředí `crazygames` nebo `local`, jinak `false`. Po prvním `adError` s kódem `adsDisabled` je `false` až do konce relace. `requestRewardedAd` zavolá `SDK.ad.requestAd('rewarded', { adStarted, adFinished, adError })`: `adStarted` → `onStart`, `adFinished` → `completed`, `adError` po `adStarted` → `cancelled`, `adError` bez `adStarted` → `unavailable`. `adError` nikdy nevede na `completed`. Když `requestAd` synchronně vyhodí výjimku, požadavek skončí `unavailable`.
-- **S6.3** Když `rewardedAdsOffered()` je `false`, požadavek skončí `unavailable` bez volání SDK a bez `onStart`, asynchronně.
+- **S6.3** Když `rewardedAdsOffered()` je `false`, požadavek skončí `unavailable` bez volání reklamy v SDK a bez `onStart`, asynchronně. Běžící hraní se i tak zastaví podle S5.2.
 - **S6.4** Adaptér předá každý callback, který SDK zavolá, i opakovaně nebo pozdě, vždy s `attemptId` požadavku. Odfiltrování řeší logic.
 - **S6.5** Když přijde nový požadavek, zatímco předchozí na portálu ještě nemá výsledek, nový skončí `unavailable` bez volání SDK.
 - **S6.6** App čte `rewardedAdsOffered()` při každém vykreslení pauzy, ne jen při startu.

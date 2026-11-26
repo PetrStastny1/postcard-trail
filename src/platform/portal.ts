@@ -75,12 +75,15 @@ export function createPortalSession<Sdk>() {
     ) {
       const report = (outcome: RewardedAdOutcome) => onResult({ attemptId, outcome })
       const idle = idleConnection()
+      // S5.2 applies to every request, also one that ends unavailable; during a spot gameplay is already stopped.
+      if (idle && gameplayRunning) {
+        idle.gameplay.gameplayStop()
+        gameplayRunning = false
+      }
       if (!offered || !idle) {
         setTimeout(() => report('unavailable'), 0)
         return
       }
-      if (gameplayRunning) idle.gameplay.gameplayStop()
-      gameplayRunning = false
       spotPlaying = true
       let settled = false
       playSpot(idle.sdk, {
