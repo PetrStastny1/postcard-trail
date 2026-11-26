@@ -1,6 +1,12 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { createCrazyGamesAdapter, loadCrazyGamesSdk, type CrazyGamesAdError, type CrazyGamesSdk } from './crazygames.ts'
+import {
+  createCrazyGamesAdapter,
+  loadCrazyGamesSdk,
+  type CrazyGamesAdError,
+  type CrazyGamesSdk,
+  type CrazyGamesSettings,
+} from './crazygames.ts'
 import { createPokiAdapter, loadPokiSdk, type PokiSdk } from './poki.ts'
 import type { AnalyticsEvent, PlatformAdapter, RewardedAdOutcome } from './types.ts'
 
@@ -72,13 +78,22 @@ function fakePoki(init: InitBehaviour = 'resolves') {
 type CrazyGamesEnvironment = CrazyGamesSdk['environment']
 type RequestAdCallbacks = Parameters<CrazyGamesSdk['ad']['requestAd']>[1]
 
-/** Stands in for the CrazyGames SDK v3 script; records each call. In `disabled` calls throw like the real SDK. */
-function fakeCrazyGames(environment: CrazyGamesEnvironment = 'crazygames', init: InitBehaviour = 'resolves') {
+/**
+ * Stands in for the CrazyGames SDK v3 script; records each call. In `disabled` calls throw like the real SDK.
+ * Settings listeners are kept apart from `calls`; `changeSettings` notifies them like the SDK, on every change.
+ */
+function fakeCrazyGames(environment: CrazyGamesEnvironment = 'crazygames', init: InitBehaviour = 'resolves', muteAudio = false) {
   const calls: string[] = []
   const ads: RequestAdCallbacks[] = []
+  const settingsListeners: ((settings: CrazyGamesSettings) => void)[] = []
+  let settings: CrazyGamesSettings = { muteAudio, disableChat: false }
   const call = (name: string) => {
     if (environment === 'disabled') throw new Error(`CrazyGames SDK is disabled: ${name}`)
     calls.push(name)
+  }
+  const changeSettings = (change: Partial<CrazyGamesSettings>) => {
+    settings = { ...settings, ...change }
+    for (const listener of settingsListeners) listener(settings)
   }
   const sdk: CrazyGamesSdk = {
     init: () => (init === 'resolves' ? Promise.resolve() : Promise.reject(new Error('init failed'))),
@@ -88,6 +103,14 @@ function fakeCrazyGames(environment: CrazyGamesEnvironment = 'crazygames', init:
       loadingStop: () => call('loadingStop'),
       gameplayStart: () => call('gameplayStart'),
       gameplayStop: () => call('gameplayStop'),
+      get settings() {
+        if (environment === 'disabled') throw new Error('CrazyGames SDK is disabled: settings')
+        return settings
+      },
+      addSettingsChangeListener(listener) {
+        if (environment === 'disabled') throw new Error('CrazyGames SDK is disabled: addSettingsChangeListener')
+        settingsListeners.push(listener)
+      },
     },
     ad: {
       requestAd(type: string, callbacks: RequestAdCallbacks) {
@@ -96,7 +119,7 @@ function fakeCrazyGames(environment: CrazyGamesEnvironment = 'crazygames', init:
       },
     },
   }
-  return { sdk, calls, ads }
+  return { sdk, calls, ads, settingsListeners, changeSettings }
 }
 
 const adError = (code: string): CrazyGamesAdError => ({ code, message: code })
@@ -952,5 +975,227 @@ for (const portal of slowPortals) {
     assert.equal(slow.calls[0], 'init')
     assert.ok(slow.calls.includes('gameplayStart'))
     assert.equal(slow.calls.at(-1), slow.rewardedCall)
+  })
+}
+
+function crazyGamesAdapter(sdk: CrazyGamesSdk): PlatformAdapter {
+  return createCrazyGamesAdapter({ development: true, openStorage: () => new MemoryStorage(), loadSdk: () => Promise.resolve(sdk) })
+}
+
+function recordPortalMute(adapter: PlatformAdapter): boolean[] {
+  const changes: boolean[] = []
+  adapter.onPortalAudioMutedChange((muted) => changes.push(muted))
+  return changes
+}
+
+for (const environment of ['crazygames', 'local'] as const) {
+  for (const muteAudio of [true, false]) {
+    test(`S10.1 crazygames: in ${environment} with muteAudio ${muteAudio} portalAudioMuted() follows the setting once init() resolves`, async () => {
+      const crazyGames = fakeCrazyGames(environment, 'resolves', muteAudio)
+      const sdkInit = deferred<unknown>()
+      crazyGames.sdk.init = () => sdkInit.promise
+      const adapter = crazyGamesAdapter(crazyGames.sdk)
+      const changes = recordPortalMute(adapter)
+
+      assert.equal(adapter.portalAudioMuted(), false)
+      const initialised = adapter.init()
+      await settle()
+      assert.equal(adapter.portalAudioMuted(), false, 'not valid before init() resolves')
+      sdkInit.resolve(undefined)
+      await initialised
+
+      assert.equal(adapter.portalAudioMuted(), muteAudio)
+      assert.deepEqual(changes, [], 'the value read at start is not a change')
+      assert.equal(crazyGames.settingsListeners.length, 1)
+    })
+  }
+}
+
+test('S10.1 crazygames: an SDK that calls the settings listener on registration does not report the start value as a change', async () => {
+  const crazyGames = fakeCrazyGames('crazygames', 'resolves', true)
+  crazyGames.sdk.game.addSettingsChangeListener = (listener) => {
+    crazyGames.settingsListeners.push(listener)
+    listener(crazyGames.sdk.game.settings)
+  }
+  const adapter = crazyGamesAdapter(crazyGames.sdk)
+  const changes = recordPortalMute(adapter)
+
+  await adapter.init()
+
+  assert.equal(adapter.portalAudioMuted(), true)
+  assert.deepEqual(changes, [])
+  crazyGames.changeSettings({ muteAudio: false })
+  assert.deepEqual(changes, [false])
+})
+
+test('S10.2 crazygames: a muteAudio change reaches every listener once in registration order, other settings changes do not', async () => {
+  const crazyGames = fakeCrazyGames()
+  const adapter = crazyGamesAdapter(crazyGames.sdk)
+  const deliveries: string[] = []
+  adapter.onPortalAudioMutedChange((muted) => deliveries.push(`before init: ${muted}`))
+  await adapter.init()
+  adapter.onPortalAudioMutedChange((muted) => deliveries.push(`after init: ${muted}`))
+
+  crazyGames.changeSettings({ muteAudio: true })
+  assert.equal(adapter.portalAudioMuted(), true)
+  crazyGames.changeSettings({ disableChat: true })
+  crazyGames.changeSettings({ muteAudio: true })
+  assert.deepEqual(deliveries, ['before init: true', 'after init: true'])
+  crazyGames.changeSettings({ muteAudio: false })
+
+  assert.equal(adapter.portalAudioMuted(), false)
+  assert.deepEqual(deliveries, ['before init: true', 'after init: true', 'before init: false', 'after init: false'])
+  assert.equal(crazyGames.settingsListeners.length, 1, 'the adapter subscribes to the SDK once')
+  assert.deepEqual(crazyGames.calls, [], 'settings changes send nothing to the SDK')
+})
+
+test('S10.2 crazygames: a muteAudio true at start is lifted with one call to false', async () => {
+  const crazyGames = fakeCrazyGames('crazygames', 'resolves', true)
+  const adapter = crazyGamesAdapter(crazyGames.sdk)
+  await adapter.init()
+  const changes = recordPortalMute(adapter)
+
+  crazyGames.changeSettings({ disableChat: true })
+  crazyGames.changeSettings({ muteAudio: false })
+
+  assert.equal(adapter.portalAudioMuted(), false)
+  assert.deepEqual(changes, [false])
+})
+
+for (const [setup, environment, init] of [
+  ['init rejects', 'crazygames', 'rejects'],
+  ['the environment is disabled', 'disabled', 'resolves'],
+] as const) {
+  test(`S10.3 crazygames: when ${setup} portalAudioMuted() stays false and nothing subscribes`, async () => {
+    const crazyGames = fakeCrazyGames(environment, init, true)
+    const adapter = crazyGamesAdapter(crazyGames.sdk)
+    const changes = recordPortalMute(adapter)
+
+    await adapter.init()
+    crazyGames.changeSettings({ muteAudio: false })
+    crazyGames.changeSettings({ muteAudio: true })
+
+    assert.equal(adapter.portalAudioMuted(), false)
+    assert.equal(crazyGames.settingsListeners.length, 0)
+    assert.deepEqual(changes, [])
+  })
+}
+
+for (const breakage of ['game.settings is missing', 'addSettingsChangeListener throws'] as const) {
+  test(`S10.3 crazygames: when ${breakage} init() resolves, portalAudioMuted() stays false and ads and signals still work`, async () => {
+    const crazyGames = fakeCrazyGames('crazygames', 'resolves', true)
+    if (breakage === 'game.settings is missing') Reflect.deleteProperty(crazyGames.sdk.game, 'settings')
+    else
+      crazyGames.sdk.game.addSettingsChangeListener = () => {
+        throw new Error('settings API unavailable')
+      }
+    const adapter = crazyGamesAdapter(crazyGames.sdk)
+    const changes = recordPortalMute(adapter)
+
+    await adapter.init()
+    crazyGames.changeSettings({ muteAudio: false })
+    crazyGames.changeSettings({ muteAudio: true })
+    adapter.loadingStarted()
+    await settle()
+
+    assert.equal(adapter.portalAudioMuted(), false)
+    assert.deepEqual(changes, [])
+    assert.equal(adapter.rewardedAdsOffered(), true)
+    assert.deepEqual(crazyGames.calls, ['loadingStart'])
+  })
+}
+
+test('S10.3 crazygames: without a loaded SDK portalAudioMuted() stays false', async () => {
+  const adapter = createCrazyGamesAdapter({
+    development: true,
+    openStorage: () => new MemoryStorage(),
+    loadSdk: () => Promise.reject(new Error('Failed to load the SDK script')),
+  })
+  const changes = recordPortalMute(adapter)
+
+  await adapter.init()
+
+  assert.equal(adapter.portalAudioMuted(), false)
+  assert.deepEqual(changes, [])
+})
+
+for (const hanging of ['script', 'SDK init'] as const) {
+  test(`S10.3 crazygames: a ${hanging} that finishes after the limit leaves portalAudioMuted() false and subscribes nothing`, async (t) => {
+    t.mock.timers.enable({ apis: ['setTimeout'] })
+    const crazyGames = fakeCrazyGames('crazygames', 'resolves', true)
+    const script = deferred<CrazyGamesSdk>()
+    const sdkInit = deferred<unknown>()
+    crazyGames.sdk.init = () => sdkInit.promise
+    const adapter = createCrazyGamesAdapter({ development: true, openStorage: () => new MemoryStorage(), loadSdk: () => script.promise })
+    const changes = recordPortalMute(adapter)
+    if (hanging === 'SDK init') script.resolve(crazyGames.sdk)
+
+    const initialised = adapter.init()
+    await flushPromises()
+    t.mock.timers.tick(5000)
+    await initialised
+    script.resolve(crazyGames.sdk)
+    sdkInit.resolve(undefined)
+    await flushPromises()
+    crazyGames.changeSettings({ muteAudio: false })
+    crazyGames.changeSettings({ muteAudio: true })
+
+    assert.equal(adapter.portalAudioMuted(), false)
+    assert.equal(crazyGames.settingsListeners.length, 0)
+    assert.deepEqual(changes, [])
+  })
+}
+
+test('S10.4 crazygames: a muteAudio change during a running spot is passed on at once', async () => {
+  const crazyGames = fakeCrazyGames()
+  const adapter = crazyGamesAdapter(crazyGames.sdk)
+  await adapter.init()
+  const changes = recordPortalMute(adapter)
+  const callbacks: Callback[] = []
+
+  requestAd(adapter, 'a1', callbacks)
+  crazyGames.ads[0]?.adStarted()
+  crazyGames.changeSettings({ muteAudio: true })
+
+  assert.deepEqual(changes, [true])
+  assert.equal(adapter.portalAudioMuted(), true)
+
+  crazyGames.changeSettings({ muteAudio: false })
+  crazyGames.ads[0]?.adFinished()
+  await settle()
+
+  assert.deepEqual(changes, [true, false])
+  assert.equal(adapter.portalAudioMuted(), false)
+  assert.deepEqual(crazyGames.calls, ['requestAd rewarded'])
+  assert.deepEqual(callbacks, [
+    { attemptId: 'a1', call: 'start' },
+    { attemptId: 'a1', call: 'result', outcome: 'completed' },
+  ])
+})
+
+for (const [setup, init, loads] of [
+  ['init resolves', 'resolves', true],
+  ['init rejects', 'rejects', true],
+  ['the SDK does not load', 'resolves', false],
+] as const) {
+  test(`S10.5 poki: when ${setup} portalAudioMuted() is false and the listener is never called`, async () => {
+    const poki = fakePoki(init)
+    const adapter = createPokiAdapter({
+      development: true,
+      openStorage: () => new MemoryStorage(),
+      loadSdk: () => (loads ? Promise.resolve(poki.sdk) : Promise.reject(new Error('Failed to load the SDK script'))),
+    })
+    const changes = recordPortalMute(adapter)
+
+    assert.equal(adapter.portalAudioMuted(), false)
+    await adapter.init()
+    adapter.gameplayStart()
+    requestAd(adapter, 'a1', [])
+    poki.breaks[0]?.onStart()
+    poki.breaks[0]?.result.resolve(true)
+    await settle()
+
+    assert.equal(adapter.portalAudioMuted(), false)
+    assert.deepEqual(changes, [])
   })
 }

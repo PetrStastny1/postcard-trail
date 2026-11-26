@@ -45,6 +45,8 @@ export interface Feedback {
   muteForAd(): void
   /** Call when the attempt has a result (or is abandoned). */
   restoreAfterAd(): void
+  /** Portal mute (`PlatformAdapter.portalAudioMuted()`); call after `init()` and from `onPortalAudioMutedChange`. */
+  setPortalMuted(muted: boolean): void
 }
 
 export function createFeedback(settings: FeedbackSettings): Feedback
@@ -52,6 +54,7 @@ export function createFeedback(settings: FeedbackSettings): Feedback
 
 - App volá `unlock()` na začátku handleru každého aktivujícího vstupu hráče (`click`, `keydown`), ne jen prvního a ne z `pointerdown`. Prohlížeče dovolí spustit zvuk jen při aktivujícím vstupu (dotykový `pointerdown` jím není). Obnova zvuku po odmítnutém nebo nedokončeném `resume()` a po přerušení na iOS (`interrupted`) spoléhá na další `unlock()`.
 - Nastavení zvuku a vibrací ukládá oblast logic, feedback dostává jen jejich hodnoty.
+- Portálové ztlumení předává app: po `await adapter.init()` zavolá `feedback.setPortalMuted(adapter.portalAudioMuted())` a zaregistruje `adapter.onPortalAudioMutedChange(feedback.setPortalMuted)` (API.md). Feedback ho drží odděleně od nastavení zvuku (S8.5).
 - Úvod je tichý: app na úvodní obrazovce `play` nevolá.
 - Každý podnět má viditelný ekvivalent v UI (zajišťuje app).
 
@@ -168,6 +171,7 @@ Tóny se plánují do kontextu ve stavu `running`, nebo když `unlock()` požád
 
 - **S8.3** `setSoundEnabled(false)` ztlumí hlavní hlasitost ihned (v aktuálním čase kontextu, naplánované změny se zruší), i probíhající tón, a další `play` nevytvoří oscilátor. Vypnutí před `unlock()` znamená, že kontext začne potichu. `setSoundEnabled(true)` vrátí 0,6.
 - **S8.4** `muteForAd()` ztlumí ihned. `restoreAfterAd()` vrátí uloženou úroveň: 0,6 při zapnutém zvuku, jinak ticho. Zapnutí zvuku během reklamy se projeví až po `restoreAfterAd()`.
+- **S8.5** Portálové ztlumení (P10) je samostatný důvod ticha vedle nastavení zvuku a reklamy a nemění uložené nastavení zvuku. `setPortalMuted(true)` ztlumí hlavní hlasitost ihned (jako S8.3) a další `play` nevytvoří oscilátor. Vibrace se řídí dál jen svým nastavením (S9.1, S9.2). `setPortalMuted(false)` vrátí uloženou úroveň: 0,6 při zapnutém zvuku, jinak ticho. Během portálového ztlumení hru neozvučí `setSoundEnabled(true)` ani `restoreAfterAd()`. Zrušení portálového ztlumení během reklamy (`muteForAd()` bez `restoreAfterAd()`) se projeví až po `restoreAfterAd()`. Ztlumení nastavené před `unlock()` platí pro nově vytvořený kontext. Hlasitost je tedy 0,6 jen tehdy, když je zvuk zapnutý, neběží reklama a portál neztlumuje.
 
 ### P9 Vibrace
 
@@ -175,9 +179,18 @@ Tóny se plánují do kontextu ve stavu `running`, nebo když `unlock()` požád
 - **S9.2** Vibrace nezávisí na zvuku ani na `unlock()`. Během `muteForAd()` se nevibruje.
 - **S9.3** Bez `navigator.vibrate` nebo při vypnutém nastavení se nic neděje a nic nehází.
 
+### P10 Portálové ztlumení
+
+`portalAudioMuted()` a `onPortalAudioMutedChange()` z kontraktu (rozhodnutí „Jak respektovat ztlumení zvuku z portálu CrazyGames“ v LOG.md). CrazyGames SDK v3 podle [Game module](https://docs.crazygames.com/sdk/game/) (ověřeno 26. 11. 2026): `SDK.game.settings` je `{ muteAudio, disableChat }` a platí po vyřešeném `SDK.init()`. `SDK.game.addSettingsChangeListener(listener)` volá listener s novým objektem při každé změně nastavení, i když se změní jen `disableChat`. V prostředí `local` lze hodnotu vynutit parametrem adresy `?muteAudio=true`, to řeší SDK samo. `disableChat` hra nepoužívá. App může zaregistrovat víc listenerů, adaptér je drží všechny. Odhlášení kontrakt nemá.
+
+- **S10.1** CrazyGames, ztlumení při startu: po vyřešeném `init()` adaptéru, ve kterém `SDK.init()` uspělo do 5 000 ms (S5.8) v prostředí `crazygames` nebo `local`, vrací `portalAudioMuted()` hodnotu `SDK.game.settings.muteAudio`. Před vyřešením `init()` vrací `false`. Hodnota přečtená při startu se nehlásí jako změna, app ji čte sama po `await init()`.
+- **S10.2** CrazyGames, změna za běhu: adaptér se k `addSettingsChangeListener` přihlásí jednou, po úspěšném `init()` podle S10.1. Když SDK ohlásí jinou hodnotu `muteAudio`, než vrací `portalAudioMuted()`, adaptér ji uloží a zavolá každý zaregistrovaný listener jednou s novou hodnotou, v pořadí registrace. Změna jen `disableChat` nebo stejná hodnota listener nevolá. Listener zaregistrovaný před vyřešením `init()` dostává změny po něm.
+- **S10.3** CrazyGames bez SDK: při nenačteném skriptu, selhání `SDK.init()`, prostředí `disabled` a vypršení limitu 5 000 ms (i když skript nebo `SDK.init()` doběhnou později) je `portalAudioMuted()` do konce relace `false`, adaptér se ke změnám nastavení v SDK nepřihlásí a listener nikdy nezavolá. Totéž platí, když SDK po úspěšném `SDK.init()` nemá `game.settings` nebo když čtení nastavení či `addSettingsChangeListener` vyhodí výjimku: `init()` adaptéru se přesto vyřeší, `portalAudioMuted()` je do konce relace `false` a listener se nikdy nezavolá. Reklamy a signály `loading` a `gameplay` se v tom případě řídí dosavadními pravidly (P5, P6).
+- **S10.4** CrazyGames, souběh s reklamou: změna `muteAudio` během běžícího spotu se předá listeneru i do `portalAudioMuted()` hned. Jde o volání ze SDK do hry, ne do SDK, takže se na ni S5.2 nevztahuje.
+- **S10.5** Poki a lokální adaptér: `portalAudioMuted()` je vždy `false` (před `init()`, po něm i po jeho selhání) a listener z `onPortalAudioMutedChange` se nikdy nezavolá. Poki ztlumení hry nevyžaduje a lokální adaptér parametr `muteAudio` v adrese nečte.
+
 ## Otevřené body pro ředitele a app
 
 - App volá `feedback.unlock()` na začátku handleru každého aktivujícího vstupu hráče (`click`, `keydown`), ne jen prvního a ne z `pointerdown`. `unlock()` a `play()` téhož vstupu musí být ve stejném listeneru a před prvním `await`, jinak první podnět po startu nebo po přerušení nezazní. Bez dalších volání by zvuk po odmítnutém nebo nedokončeném `resume()` či po přerušení na iOS do konce relace nezazní. Rozhodnutí je v LOG.md („Platform: kdy app volá `feedback.unlock()`“).
-- CrazyGames vyžaduje respektovat `SDK.game.settings.muteAudio` s předností před herním nastavením. Kontrakt `PlatformAdapter` ho nevystavuje. Návrh změny kontraktu je v předávací zprávě oblasti.
 - Poki doporučuje `commercialBreak()` při návratu z pauzy. Zadání nastavuje průběžné reklamy na 0 (§12, K5), adaptér je proto nevolá.
 - CrazyGames nechce `gameplayStop` při pouhé ztrátě fokusu. Hra se ale po skrytí stránky skutečně pozastaví a čeká na „Pokračovat“, takže `gameplayStop` při skrytí je oprávněný.

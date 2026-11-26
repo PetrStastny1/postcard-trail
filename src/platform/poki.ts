@@ -127,5 +127,7 @@ export function createPokiAdapter({ development, openStorage, loadSdk }: PokiAda
       if (measurement) session.whenIdle((sdk) => sdk.measure(...measurement))
     },
     recordedEvents: analytics.recordedEvents,
+    portalAudioMuted: () => false,
+    onPortalAudioMutedChange() {},
   }
 }
