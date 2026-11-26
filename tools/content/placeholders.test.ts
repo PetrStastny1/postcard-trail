@@ -139,6 +139,8 @@ describe('scene plan', () => {
 })
 
 describe('placeholders CLI', () => {
+  const emptyListing = '{\n  "stopIds": []\n}\n'
+
   test('keeps final scenes, removes stale placeholders and starts no browser when nothing is placeholder', () => {
     const root = generatorRoot()
     const scenes = path.join(root, 'public/scenes')
@@ -153,20 +155,22 @@ describe('placeholders CLI', () => {
     assert.equal(readFileSync(path.join(scenes, 'TST01.webp'), 'utf8'), 'final TST01')
     assert.equal(readFileSync(path.join(scenes, 'TST02.webp'), 'utf8'), 'final TST02')
     assert.equal(existsSync(path.join(scenes, 'OLD01.webp')), false)
-    assert.equal(readFileSync(path.join(scenes, 'placeholders.json'), 'utf8'), '{\n  "stopIds": []\n}\n')
+    assert.equal(readFileSync(path.join(scenes, 'placeholders.json'), 'utf8'), emptyListing)
   })
 
   test('fails on a final scene outside the catalog, lists it and changes nothing', () => {
     const root = generatorRoot()
     const scenes = path.join(root, 'public/scenes')
     writeFileSync(path.join(scenes, 'GONE01.webp'), 'final scene of a removed stop')
+    writeFileSync(path.join(scenes, 'placeholders.json'), emptyListing)
 
     const result = runGenerator(root)
 
     assert.equal(result.status, 1)
     assert.match(result.stderr, /public\/scenes\/GONE01\.webp: not a scene of a catalog stop/)
     assert.doesNotMatch(result.stderr, /\n\s+at /, 'no stack trace')
-    assert.deepEqual(readdirSync(scenes), ['GONE01.webp'])
+    assert.deepEqual(readdirSync(scenes).sort(), ['GONE01.webp', 'placeholders.json'])
+    assert.equal(readFileSync(path.join(scenes, 'placeholders.json'), 'utf8'), emptyListing)
   })
 
   for (const [label, content, message] of [
@@ -184,8 +188,70 @@ describe('placeholders CLI', () => {
       assert.equal(result.status, 1)
       assert.match(result.stderr, message)
       assert.doesNotMatch(result.stderr, /\n\s+at /, 'no stack trace')
+      assert.doesNotMatch(result.stderr, /delete/, 'never advises deleting the list')
       assert.deepEqual(readdirSync(scenes), ['placeholders.json'])
       assert.equal(readFileSync(path.join(scenes, 'placeholders.json'), 'utf8'), content)
+    })
+  }
+
+  test('without placeholders.json refuses to treat existing scenes as final, lists them and changes nothing', () => {
+    const root = generatorRoot()
+    const scenes = path.join(root, 'public/scenes')
+    writeFileSync(path.join(scenes, 'TST02.webp'), 'scene TST02')
+    writeFileSync(path.join(scenes, 'TST01.webp'), 'scene TST01')
+    writeFileSync(path.join(scenes, '.DS_Store'), 'finder metadata')
+
+    const result = runGenerator(root)
+
+    assert.equal(result.status, 1)
+    assert.match(result.stderr, /public\/scenes\/placeholders\.json: file not found while public\/scenes has scenes/)
+    assert.match(result.stderr, /\npublic\/scenes\/TST01\.webp\npublic\/scenes\/TST02\.webp\n/)
+    assert.doesNotMatch(result.stderr, /DS_Store/)
+    assert.doesNotMatch(result.stderr, /\n\s+at /, 'no stack trace')
+    assert.deepEqual(readdirSync(scenes).sort(), ['.DS_Store', 'TST01.webp', 'TST02.webp'])
+    assert.equal(readFileSync(path.join(scenes, 'TST01.webp'), 'utf8'), 'scene TST01')
+    assert.equal(readFileSync(path.join(scenes, 'TST02.webp'), 'utf8'), 'scene TST02')
+  })
+
+  for (const [label, prepare, message] of [
+    ['a missing tokens.css', (root: string) => rmSync(path.join(root, 'src/styles/tokens.css')), /^src\/styles\/tokens\.css: file not found$/m],
+    [
+      'a catalog with invalid JSON',
+      (root: string) => writeFileSync(path.join(root, 'src/content/catalog.json'), '{ "cities": ['),
+      /^src\/content\/catalog\.json: not valid JSON \(/m,
+    ],
+    [
+      'a catalog without cities',
+      (root: string) => writeFileSync(path.join(root, 'src/content/catalog.json'), '{}'),
+      /^src\/content\/catalog\.json: expected \{ "cities": \[\{ "id": string \}\] \}$/m,
+    ],
+    ['a missing catalog', (root: string) => rmSync(path.join(root, 'src/content/catalog.json')), /^src\/content\/catalog\.json: file not found$/m],
+    [
+      'a missing route',
+      (root: string) => rmSync(path.join(root, 'src/content/routes/testville.json')),
+      /^src\/content\/routes\/testville\.json: file not found$/m,
+    ],
+    [
+      'a route with invalid JSON',
+      (root: string) => writeFileSync(path.join(root, 'src/content/routes/testville.json'), '{ "stops": '),
+      /^src\/content\/routes\/testville\.json: not valid JSON \(/m,
+    ],
+    [
+      'a route with stops without IDs',
+      (root: string) => writeFileSync(path.join(root, 'src/content/routes/testville.json'), '{ "stops": [{}] }'),
+      /^src\/content\/routes\/testville\.json: expected \{ "stops": \[\{ "id": string \}\] \}$/m,
+    ],
+  ] as const) {
+    test(`fails readably with the path on ${label} and writes nothing`, () => {
+      const root = generatorRoot()
+      prepare(root)
+
+      const result = runGenerator(root)
+
+      assert.equal(result.status, 1)
+      assert.match(result.stderr, message)
+      assert.doesNotMatch(result.stderr, /\n\s+at /, 'no stack trace')
+      assert.deepEqual(readdirSync(path.join(root, 'public/scenes')), [])
     })
   }
 
@@ -195,14 +261,16 @@ describe('placeholders CLI', () => {
     writeFileSync(path.join(scenes, '.DS_Store'), 'finder metadata')
     writeFileSync(path.join(scenes, 'TST01.webp'), 'final TST01')
     writeFileSync(path.join(scenes, 'TST02.webp'), 'final TST02')
+    writeFileSync(path.join(scenes, 'placeholders.json'), emptyListing)
 
     const result = runGenerator(root)
 
     assert.equal(result.status, 0, result.stderr)
     assert.equal(readFileSync(path.join(scenes, '.DS_Store'), 'utf8'), 'finder metadata')
-    assert.equal(readFileSync(path.join(scenes, 'placeholders.json'), 'utf8'), '{\n  "stopIds": []\n}\n')
+    assert.equal(readFileSync(path.join(scenes, 'placeholders.json'), 'utf8'), emptyListing)
   })
 
+  // A clean start: no list and no scenes. The generator gets as far as launching Chromium, which the test hides.
   test('without Chromium fails readably with the install command and writes nothing', () => {
     const root = generatorRoot()
 
