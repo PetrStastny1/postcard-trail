@@ -1,0 +1,620 @@
+{
+  "id": "bratislava",
+  "name": {
+    "en": "Bratislava",
+    "cs": "Bratislava"
+  },
+  "coordinates": {
+    "lat": 48.1517,
+    "lon": 17.1093
+  },
+  "postcardQuestionId": "BRA04",
+  "stops": [
+    {
+      "id": "BRA01",
+      "place": {
+        "en": "Approaching Castle Hill",
+        "cs": "Při příchodu na Hradní vrch"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/BRA01.webp",
+      "sceneAlt": {
+        "en": "A block-shaped white castle with red roofs and four corner towers",
+        "cs": "Bílý hrad ve tvaru kvádru, červené střechy a čtyři nárožní věže"
+      },
+      "question": {
+        "en": "Which Slovak landmark has four corner towers on a white castle above a city?",
+        "cs": "Která slovenská dominanta má čtyři nárožní věže na bílém hradu nad městem?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Bratislava Castle",
+            "cs": "Bratislavský hrad"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Devín Castle",
+            "cs": "Hrad Devín"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Bojnice Castle",
+            "cs": "Bojnický zámek"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Spiš Castle",
+            "cs": "Spišský hrad"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On Castle Hill, Bratislava Castle is recognisable by its four corner towers.",
+        "cs": "Na Hradním vrchu stojí Bratislavský hrad, který poznáš podle čtyř nárožních věží."
+      },
+      "sourceUrls": [
+        "https://www.visitbratislava.com/news/dont-know-bratislava-castle-yet/",
+        "https://en.wikipedia.org/wiki/Bratislava_Castle"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Bratislava_-_Burg_(b).JPG"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "BRA02",
+      "place": {
+        "en": "On the terrace below the castle",
+        "cs": "Na terase pod hradem"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/BRA02.webp",
+      "sceneAlt": {
+        "en": "A broad river between urban banks, with a round platform on a tall support by the far bank",
+        "cs": "Široká řeka mezi dvěma městskými břehy, nad pravým břehem plošina na vysokém pilíři"
+      },
+      "question": {
+        "en": "Which river runs through Bratislava below Castle Hill?",
+        "cs": "Která řeka protéká Bratislavou pod Hradním vrchem?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Danube",
+            "cs": "Dunaj"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Morava",
+            "cs": "Morava"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Váh",
+            "cs": "Váh"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Hron",
+            "cs": "Hron"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "From the castle lookout, you can see the Danube and the bridge towards Petržalka.",
+        "cs": "Z hradní vyhlídky vidíš Dunaj a most vedoucí do Petržalky."
+      },
+      "sourceUrls": [
+        "https://www.visitbratislava.com/exercise-and-sport/danube-promenade/",
+        "https://en.wikipedia.org/wiki/Danube"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Panoramic_view_from_Bratislava_castle.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "BRA03",
+      "place": {
+        "en": "At pavement level on a corner of Panská Street",
+        "cs": "V úrovni dlažby na rohu Panské ulice"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/BRA03.webp",
+      "sceneAlt": {
+        "en": "A bronze figure in a cap peeks out of a hole in the pavement, resting its arms on the edge",
+        "cs": "Z otvoru v dlažbě vykukuje bronzová postava v čepici a opírá se rukama o jeho okraj"
+      },
+      "question": {
+        "en": "Which Bratislava statue can you see?",
+        "cs": "Kterou bratislavskou sochu vidíš?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Čumil",
+            "cs": "Čumil"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Schöne Náci",
+            "cs": "Schöne Náci"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Napoleonic Soldier",
+            "cs": "Napoleonův voják"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Hans Christian Andersen",
+            "cs": "Hans Christian Andersen"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "At the corner of Panská Street, Čumil peeks out of a manhole.",
+        "cs": "Na rohu Panské ulice vyhlíží z poklopu Čumil."
+      },
+      "sourceUrls": [
+        "https://www.visitbratislava.com/sights-attractions/cumil-statue/"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Estatua_Hombre_Trabajando,_Bratislava,_Eslovaquia,_2020-02-01,_DD_45.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "BRA04",
+      "place": {
+        "en": "On the quay at the north end of the bridge",
+        "cs": "Na nábřeží u severního předmostí"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/BRA04.webp",
+      "sceneAlt": {
+        "en": "One tall pylon, diagonal cables and a round structure above the tower",
+        "cs": "Jeden vysoký pylon, šikmé kabely a kulatá stavba na vrcholu stožáru"
+      },
+      "question": {
+        "en": "What is this Bratislava bridge called?",
+        "cs": "Jak se jmenuje tento bratislavský most?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "SNP Bridge",
+            "cs": "Most SNP"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Old Bridge",
+            "cs": "Starý most"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Apollo Bridge",
+            "cs": "Most Apollo"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Harbour Bridge",
+            "cs": "Prístavný most"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "The SNP Bridge crosses the Danube here with the UFO lookout on top of its pylon.",
+        "cs": "Most SNP tu překračuje Dunaj a na vrcholu jeho pylonu je vyhlídka UFO."
+      },
+      "sourceUrls": [
+        "https://www.visitbratislava.com/sights-attractions/ufo/",
+        "https://en.wikipedia.org/wiki/Most_SNP"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Most_SNP,_Bratislava_(by_Pudelek).JPG"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "BRA05",
+      "place": {
+        "en": "By the walls on Staromestská",
+        "cs": "U hradeb ve Staromestskej"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/BRA05.webp",
+      "sceneAlt": {
+        "en": "A narrow tall tower with a gold crown above a nave beside a surviving wall",
+        "cs": "Úzká vysoká věž se zlatou korunou nad chrámovou lodí u zbytku zdi"
+      },
+      "question": {
+        "en": "Which Bratislava church has a golden crown atop a slender tower by the old city walls?",
+        "cs": "Který bratislavský chrám poznáš podle zlaté koruny na štíhlé věži u někdejších hradeb?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "St Martin’s Cathedral",
+            "cs": "Dóm sv. Martina"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Blue Church",
+            "cs": "Modrý kostolík"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Franciscan Church",
+            "cs": "Františkánský kostel"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Blumentál Church",
+            "cs": "Blumentálský kostel"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "By the old walls, St Martin’s Cathedral has a golden crown at the tip of its tower.",
+        "cs": "U starých hradeb poznáš Dóm svatého Martina podle zlaté koruny na špici věže."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/St._Martin's_Cathedral,_Bratislava"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Cathedral_of_St_Martin,_Bratislava_-_tower.JPG"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "BRA06",
+      "place": {
+        "en": "At the east end of Hviezdoslav Square",
+        "cs": "Na východním konci Hviezdoslavova náměstí"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/BRA06.webp",
+      "sceneAlt": {
+        "en": "An ornate broad façade behind a fountain topped by a boy and an eagle",
+        "cs": "Zdobené široké průčelí za kašnou zakončenou sochou chlapce a orla"
+      },
+      "question": {
+        "en": "Which building closes the east end of Hviezdoslav Square behind a fountain with a boy and an eagle?",
+        "cs": "Která budova uzavírá východní konec Hviezdoslavova náměstí za fontánou s chlapcem a orlem?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Historic Slovak National Theatre",
+            "cs": "Historická budova Slovenského národního divadla"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "New Slovak National Theatre",
+            "cs": "Nová budova Slovenského národního divadla"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Reduta",
+            "cs": "Reduta"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Old Town Hall",
+            "cs": "Stará radnice"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "The historic Slovak National Theatre stands behind Ganymede’s fountain.",
+        "cs": "Za Ganymédovou fontánou stojí historická budova Slovenského národního divadla."
+      },
+      "sourceUrls": [
+        "https://www.visitbratislava.com/sights-attractions/slovak-national-theatre-historical-building/"
+      ],
+      "photoReferenceUrls": [
+        "https://www.visitbratislava.com/sights-attractions/slovak-national-theatre-historical-building/"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "BRA07",
+      "place": {
+        "en": "In the open square by the Old Town Hall",
+        "cs": "Na otevřeném náměstí u Staré radnice"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/BRA07.webp",
+      "sceneAlt": {
+        "en": "Old paving between colourful houses, a small fountain with a knight and a square clock tower nearby",
+        "cs": "Stará dlažba mezi barevnými domy, malá kašna s rytířem a vedle ní hranatá hodinová věž"
+      },
+      "question": {
+        "en": "Which Bratislava square puts Roland’s Fountain and the Old Town Hall clock tower in the same view?",
+        "cs": "Které bratislavské náměstí poznáš podle Rolandovy fontány a hodinové věže Staré radnice v jednom záběru?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Hlavné námestie",
+            "cs": "Hlavné námestie"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Hviezdoslavovo námestie",
+            "cs": "Hviezdoslavovo námestie"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Primaciálne námestie",
+            "cs": "Primaciálne námestie"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Námestie SNP",
+            "cs": "Námestie SNP"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Roland’s Fountain stands by the Old Town Hall on Hlavné námestie.",
+        "cs": "U Staré radnice na Hlavném námestí stojí Rolandova fontána."
+      },
+      "sourceUrls": [
+        "https://www.visitbratislava.com/sights-attractions/maximilians-fountain/"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Hlavn%C3%A9_n%C3%A1mestie_with_the_Old_Town_Hall_and_Roland_Fountain_(10267625666).jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "BRA08",
+      "place": {
+        "en": "Behind the Old Town Hall",
+        "cs": "Za Starou radnicí"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/BRA08.webp",
+      "sceneAlt": {
+        "en": "A pale pink façade, central pediment and a hat with tassels in relief",
+        "cs": "Světle růžové průčelí, středový štít a reliéf klobouku se střapci"
+      },
+      "question": {
+        "en": "Which Bratislava palace has a pink front and a cardinal’s hat high on its pediment?",
+        "cs": "Který bratislavský palác má růžové průčelí a vysoko na štítu kardinálský klobouk?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Primate’s Palace",
+            "cs": "Primaciální palác"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Grassalkovich Palace",
+            "cs": "Grassalkovichův palác"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Pálffy Palace",
+            "cs": "Pálffyho palác"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Mirbach Palace",
+            "cs": "Mirbachův palác"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Behind the Old Town Hall, the Primate’s Palace has a pink front and a cardinal’s hat.",
+        "cs": "Na malém náměstí za Starou radnicí poznáš Primaciální palác podle růžové fasády a kardinálského klobouku."
+      },
+      "sourceUrls": [
+        "https://www.visitbratislava.com/sights-attractions/primates-palace/",
+        "https://en.wikipedia.org/wiki/Primate's_Palace"
+      ],
+      "photoReferenceUrls": [
+        "https://www.visitbratislava.com/sights-attractions/primates-palace/"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "BRA09",
+      "place": {
+        "en": "On Michalská Street looking north",
+        "cs": "V Michalské ulici při pohledu k severu"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/BRA09.webp",
+      "sceneAlt": {
+        "en": "A slender tower above a passage arch, topped by a tall copper onion roof",
+        "cs": "Celá úzká věž nad průchozím obloukem, na vrcholu vysoká měděná cibulová báň"
+      },
+      "question": {
+        "en": "Which Bratislava landmark stands in line with the street?",
+        "cs": "Kterou bratislavskou stavbu vidíš v ose ulice?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Michael’s Gate",
+            "cs": "Michalská brána"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Sigismund Gate",
+            "cs": "Žigmundova brána"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Old Town Hall Tower",
+            "cs": "Věž Staré radnice"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Vienna Gate of Bratislava Castle",
+            "cs": "Vídeňská brána Bratislavského hradu"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "The passage at the north end of Michalská Street runs under the tower of Michael’s Gate.",
+        "cs": "Na severním konci Michalské ulice vede pod věží průchod Michalské brány."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Michael's_Gate"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/Category:Michael%27s_Gate"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Úzká mnohopatrová věž přímo nad uličním průchodem a měděná cibulová střecha. Žigmundova a Vídeňská brána jsou hradní vstupy bez této vysoké střechy. Věž radnice přiléhá ke křídlu radnice a nestojí nad průchodem celou ulicí."
+    },
+    {
+      "id": "BRA10",
+      "place": {
+        "en": "On Hodža Square",
+        "cs": "Na Hodžově náměstí"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/BRA10.webp",
+      "sceneAlt": {
+        "en": "A low pale palace behind iron railings, with a balcony above the central arched entrance",
+        "cs": "Nízký světlý palác za kovaným plotem s balkonem nad obloukovým vstupem"
+      },
+      "question": {
+        "en": "Which palace stands behind low iron railings on Hodža Square, with long pale wings and a central portico?",
+        "cs": "Který palác stojí za nízkým kovaným plotem na Hodžově náměstí s dlouhými světlými křídly a středním portikem?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Grassalkovich Palace",
+            "cs": "Grassalkovichův palác"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Primate’s Palace",
+            "cs": "Primaciální palác"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Summer Archbishop’s Palace",
+            "cs": "Letní arcibiskupský palác"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Mirbach Palace",
+            "cs": "Mirbachův palác"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On Hodža Square, iron railings stand in front of Grassalkovich Palace.",
+        "cs": "Na Hodžově náměstí hledíš přes kovaný plot na Grassalkovichův palác."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Grassalkovich_Palace"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Palacio_Grassalkovich,_Bratislava,_Eslovaquia,_2020-02-01,_DD_21.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Nízké světlé křídlo za plotem proti širokému Hodžovu náměstí a balkon nad prostředním průchodem. Primaciální palác je růžový se štítem, Mirbachův přiléhá do užší uliční fronty a letní arcibiskupský palác nestojí v této uliční ose."
+    }
+  ]
+}

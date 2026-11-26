@@ -1,0 +1,411 @@
+{
+  "cities": [
+    {
+      "id": "paris",
+      "name": {
+        "en": "Paris",
+        "cs": "Paříž"
+      },
+      "coordinates": {
+        "lat": 48.8567,
+        "lon": 2.3522
+      },
+      "postcard": {
+        "stopId": "PAR01",
+        "sceneAsset": "scenes/PAR01.webp",
+        "sentence": {
+          "en": "From the Champ de Mars, you can see the four lattice legs of the Eiffel Tower.",
+          "cs": "Z Martova pole se díváš na čtyři příhradové nohy Eiffelovy věže."
+        }
+      }
+    },
+    {
+      "id": "london",
+      "name": {
+        "en": "London",
+        "cs": "Londýn"
+      },
+      "coordinates": {
+        "lat": 51.5072,
+        "lon": -0.1275
+      },
+      "postcard": {
+        "stopId": "LON10",
+        "sceneAsset": "scenes/LON10.webp",
+        "sentence": {
+          "en": "From the promenade below the fortress, you can see two rising road spans below a pair of towers linked by high walkways.",
+          "cs": "Z promenády pod pevností je dobře vidět spodní vozovka se dvěma výklopnými díly a dvě věže propojené horními lávkami."
+        }
+      }
+    },
+    {
+      "id": "rome",
+      "name": {
+        "en": "Rome",
+        "cs": "Řím"
+      },
+      "coordinates": {
+        "lat": 41.8931,
+        "lon": 12.4828
+      },
+      "postcard": {
+        "stopId": "ROM01",
+        "sceneAsset": "scenes/ROM01.webp",
+        "sentence": {
+          "en": "On Piazza del Colosseo, you can see an oval amphitheatre with tiers of stone arches and a broken outer ring.",
+          "cs": "Na náměstí Colosseo je dobře vidět oválný amfiteátr s vrstvami kamenných arkád a přerušeným obvodem."
+        }
+      }
+    },
+    {
+      "id": "berlin",
+      "name": {
+        "en": "Berlin",
+        "cs": "Berlín"
+      },
+      "coordinates": {
+        "lat": 52.5167,
+        "lon": 13.3833
+      },
+      "postcard": {
+        "stopId": "BER01",
+        "sceneAsset": "scenes/BER01.webp",
+        "sentence": {
+          "en": "On Pariser Platz, you can see six tall columns at the front and a four-horse chariot on a flat roof.",
+          "cs": "Na Pariser Platz je dobře vidět šest vysokých sloupů vpředu a čtyřspřeží na ploché střeše."
+        }
+      }
+    },
+    {
+      "id": "madrid",
+      "name": {
+        "en": "Madrid",
+        "cs": "Madrid"
+      },
+      "coordinates": {
+        "lat": 40.4169,
+        "lon": -3.7033
+      },
+      "postcard": {
+        "stopId": "MAD09",
+        "sceneAsset": "scenes/MAD09.webp",
+        "sentence": {
+          "en": "On the bank of the large lake in El Retiro, you can see rowing boats and a semicircular colonnade beneath an equestrian monument.",
+          "cs": "Na břehu velkého jezera v Retiru je dobře vidět veslice a půlkruhová kolonáda pod jezdeckým pomníkem."
+        }
+      }
+    },
+    {
+      "id": "amsterdam",
+      "name": {
+        "en": "Amsterdam",
+        "cs": "Amsterdam"
+      },
+      "coordinates": {
+        "lat": 52.3667,
+        "lon": 4.8833
+      },
+      "postcard": {
+        "stopId": "AMS06",
+        "sceneAsset": "scenes/AMS06.webp",
+        "sentence": {
+          "en": "On the Prinsengracht, the narrow front of the Anne Frank House stands next to the museum’s glass entrance.",
+          "cs": "Na Prinsengrachtu stojíš u domu Anne Frankové, jehož úzké průčelí je vedle proskleného vstupu do muzea."
+        }
+      }
+    },
+    {
+      "id": "athens",
+      "name": {
+        "en": "Athens",
+        "cs": "Atény"
+      },
+      "coordinates": {
+        "lat": 37.9842,
+        "lon": 23.7281
+      },
+      "postcard": {
+        "stopId": "ATH08",
+        "sceneAsset": "scenes/ATH08.webp",
+        "sentence": {
+          "en": "Below the Acropolis, the Acropolis Museum has its highest gallery turned towards the rock.",
+          "cs": "Pod Akropolí stojí Muzeum Akropole s nejvyšší galerií natočenou ke skále."
+        }
+      }
+    },
+    {
+      "id": "bratislava",
+      "name": {
+        "en": "Bratislava",
+        "cs": "Bratislava"
+      },
+      "coordinates": {
+        "lat": 48.1517,
+        "lon": 17.1093
+      },
+      "postcard": {
+        "stopId": "BRA04",
+        "sceneAsset": "scenes/BRA04.webp",
+        "sentence": {
+          "en": "The SNP Bridge crosses the Danube here with the UFO lookout on top of its pylon.",
+          "cs": "Most SNP tu překračuje Dunaj a na vrcholu jeho pylonu je vyhlídka UFO."
+        }
+      }
+    },
+    {
+      "id": "vienna",
+      "name": {
+        "en": "Vienna",
+        "cs": "Vídeň"
+      },
+      "coordinates": {
+        "lat": 48.2083,
+        "lon": 16.3725
+      },
+      "postcard": {
+        "stopId": "VIE01",
+        "sceneAsset": "scenes/VIE01.webp",
+        "sentence": {
+          "en": "On Stephansplatz, you can see colourful zigzag bands of tiles below a tall narrow spire.",
+          "cs": "Na Stephansplatzu je dobře vidět barevné lomené pásy keramických tašek pod štíhlou věží."
+        }
+      }
+    },
+    {
+      "id": "prague",
+      "name": {
+        "en": "Prague",
+        "cs": "Praha"
+      },
+      "coordinates": {
+        "lat": 50.0875,
+        "lon": 14.4214
+      },
+      "postcard": {
+        "stopId": "P04",
+        "sceneAsset": "scenes/P04.webp",
+        "sentence": {
+          "en": "On the Old Town bank, you are above the Vltava, with Charles Bridge spanning the river.",
+          "cs": "Na staroměstském břehu stojíš nad Vltavou, přes kterou se klene Karlův most."
+        }
+      }
+    },
+    {
+      "id": "lisbon",
+      "name": {
+        "en": "Lisbon",
+        "cs": "Lisabon"
+      },
+      "coordinates": {
+        "lat": 38.708,
+        "lon": -9.139
+      },
+      "postcard": {
+        "stopId": "LIS07",
+        "sceneAsset": "scenes/LIS07.webp",
+        "sentence": {
+          "en": "Under the arch at Rua Augusta, you can see a monumental arch with tall columns, a clock on the street side and figures on top.",
+          "cs": "Pod průjezdem u Rua Augusta je dobře vidět monumentální oblouk s vysokými sloupy, hodinami na uliční straně a sochami nahoře."
+        }
+      }
+    },
+    {
+      "id": "dublin",
+      "name": {
+        "en": "Dublin",
+        "cs": "Dublin"
+      },
+      "coordinates": {
+        "lat": 53.3497,
+        "lon": -6.2603
+      },
+      "postcard": {
+        "stopId": "DUB10",
+        "sceneAsset": "scenes/DUB10.webp",
+        "sentence": {
+          "en": "From the south bank of the Liffey, you can see a steep white cast-iron footbridge with a single arch and lamps.",
+          "cs": "Z jižního nábřeží Liffey je dobře vidět strmá bílá litinová pěší lávka s jediným obloukem a lucernami."
+        }
+      }
+    },
+    {
+      "id": "copenhagen",
+      "name": {
+        "en": "Copenhagen",
+        "cs": "Kodaň"
+      },
+      "coordinates": {
+        "lat": 55.6761,
+        "lon": 12.5689
+      },
+      "postcard": {
+        "stopId": "CPH06",
+        "sceneAsset": "scenes/CPH06.webp",
+        "sentence": {
+          "en": "On the quay lined with colourful houses, you can see a row of narrow colourful houses beside historic boats on a long straight quay.",
+          "cs": "Na nábřeží pod barevnými domy je dobře vidět řada barevných úzkých domů vedle historických lodí u dlouhé rovné hrany mola."
+        }
+      }
+    },
+    {
+      "id": "stockholm",
+      "name": {
+        "en": "Stockholm",
+        "cs": "Stockholm"
+      },
+      "coordinates": {
+        "lat": 59.3294,
+        "lon": 18.0686
+      },
+      "postcard": {
+        "stopId": "STO10",
+        "sceneAsset": "scenes/STO10.webp",
+        "sentence": {
+          "en": "From the Monteliusvägen overlook, you can see an elevated view across the lake to separate built-up islands linked by bridges.",
+          "cs": "Z vyhlídky Monteliusvägen je dobře vidět vyvýšený pohled přes jezero na oddělené zastavěné ostrovy s mosty."
+        }
+      }
+    },
+    {
+      "id": "brussels",
+      "name": {
+        "en": "Brussels",
+        "cs": "Brusel"
+      },
+      "coordinates": {
+        "lat": 50.8467,
+        "lon": 4.3517
+      },
+      "postcard": {
+        "stopId": "BRU03",
+        "sceneAsset": "scenes/BRU03.webp",
+        "sentence": {
+          "en": "In the middle of the Grand-Place, you can see gilded ornaments on the guildhouse gables.",
+          "cs": "Uprostřed Grand-Place je dobře vidět zlacené ornamenty na štítech cechovních domů."
+        }
+      }
+    },
+    {
+      "id": "budapest",
+      "name": {
+        "en": "Budapest",
+        "cs": "Budapešť"
+      },
+      "coordinates": {
+        "lat": 47.4983,
+        "lon": 19.0408
+      },
+      "postcard": {
+        "stopId": "B04",
+        "sceneAsset": "scenes/B04.webp",
+        "sentence": {
+          "en": "From the north pavement of the Chain Bridge, you can see the Danube and Parliament’s dome on the Pest bank.",
+          "cs": "Ze severního chodníku Řetězového mostu vidíš Dunaj a pešťský břeh s kupolí Parlamentu."
+        }
+      }
+    },
+    {
+      "id": "warsaw",
+      "name": {
+        "en": "Warsaw",
+        "cs": "Varšava"
+      },
+      "coordinates": {
+        "lat": 52.23,
+        "lon": 21.0111
+      },
+      "postcard": {
+        "stopId": "WAW08",
+        "sceneAsset": "scenes/WAW08.webp",
+        "sentence": {
+          "en": "In the Old Town Market Place, you can see a bronze mermaid with a sword and a round shield among gabled townhouses.",
+          "cs": "Na Rynku Starého Města je dobře vidět bronzová mořská víla s mečem a kruhovým štítem mezi štíty měšťanských domů."
+        }
+      }
+    },
+    {
+      "id": "oslo",
+      "name": {
+        "en": "Oslo",
+        "cs": "Oslo"
+      },
+      "coordinates": {
+        "lat": 59.9133,
+        "lon": 10.7389
+      },
+      "postcard": {
+        "stopId": "OSL03",
+        "sceneAsset": "scenes/OSL03.webp",
+        "sentence": {
+          "en": "On the sloping white roof by the fjord, you can see a white roof blending into a public ramp with people on foot.",
+          "cs": "Na bílé šikmé střeše u fjordu je dobře vidět bílá střešní plocha přecházející do veřejné rampy s chodci."
+        }
+      }
+    },
+    {
+      "id": "helsinki",
+      "name": {
+        "en": "Helsinki",
+        "cs": "Helsinky"
+      },
+      "coordinates": {
+        "lat": 60.1708,
+        "lon": 24.9375
+      },
+      "postcard": {
+        "stopId": "HEL01",
+        "sceneAsset": "scenes/HEL01.webp",
+        "sentence": {
+          "en": "At the foot of the steps from Senate Square, you can see white walls above a long staircase beneath green domes.",
+          "cs": "Na spodku schodiště Senátního náměstí je dobře vidět světlé stěny nad dlouhým schodištěm a zelené kupole."
+        }
+      }
+    },
+    {
+      "id": "reykjavik",
+      "name": {
+        "en": "Reykjavík",
+        "cs": "Reykjavík"
+      },
+      "coordinates": {
+        "lat": 64.1475,
+        "lon": -21.935
+      },
+      "postcard": {
+        "stopId": "REY01",
+        "sceneAsset": "scenes/REY01.webp",
+        "sentence": {
+          "en": "On the forecourt of Hallgrímskirkja, you can see stepped ranks resembling basalt columns on either side of a narrow tower.",
+          "cs": "Na prostranství před Hallgrímskirkjou je dobře vidět stupňovité pruhy připomínající čedičové sloupce po obou stranách štíhlé věže."
+        }
+      }
+    }
+  ],
+  "versions": [
+    {
+      "effectiveUtcDate": "2026-12-01",
+      "orderedCityIds": [
+        "paris",
+        "london",
+        "rome",
+        "berlin",
+        "madrid",
+        "amsterdam",
+        "athens",
+        "bratislava",
+        "vienna",
+        "prague",
+        "lisbon",
+        "dublin",
+        "copenhagen",
+        "stockholm",
+        "brussels",
+        "budapest",
+        "warsaw",
+        "oslo",
+        "helsinki",
+        "reykjavik"
+      ]
+    }
+  ]
+}

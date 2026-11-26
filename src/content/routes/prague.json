@@ -1,0 +1,624 @@
+{
+  "id": "prague",
+  "name": {
+    "en": "Prague",
+    "cs": "Praha"
+  },
+  "coordinates": {
+    "lat": 50.0875,
+    "lon": 14.4214
+  },
+  "postcardQuestionId": "P04",
+  "stops": [
+    {
+      "id": "P01",
+      "place": {
+        "en": "Outside the Powder Gate",
+        "cs": "Před Prašnou bránou"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/P01.webp",
+      "sceneAlt": {
+        "en": "A flag with white and red bands and a blue wedge",
+        "cs": "Vlajka s bílým a červeným pásem a modrým klínem"
+      },
+      "question": {
+        "en": "Which country are you standing in?",
+        "cs": "Ve které zemi právě stojíš?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Poland",
+            "cs": "Polsko"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Slovenia",
+            "cs": "Slovinsko"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Czechia",
+            "cs": "Česko"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Austria",
+            "cs": "Rakousko"
+          }
+        }
+      ],
+      "correctChoiceId": "c",
+      "feedback": {
+        "en": "Outside the Powder Gate, you can see the Czech flag with white and red bands and a blue triangle, on a portable flagstaff by the gateway.",
+        "cs": "Před Prašnou bránou je dobře vidět česká vlajka s bílým a červeným polem a modrým klínem na přenosném praporu před branou."
+      },
+      "sourceUrls": [
+        "https://vlada.gov.cz/cz/statni-vlajka-ceske-republiky-43756/",
+        "https://en.wikipedia.org/wiki/Flag_of_the_Czech_Republic"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Flag_of_the_Czech_Republic.svg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "P02",
+      "place": {
+        "en": "Entering the square from Celetná Street",
+        "cs": "Při příchodu z Celetné na náměstí"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/P02.webp",
+      "sceneAlt": {
+        "en": "Two tall church towers fully visible above house gables",
+        "cs": "Dvě celé vysoké kostelní věže nad štíty domů"
+      },
+      "question": {
+        "en": "Which Prague square has these two church towers rising behind a row of house gables?",
+        "cs": "Které pražské náměstí poznáš podle dvou věží vyčnívajících za řadou domovních štítů?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Old Town Square",
+            "cs": "Staroměstské náměstí"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Wenceslas Square",
+            "cs": "Václavské náměstí"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Lesser Town Square",
+            "cs": "Malostranské náměstí"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Republic Square",
+            "cs": "Náměstí Republiky"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Entering the square from Celetná Street, you can see the two main towers of the Church of Our Lady before Týn seen in full above the gables.",
+        "cs": "Při příchodu z Celetné na náměstí je dobře vidět dvě hlavní věže Týnského chrámu celé nad štíty domů."
+      },
+      "sourceUrls": [
+        "https://prague.eu/en/objevujte/church-of-our-lady-before-tyn-chram-matky-bozi-pred-tynem",
+        "https://en.wikipedia.org/wiki/Church_of_Our_Lady_before_T%C3%BDn"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Prague_07-2016_View_from_Old_Town_Hall_Tower_img2.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "P03",
+      "place": {
+        "en": "At the south wall of the Old Town Hall",
+        "cs": "U jižní stěny Staroměstské radnice"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/P03.webp",
+      "sceneAlt": {
+        "en": "The large dial with the Sun, Moon and zodiac motifs",
+        "cs": "Velký ciferník s motivem Slunce, Měsíce a zvěrokruhu"
+      },
+      "question": {
+        "en": "Which well-known clock has a round calendar and an astronomical dial?",
+        "cs": "Které známé hodiny poznáš podle kruhového kalendáře a astronomického ciferníku?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Old Town Astronomical Clock",
+            "cs": "Staroměstský orloj"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Clementinum tower clock",
+            "cs": "Věžní hodiny Klementina"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Main railway station clock",
+            "cs": "Hodiny hlavního nádraží"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "St Vitus tower clock",
+            "cs": "Hodiny svatovítské věže"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "By the Old Town Hall you can see the Orloj’s dial with the Sun, Moon and zodiac.",
+        "cs": "U Staroměstské radnice vidíš ciferník orloje s motivy Slunce, Měsíce a zvěrokruhu."
+      },
+      "sourceUrls": [
+        "https://prague.eu/en/objevujte/old-town-hall-with-astronomical-clock-staromestska-radnice-s-orlojem",
+        "https://en.wikipedia.org/wiki/Prague_astronomical_clock"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Astronomical_Clock_(8341899828).jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "P04",
+      "place": {
+        "en": "From the right bank south of the bridge",
+        "cs": "Z pravého břehu jižně od mostu"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/P04.webp",
+      "sceneAlt": {
+        "en": "A river with an arched stone bridge below a castle hill",
+        "cs": "Řeka s kamenným mostem pod hradním svahem"
+      },
+      "question": {
+        "en": "Which river flows through Prague?",
+        "cs": "Která řeka protéká Prahou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Elbe",
+            "cs": "Labe"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Vltava",
+            "cs": "Vltava"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Morava",
+            "cs": "Morava"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Ohře",
+            "cs": "Ohře"
+          }
+        }
+      ],
+      "correctChoiceId": "b",
+      "feedback": {
+        "en": "On the Old Town bank, you are above the Vltava, with Charles Bridge spanning the river.",
+        "cs": "Na staroměstském břehu stojíš nad Vltavou, přes kterou se klene Karlův most."
+      },
+      "sourceUrls": [
+        "https://prague.eu/en/objevujte/charles-bridge-karluv-most/",
+        "https://en.wikipedia.org/wiki/Charles_Bridge"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Charles_bridge_and_the_Castle.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "P05",
+      "place": {
+        "en": "On the first stretch of the bridge from Old Town",
+        "cs": "Na prvním úseku mostu od Starého Města"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/P05.webp",
+      "sceneAlt": {
+        "en": "A paved pedestrian deck with rows of sculptures on stone plinths and distinct towers on the far side",
+        "cs": "Vydlážděná pěší paluba s řadami soch na kamenných soklech a výraznými věžemi na protější straně"
+      },
+      "question": {
+        "en": "What is the name of the bridge in view?",
+        "cs": "Jak se jmenuje most v záběru?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Mánes Bridge",
+            "cs": "Mánesův most"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Legion Bridge",
+            "cs": "Most Legií"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Charles Bridge",
+            "cs": "Karlův most"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Čech Bridge",
+            "cs": "Čechův most"
+          }
+        }
+      ],
+      "correctChoiceId": "c",
+      "feedback": {
+        "en": "On Charles Bridge, you walk past stone statues towards Lesser Town.",
+        "cs": "Na Karlově mostě jdeš kolem kamenných soch směrem k Malé Straně."
+      },
+      "sourceUrls": [
+        "https://prague.eu/en/objevujte/charles-bridge-karluv-most/",
+        "https://en.wikipedia.org/wiki/Charles_Bridge"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Prague_07-2016_view_from_Lesser_Town_Tower_of_Charles_Bridge_img3.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "P06",
+      "place": {
+        "en": "Near the west end of the bridge",
+        "cs": "U západního konce mostu"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/P06.webp",
+      "sceneAlt": {
+        "en": "Two unequal towers joined by an arch, with the tall pointed-roof tower on the right when viewed from the bridge",
+        "cs": "Dvě různě vysoké věže propojené obloukem, vyšší se špičatou střechou vpravo při pohledu z mostu"
+      },
+      "question": {
+        "en": "Which towers stand at the end of the bridge ahead?",
+        "cs": "Které věže vidíš na konci mostu před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Old Town Bridge Tower",
+            "cs": "Staroměstská mostecká věž"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Powder Gate",
+            "cs": "Prašná brána"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Tábor Gate at Vyšehrad",
+            "cs": "Vyšehradská Táborská brána"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Lesser Town Bridge Towers",
+            "cs": "Malostranské mostecké věže"
+          }
+        }
+      ],
+      "correctChoiceId": "d",
+      "feedback": {
+        "en": "At the west end of Charles Bridge, you can see the two Lesser Town Bridge Towers joined by the gateway.",
+        "cs": "Na západním konci Karlova mostu vidíš dvě Malostranské mostecké věže spojené průchodem."
+      },
+      "sourceUrls": [
+        "https://prague.eu/en/objevujte/lesser-town-bridge-towers-malostranske-mostecke-veze/"
+      ],
+      "photoReferenceUrls": [
+        "https://prague.eu/en/objevujte/lesser-town-bridge-towers-malostranske-mostecke-veze/"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "P07",
+      "place": {
+        "en": "By the Grand Priory Mill on Kampa",
+        "cs": "U Velkopřevorského mlýna na Kampě"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/P07.webp",
+      "sceneAlt": {
+        "en": "A large waterwheel in a narrow channel between houses",
+        "cs": "Velké vodní kolo v úzkém korytě mezi domy"
+      },
+      "question": {
+        "en": "Which Prague side channel can you recognise by its narrow bed and mill wheel?",
+        "cs": "Které pražské rameno poznáš podle úzkého koryta a mlýnského kola?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Čertovka",
+            "cs": "Čertovka"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Libeň side channel",
+            "cs": "Libenské rameno"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Holešovice harbour channel",
+            "cs": "Holešovický přístavní kanál"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Modřany navigation channel",
+            "cs": "Modřanský plavební kanál"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "By Kampa, you can see the mill wheel in the Čertovka, a side channel of the Vltava.",
+        "cs": "U Kampy vidíš mlýnské kolo na Čertovce, bočním rameni Vltavy."
+      },
+      "sourceUrls": [
+        "https://prague.eu/en/objevujte/kampa/",
+        "https://en.wikipedia.org/wiki/%C4%8Certovka"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:%C4%8Certovka_-_Velkop%C5%99evorsk%C3%BD_ml%C3%BDn.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "P08",
+      "place": {
+        "en": "On Grand Priory Square",
+        "cs": "Na Velkopřevorském náměstí"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/P08.webp",
+      "sceneAlt": {
+        "en": "A low wall round an open square, densely covered with colourful shapes",
+        "cs": "Nízká zeď otevřeného náměstí, hustě pokrytá různobarevnými tvary"
+      },
+      "question": {
+        "en": "What is this painted wall in Lesser Town called?",
+        "cs": "Jak se jmenuje tato malovaná zeď na Malé Straně?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Hunger Wall",
+            "cs": "Hladová zeď"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Lennon Wall",
+            "cs": "Lennonova zeď"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Vyšehrad ramparts",
+            "cs": "Hradby Vyšehradu"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Wallenstein Garden walls",
+            "cs": "Zdi Valdštejnské zahrady"
+          }
+        }
+      ],
+      "correctChoiceId": "b",
+      "feedback": {
+        "en": "On Grand Priory Square, you are looking at the colourful layers of the Lennon Wall.",
+        "cs": "Na Velkopřevorském náměstí stojíš před barevnými vrstvami Lennonovy zdi."
+      },
+      "sourceUrls": [
+        "https://prague.eu/en/objevujte/john-lennon-wall-zed-johna-lennona/",
+        "https://en.wikipedia.org/wiki/Lennon_Wall"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Lennon_Wall,_August_2014.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "P09",
+      "place": {
+        "en": "In the Third Courtyard of Prague Castle",
+        "cs": "Na třetím nádvoří Pražského hradu"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/P09.webp",
+      "sceneAlt": {
+        "en": "A tall tower, a gateway with a gold mosaic and flying buttresses",
+        "cs": "Vysoká věž, portál se zlatou mozaikou a opěrné oblouky"
+      },
+      "question": {
+        "en": "Which Prague building has a triple entrance with a gold mosaic and a tall south tower?",
+        "cs": "Kterou pražskou stavbu poznáš podle trojitého portálu se zlatou mozaikou a vysoké jižní věže?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "St Vitus Cathedral",
+            "cs": "Katedrála svatého Víta"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "St George’s Basilica",
+            "cs": "Bazilika svatého Jiří"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Church of Our Lady before Týn",
+            "cs": "Týnský chrám"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "St Nicholas Church",
+            "cs": "Chrám sv. Mikuláše"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "From the Third Courtyard of Prague Castle, you can see the south tower and Golden Gate of St Vitus Cathedral.",
+        "cs": "Ze třetího nádvoří Pražského hradu vidíš jižní věž a Zlatou bránu katedrály svatého Víta."
+      },
+      "sourceUrls": [
+        "https://www.hrad.cz/en/prague-castle-for-visitors/objects-for-visitors/st.-vitus-cathedral-10330",
+        "https://en.wikipedia.org/wiki/St._Vitus_Cathedral"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:St_Vitus_Cathedral,_Prague,_south_side.jpeg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Trojitý jižní portál se zlatou mozaikou je vedle vysoké věže a nad lodí jsou opěrné oblouky. Týn má dvojici věží, sv. Jiří červené čelo a sv. Mikuláš velkou kupoli."
+    },
+    {
+      "id": "P10",
+      "place": {
+        "en": "By the row of small houses tight against the rampart",
+        "cs": "U řady domků těsně pod hradbou"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/P10.webp",
+      "sceneAlt": {
+        "en": "Tiny coloured façades fitted against a rampart along a narrow paved street",
+        "cs": "Drobná barevná průčelí vestavěná těsně pod hradbu v úzké dlážděné ulici"
+      },
+      "question": {
+        "en": "Which Prague lane runs alongside this row of tiny colourful houses?",
+        "cs": "Která pražská ulička vede podél této řady nízkých barevných domků?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "New World",
+            "cs": "Nový Svět"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Nerudova",
+            "cs": "Nerudova"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Jánský vršek",
+            "cs": "Jánský vršek"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Golden Lane",
+            "cs": "Zlatá ulička"
+          }
+        }
+      ],
+      "correctChoiceId": "d",
+      "feedback": {
+        "en": "In Golden Lane, you are beside the tiny colourful houses built against the rampart.",
+        "cs": "Ve Zlaté uličce stojíš u nízkých barevných domků vestavěných těsně pod hradbu."
+      },
+      "sourceUrls": [
+        "https://prague.eu/cs/objevujte/prazsky-hrad-zlata-ulicka/"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/Category:Zlat%C3%A1_uli%C4%8Dka_u_Daliborky"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Barevné nízké domky stojí v řadě přímo pod obrannou zdí, s prostorem pro pěší užším než běžná ulice. Nový Svět, Nerudova a Jánský vršek nemají tuto řadu pod hradbou."
+    }
+  ]
+}
