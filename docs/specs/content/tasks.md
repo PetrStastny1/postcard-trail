@@ -28,4 +28,4 @@ Požadavky jsou v [spec.md](spec.md). WP1 je první, protože ostatní stavějí
 
 ## Předání oblasti
 
-- [ ] Review, QA a `.handoff/REPORT.md` oblasti.
+- [x] Review, QA a `.handoff/REPORT.md` oblasti.
