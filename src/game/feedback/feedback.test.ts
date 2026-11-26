@@ -54,6 +54,8 @@ class FakeOscillator {
 class FakeAudioContext {
   static instances: FakeAudioContext[] = []
   static initialState: 'suspended' | 'running' = 'running'
+  static constructorError: Error | undefined
+  static resumeRejects = false
   state: 'suspended' | 'running' | 'closed' | 'interrupted' = FakeAudioContext.initialState
   currentTime = 10
   destination = { kind: 'destination' }
@@ -61,6 +63,7 @@ class FakeAudioContext {
   gains: FakeGain[] = []
   oscillators: FakeOscillator[] = []
   constructor() {
+    if (FakeAudioContext.constructorError) throw FakeAudioContext.constructorError
     FakeAudioContext.instances.push(this)
   }
   createGain() {
@@ -75,6 +78,7 @@ class FakeAudioContext {
   }
   resume() {
     this.resumeCalls += 1
+    if (FakeAudioContext.resumeRejects) return Promise.reject(new Error('NotAllowedError'))
     this.state = 'running'
     return Promise.resolve()
   }
@@ -115,6 +119,8 @@ function onlyContext(): FakeAudioContext {
 beforeEach(() => {
   FakeAudioContext.instances = []
   FakeAudioContext.initialState = 'running'
+  FakeAudioContext.constructorError = undefined
+  FakeAudioContext.resumeRejects = false
   vibrations = []
   installAudioContext()
   installNavigator(true)
@@ -187,6 +193,61 @@ test('S8.1 S9.2 without Web Audio unlock and play do not throw and vibration sti
   assert.doesNotThrow(() => feedback.restoreAfterAd())
   feedback.play('postcard')
   assert.deepEqual(vibrations, [25, 35])
+})
+
+test('S8.1 a rejected resume leaves no unhandled rejection and the next unlock tries again', async () => {
+  const unhandled: unknown[] = []
+  const onUnhandled = (reason: unknown) => unhandled.push(reason)
+  process.on('unhandledRejection', onUnhandled)
+  try {
+    FakeAudioContext.initialState = 'suspended'
+    FakeAudioContext.resumeRejects = true
+    const feedback = createFeedback(allOn)
+    feedback.unlock()
+    const context = onlyContext()
+    await new Promise((resolve) => setImmediate(resolve))
+    assert.deepEqual(unhandled, [])
+    assert.equal(context.state, 'suspended')
+
+    FakeAudioContext.resumeRejects = false
+    feedback.unlock()
+    assert.equal(context.resumeCalls, 2)
+    assert.equal(context.state, 'running')
+  } finally {
+    process.off('unhandledRejection', onUnhandled)
+  }
+})
+
+test('S8.1 S9.2 a context constructor that throws leaves the game without sound and vibration works', () => {
+  FakeAudioContext.constructorError = new Error('NotSupportedError')
+  const feedback = createFeedback(allOn)
+  assert.doesNotThrow(() => feedback.unlock())
+  FakeAudioContext.constructorError = undefined
+  assert.doesNotThrow(() => feedback.unlock())
+  assert.equal(FakeAudioContext.instances.length, 0, 'a failed context is not retried')
+  assert.doesNotThrow(() => feedback.play('correct'))
+  assert.doesNotThrow(() => feedback.setSoundEnabled(false))
+  assert.doesNotThrow(() => feedback.muteForAd())
+  assert.doesNotThrow(() => feedback.restoreAfterAd())
+  assert.deepEqual(vibrations, [25])
+})
+
+test('S8.2 S9.2 a context halted after unlock schedules no tones but still vibrates', () => {
+  const feedback = createFeedback(allOn)
+  feedback.unlock()
+  const context = onlyContext()
+  for (const halted of ['suspended', 'interrupted', 'closed'] as const) {
+    context.state = halted
+    feedback.play('correct')
+    feedback.play('postcard')
+  }
+  assert.equal(context.oscillators.length, 0)
+  assert.deepEqual(vibrations, [25, 35, 25, 35, 25, 35])
+
+  context.state = 'suspended'
+  feedback.unlock()
+  feedback.play('choice')
+  assert.equal(context.oscillators.length, 1, 'tones play again once the context runs')
 })
 
 function playedTones(cue: FeedbackCue) {

@@ -71,6 +71,7 @@ export function createFeedback(settings: FeedbackSettings): Feedback {
   let vibrationEnabled = settings.vibration
   let mutedForAd = false
   let audio: { context: AudioContext; master: GainNode } | undefined
+  let audioUnavailable = false
 
   function masterLevel(): number {
     return soundEnabled && !mutedForAd ? MASTER_VOLUME : 0
@@ -102,7 +103,9 @@ export function createFeedback(settings: FeedbackSettings): Feedback {
 
   // iOS Safari reports 'interrupted' after a call or Siri, so anything short of running is resumed.
   function resumeIfHalted(context: AudioContext): void {
-    if (context.state !== 'running' && context.state !== 'closed') void context.resume()
+    if (context.state === 'running' || context.state === 'closed') return
+    // A rejected resume only means the browser does not allow sound yet; the next player input tries again.
+    context.resume().catch(() => undefined)
   }
 
   function vibrate(durationMs: number): void {
@@ -116,8 +119,15 @@ export function createFeedback(settings: FeedbackSettings): Feedback {
         resumeIfHalted(audio.context)
         return
       }
-      if (typeof AudioContext === 'undefined') return
-      const context = new AudioContext()
+      if (audioUnavailable || typeof AudioContext === 'undefined') return
+      let context: AudioContext
+      try {
+        context = new AudioContext()
+      } catch {
+        // The API can exist and still refuse a context (NotSupportedError); the game then runs without sound.
+        audioUnavailable = true
+        return
+      }
       const master = context.createGain()
       master.connect(context.destination)
       audio = { context, master }
@@ -129,7 +139,8 @@ export function createFeedback(settings: FeedbackSettings): Feedback {
       if (mutedForAd) return
       const vibrationMs = CUE_VIBRATION_MS[cue]
       if (vibrationEnabled && vibrationMs !== undefined) vibrate(vibrationMs)
-      if (!audio || !soundEnabled) return
+      // A halted context keeps its clock still, so tones scheduled now would all sound at once on resume.
+      if (!audio || !soundEnabled || audio.context.state !== 'running') return
       for (const tone of CUE_TONES[cue]) playTone(audio.context, audio.master, tone)
     },
 
