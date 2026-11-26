@@ -95,15 +95,17 @@ Scénáře: ke každé kontrole existuje test na záměrně poškozených datech
 ## R5 Zástupné scény
 
 - `npm run content:placeholders` vytvoří pro každou zastávku bez finální scény soubor `public/scenes/<id>.webp` (WebP 1280 × 1280, nejvýš 150 000 B) a zapíše `public/scenes/placeholders.json` (`{ "stopIds": [...] }`, odsazení 2 mezery, koncový nový řádek) se všemi zástupnými ID v pořadí katalogu a tras. ID zastávek bere z `src/content/catalog.json` a `src/content/routes/*.json`. Příkaz bere `--root <adresář>` se stejnou strukturou jako repozitář, výchozí kořen je repozitář.
-- Scéna je abstraktní kompozice v ilustrační paletě BRIEF §9. Barvy generátor čte z proměnných `--scene-*` v `src/styles/tokens.css`, chybějící proměnná je chyba. Kompozici popisuje čistá funkce `sceneComposition(stopId, palette)` (tvary a jejich barvy v pořadí kreslení), Chromium ji jen vykreslí. Kompozice je pro stejné ID vždy stejná (seed z ID, bez `Math.random()`) a liší se mezi zastávkami: náladou (den, soumrak, večer, noc, podzemí) a tvarem siluety. Jediný text ve scéně je ID zastávky na štítku, nikdy název volby, místa ani města.
-- Finální scéna je soubor, jehož ID v `placeholders.json` není. Generátor ji nikdy nepřepíše ani nepřidá do seznamu.
+- Scéna je abstraktní kompozice v ilustrační paletě BRIEF §9. Barvy generátor čte z proměnných `--scene-*` v `src/styles/tokens.css`, chybějící proměnná je chyba. Kompozici popisuje čistá funkce `sceneComposition(stopId, palette)` (tvary a jejich barvy v pořadí kreslení), Chromium ji jen vykreslí. Kompozice je pro stejné ID vždy stejná (seed z ID, bez `Math.random()`) a liší se mezi zastávkami: náladou (den, soumrak, večer, noc, podzemí) a tvarem siluety. Jediný text ve scéně je ID zastávky na štítku, nikdy název volby, místa ani města. Štítek má barvu z palety, která se liší od barvy země nebo nástupiště pod ním, a text má jinou barvu než štítek.
+- Finální scéna je soubor, jehož ID v `placeholders.json` není. Generátor ji nikdy nepřepíše ani nepřidá do seznamu. Seznam je proto libovolná podmnožina ID katalogu ve stejném pořadí, ne nutně všech 200.
+- Skryté soubory ve `public/scenes/` (název začíná tečkou, např. `.DS_Store`) generátor ignoruje: nekreslí je, nemaže je a nehlásí je.
+- Poškozený `placeholders.json` (neplatný JSON, chybí `stopIds` nebo to není pole řetězců) ukončí běh kódem 1 se zprávou, která uvádí cestu k souboru, bez stack trace, a nic se nezapíše.
 - Zástupná scéna, jejíž ID je v seznamu, ale už není v katalogu, se smaže a ze seznamu vypadne. Jiný soubor ve `public/scenes/` (finální scéna bez zastávky, soubor jiného typu) generátor nesmaže: skončí kódem 1, vypíše každý takový soubor na řádek a nic nezapíše.
 - Převod do WebP dělá Chromium z Playwrightu (`canvas.toDataURL('image/webp', kvalita)`), bez nové závislosti. Generátor zkouší kvality 0,85, 0,7, 0,55 a 0,4 a vezme první, se kterou je scéna do limitu; když se nevejde ani s nejnižší, skončí chybou. Když Chromium chybí, skončí kódem 1 se zprávou, která uvádí `npx playwright install chromium`. Nic se nezapíše, dokud nejsou vykreslené všechny scény. Když není co vykreslit (všechny scény jsou finální), prohlížeč se nespouští.
 - Generátor se spouští ručně a výstup se commituje. `npm test` prohlížeč nespouští.
 
 Scénáře:
 
-- Běh nad repozitářem vytvoří 200 scén a seznam s 200 ID, opakovaný běh dá stejné soubory (žádný diff).
+- Běh nad repozitářem bez finálních scén vytvoří 200 scén a seznam s 200 ID. Opakovaný běh na stejném systému dá bajtově stejné soubory (žádný diff). Na jiném systému se může lišit vykreslení ID na štítku, protože písmo `system-ui` je závislé na OS; kompozice (`sceneComposition`) je stejná všude.
 - Soubor `PAR01.webp`, který v seznamu není, zůstane po běhu beze změny a do seznamu se nepřidá.
 - Zástupná scéna s ID mimo katalog se smaže, finální soubor s ID mimo katalog ukončí běh chybou s jeho cestou.
 - Bez nainstalovaného Chromia skončí běh kódem 1 se zprávou o `npx playwright install chromium` a ve `public/scenes/` nic nevznikne.

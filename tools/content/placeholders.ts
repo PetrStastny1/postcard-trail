@@ -40,6 +40,7 @@ export type SceneShape =
   | { kind: 'rect'; x: number; y: number; width: number; height: number; color: string }
   | { kind: 'roundedRect'; x: number; y: number; width: number; height: number; radius: number; color: string }
   | { kind: 'circle'; cx: number; cy: number; r: number; color: string }
+  | { kind: 'upperHalfCircle'; cx: number; cy: number; r: number; color: string }
   | { kind: 'polygon'; points: [number, number][]; color: string }
   | { kind: 'text'; text: string; x: number; y: number; fontSize: number; color: string }
 
@@ -113,6 +114,15 @@ interface StreetMood {
   windows: string
   ground: string
   ripple: string
+  plate: string
+  label: string
+}
+
+/** A backdrop with the label colours that stand out against its ground. */
+interface Backdrop {
+  shapes: SceneShape[]
+  plate: string
+  label: string
 }
 
 function streetMoods(palette: ScenePalette): StreetMood[] {
@@ -127,6 +137,8 @@ function streetMoods(palette: ScenePalette): StreetMood[] {
       windows: palette.cream,
       ground: palette.water,
       ripple: palette.reflection,
+      plate: palette.navy,
+      label: palette.light,
     },
     {
       skyTop: palette.water,
@@ -138,6 +150,8 @@ function streetMoods(palette: ScenePalette): StreetMood[] {
       windows: palette.light,
       ground: palette.water,
       ripple: palette.light,
+      plate: palette.navy,
+      label: palette.light,
     },
     {
       skyTop: palette.navy,
@@ -149,6 +163,8 @@ function streetMoods(palette: ScenePalette): StreetMood[] {
       windows: palette.stone,
       ground: palette.navy,
       ripple: palette.stone,
+      plate: palette.cream,
+      label: palette.navy,
     },
     {
       skyTop: palette.reflection,
@@ -160,6 +176,8 @@ function streetMoods(palette: ScenePalette): StreetMood[] {
       windows: palette.cream,
       ground: palette.leaf,
       ripple: palette.cream,
+      plate: palette.navy,
+      label: palette.light,
     },
   ]
 }
@@ -200,7 +218,7 @@ function windows(random: Sequence, baseY: number, color: string): SceneShape[] {
   return shapes
 }
 
-function streetScene(random: Sequence, mood: StreetMood): SceneShape[] {
+function streetScene(random: Sequence, mood: StreetMood): Backdrop {
   const horizon = random.between(820, 940)
   const shapes: SceneShape[] = [
     { kind: 'gradient', y: 0, height: horizon, from: mood.skyTop, to: mood.skyBottom },
@@ -223,15 +241,17 @@ function streetScene(random: Sequence, mood: StreetMood): SceneShape[] {
       color: mood.ripple,
     })
   }
-  return shapes
+  return { shapes, plate: mood.plate, label: mood.label }
 }
 
-function undergroundScene(random: Sequence, palette: ScenePalette): SceneShape[] {
+function undergroundScene(random: Sequence, palette: ScenePalette): Backdrop {
   const platform = random.between(860, 940)
   const tile = random.between(56, 96)
   const shapes: SceneShape[] = [{ kind: 'rect', x: 0, y: 0, width: sceneSize, height: platform, color: palette['underground-green'] }]
-  for (let y = random.between(380, 460); y < platform - tile / 2; y += tile) {
-    for (let x = (y / tile) % 2 === 0 ? 0 : -tile / 2; x < sceneSize; x += tile) {
+  const firstRow = random.between(380, 460)
+  for (let row = 0; firstRow + row * tile < platform - tile / 2; row++) {
+    const y = firstRow + row * tile
+    for (let x = row % 2 === 0 ? 0 : -tile / 2; x < sceneSize; x += tile) {
       shapes.push({ kind: 'rect', x: x + 3, y: y + 3, width: tile - 6, height: tile - 6, color: palette['underground-ivory'] })
     }
   }
@@ -239,7 +259,7 @@ function undergroundScene(random: Sequence, palette: ScenePalette): SceneShape[]
   const archWidth = sceneSize / arches
   for (let index = 0; index < arches; index++) {
     const cx = archWidth * index + archWidth / 2
-    shapes.push({ kind: 'circle', cx, cy: 380, r: archWidth * 0.42, color: palette.navy })
+    shapes.push({ kind: 'upperHalfCircle', cx, cy: 380, r: archWidth * 0.42, color: palette.navy })
     shapes.push({ kind: 'rect', x: cx - archWidth * 0.42, y: 380, width: archWidth * 0.84, height: 60, color: palette.navy })
   }
   const lamps = random.between(3, 6)
@@ -252,7 +272,7 @@ function undergroundScene(random: Sequence, palette: ScenePalette): SceneShape[]
     { kind: 'rect', x: 0, y: platform, width: sceneSize, height: sceneSize - platform, color: palette.navy },
     { kind: 'rect', x: 0, y: platform, width: sceneSize, height: 18, color: palette['underground-yellow'] },
   )
-  return shapes
+  return { shapes, plate: palette['underground-yellow'], label: palette.navy }
 }
 
 /** The placeholder scene of one stop. The same ID always gives the same composition. */
@@ -262,14 +282,14 @@ export function sceneComposition(stopId: string, palette: ScenePalette): SceneCo
     ...streetMoods(palette).map((mood) => () => streetScene(random, mood)),
     () => undergroundScene(random, palette),
   ])
-  const shapes = drawBackdrop()
+  const { shapes, plate, label } = drawBackdrop()
   const plateWidth = 520
   const plateHeight = 160
   const plateX = (sceneSize - plateWidth) / 2
   const plateY = random.between(1040, 1080)
   shapes.push(
-    { kind: 'roundedRect', x: plateX, y: plateY, width: plateWidth, height: plateHeight, radius: 32, color: palette.navy },
-    { kind: 'text', text: stopId, x: sceneSize / 2, y: plateY + plateHeight / 2, fontSize: 104, color: palette.light },
+    { kind: 'roundedRect', x: plateX, y: plateY, width: plateWidth, height: plateHeight, radius: 32, color: plate },
+    { kind: 'text', text: stopId, x: sceneSize / 2, y: plateY + plateHeight / 2, fontSize: 104, color: label },
   )
   return { size: sceneSize, shapes }
 }
@@ -283,8 +303,12 @@ export interface ScenePlan {
   unknownFiles: string[]
 }
 
-/** Decides what to draw, keep and delete. A file whose ID is not listed as placeholder is a final scene. */
-export function planScenes(stopIds: string[], listedPlaceholders: string[], sceneFiles: string[]): ScenePlan {
+/**
+ * Decides what to draw, keep and delete. A file whose ID is not listed as placeholder is a final scene.
+ * Hidden files such as `.DS_Store` come from the file manager, not from the scene workflow, so they are ignored.
+ */
+export function planScenes(stopIds: string[], listedPlaceholders: string[], directoryFiles: string[]): ScenePlan {
+  const sceneFiles = directoryFiles.filter((file) => !file.startsWith('.'))
   const listed = new Set(listedPlaceholders)
   const fileIds = new Set(sceneFiles.filter((file) => file.endsWith('.webp')).map((file) => file.slice(0, -'.webp'.length)))
   const catalogIds = new Set(stopIds)
@@ -306,7 +330,18 @@ export function planScenes(stopIds: string[], listedPlaceholders: string[], scen
 function readListedPlaceholders(root: string): string[] {
   const file = path.join(root, placeholdersPath)
   if (!existsSync(file)) return []
-  return (JSON.parse(readFileSync(file, 'utf8')) as { stopIds: string[] }).stopIds
+  let listing: unknown
+  try {
+    listing = JSON.parse(readFileSync(file, 'utf8'))
+  } catch (error) {
+    if (!(error instanceof SyntaxError)) throw error
+    throw new PlaceholderError([`${placeholdersPath}: not valid JSON (${error.message}); fix or delete the file`])
+  }
+  const stopIds = typeof listing === 'object' && listing !== null && 'stopIds' in listing ? listing.stopIds : undefined
+  if (!Array.isArray(stopIds) || !stopIds.every((stopId) => typeof stopId === 'string')) {
+    throw new PlaceholderError([`${placeholdersPath}: expected { "stopIds": string[] }; fix or delete the file`])
+  }
+  return stopIds
 }
 
 // Runs inside Chromium; it must not reference anything outside its own body.
@@ -330,6 +365,7 @@ function drawScene([composition, qualities, maxBytes]: [SceneComposition, number
     if (shape.kind === 'rect') context.rect(shape.x, shape.y, shape.width, shape.height)
     if (shape.kind === 'roundedRect') context.roundRect(shape.x, shape.y, shape.width, shape.height, shape.radius)
     if (shape.kind === 'circle') context.arc(shape.cx, shape.cy, shape.r, 0, Math.PI * 2)
+    if (shape.kind === 'upperHalfCircle') context.arc(shape.cx, shape.cy, shape.r, Math.PI, Math.PI * 2)
     if (shape.kind === 'polygon') shape.points.forEach(([x, y]) => context.lineTo(x, y))
     if (shape.kind === 'text') {
       context.font = `700 ${shape.fontSize}px system-ui, sans-serif`

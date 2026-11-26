@@ -112,6 +112,21 @@ describe('scene composition', () => {
     assert.equal(distinct.size, stopIds.length, 'every stop has its own backdrop, not only its own label')
   })
 
+  test('puts the label on a plate that stands out from the ground under it', () => {
+    for (const stopId of stopIds) {
+      const { shapes } = sceneComposition(stopId, palette)
+      const plateIndex = shapes.findIndex((shape) => shape.kind === 'roundedRect')
+      const plate = shapes[plateIndex]
+      const label = shapes[plateIndex + 1]
+      const ground = shapes
+        .slice(0, plateIndex)
+        .findLast((shape) => shape.kind === 'rect' && shape.x === 0 && shape.width === sceneSize && shape.y + shape.height === sceneSize)
+      assert.ok(plate.kind === 'roundedRect' && label.kind === 'text' && ground?.kind === 'rect', stopId)
+      assert.notEqual(plate.color, ground.color, `${stopId} plate blends into the ground`)
+      assert.notEqual(label.color, plate.color, stopId)
+    }
+  })
+
   test('does not call Math.random', () => {
     const source = readFileSync(generatorScript, 'utf8')
     assert.doesNotMatch(source, /Math\.random/)
@@ -127,6 +142,11 @@ describe('scene plan', () => {
   test('removes listed placeholders outside the catalog and reports final or foreign files outside it', () => {
     const plan = planScenes(['A01'], ['A01', 'OLD01'], ['A01.webp', 'OLD01.webp', 'GONE01.webp', 'notes.txt'])
     assert.deepEqual(plan, { placeholders: ['A01'], remove: ['OLD01'], unknownFiles: ['GONE01.webp', 'notes.txt'] })
+  })
+
+  test('ignores hidden files such as .DS_Store', () => {
+    const plan = planScenes(['A01'], [], ['.DS_Store', '.A01.webp.swp', '.hidden.webp'])
+    assert.deepEqual(plan, { placeholders: ['A01'], remove: [], unknownFiles: [] })
   })
 })
 
@@ -161,6 +181,40 @@ describe('placeholders CLI', () => {
     assert.deepEqual(readdirSync(scenes), ['GONE01.webp'])
   })
 
+  for (const [label, content, message] of [
+    ['invalid JSON', '{ "stopIds": [', /placeholders\.json: not valid JSON/],
+    ['no stopIds', '{}\n', /placeholders\.json: expected \{ "stopIds": string\[\] \}/],
+    ['stopIds of numbers', '{ "stopIds": [1] }\n', /placeholders\.json: expected \{ "stopIds": string\[\] \}/],
+  ] as const) {
+    test(`fails readably on a placeholders.json with ${label} and changes nothing`, () => {
+      const root = generatorRoot()
+      const scenes = path.join(root, 'public/scenes')
+      writeFileSync(path.join(scenes, 'placeholders.json'), content)
+
+      const result = runGenerator(root)
+
+      assert.equal(result.status, 1)
+      assert.match(result.stderr, message)
+      assert.doesNotMatch(result.stderr, /\n\s+at /, 'no stack trace')
+      assert.deepEqual(readdirSync(scenes), ['placeholders.json'])
+      assert.equal(readFileSync(path.join(scenes, 'placeholders.json'), 'utf8'), content)
+    })
+  }
+
+  test('ignores a .DS_Store in the scenes folder', () => {
+    const root = generatorRoot()
+    const scenes = path.join(root, 'public/scenes')
+    writeFileSync(path.join(scenes, '.DS_Store'), 'finder metadata')
+    writeFileSync(path.join(scenes, 'TST01.webp'), 'final TST01')
+    writeFileSync(path.join(scenes, 'TST02.webp'), 'final TST02')
+
+    const result = runGenerator(root)
+
+    assert.equal(result.status, 0, result.stderr)
+    assert.equal(readFileSync(path.join(scenes, '.DS_Store'), 'utf8'), 'finder metadata')
+    assert.equal(readFileSync(path.join(scenes, 'placeholders.json'), 'utf8'), '{\n  "stopIds": []\n}\n')
+  })
+
   test('without Chromium fails readably with the install command and writes nothing', () => {
     const root = generatorRoot()
 
@@ -174,18 +228,32 @@ describe('placeholders CLI', () => {
 })
 
 describe('committed scenes', () => {
-  const listed = (JSON.parse(readFileSync(path.join(scenesDirectory, 'placeholders.json'), 'utf8')) as { stopIds: string[] }).stopIds
+  const listing = readFileSync(path.join(scenesDirectory, 'placeholders.json'), 'utf8')
+  const listed = (JSON.parse(listing) as { stopIds: string[] }).stopIds
 
-  test('list every catalog stop as placeholder in catalog order with a final newline', () => {
-    assert.deepEqual(listed, stopIds)
+  // Delivering a final scene removes its ID from the list, so the list is any catalog-ordered subset, not all stops.
+  test('list placeholders as catalog stops in catalog order without duplicates and with a final newline', () => {
     assert.equal(stopIds.length, 200)
-    assert.equal(new Set(listed).size, listed.length)
-    assert.ok(readFileSync(path.join(scenesDirectory, 'placeholders.json'), 'utf8').endsWith(']\n}\n'))
+    assert.equal(new Set(listed).size, listed.length, 'no duplicates')
+    const catalogPositions = listed.map((stopId) => stopIds.indexOf(stopId))
+    assert.deepEqual(
+      listed.filter((_, index) => catalogPositions[index] === -1),
+      [],
+      'every listed ID is a catalog stop',
+    )
+    assert.ok(
+      catalogPositions.every((position, index) => index === 0 || position > catalogPositions[index - 1]),
+      'listed IDs follow catalog order',
+    )
+    assert.ok(listing.endsWith('\n'))
+    assert.ok(!listing.endsWith('\n\n'))
   })
 
   test('are a 1280 × 1280 WebP of at most 150 kB for every stop and nothing else', () => {
     assert.deepEqual(
-      readdirSync(scenesDirectory).sort(),
+      readdirSync(scenesDirectory)
+        .filter((file) => !file.startsWith('.'))
+        .sort(),
       [...stopIds.map((stopId) => `${stopId}.webp`), 'placeholders.json'].sort(),
     )
     for (const stopId of stopIds) {
