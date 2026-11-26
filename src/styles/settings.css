@@ -1,0 +1,104 @@
+.settings {
+  --side: max(var(--space-4), env(safe-area-inset-left), env(safe-area-inset-right));
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  max-width: 32rem;
+  margin: 0 auto;
+  padding: var(--space-4) var(--side) max(var(--space-4), env(safe-area-inset-bottom));
+}
+
+.setting-heading {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-control);
+  font-weight: var(--weight-bold);
+}
+
+.setting-choices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.setting-choice,
+.setting-switch {
+  min-height: var(--hit-target);
+  border: var(--border) solid var(--color-ink);
+  border-radius: var(--radius-md);
+  background: var(--color-on-ink);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-tight);
+}
+
+.setting-choice[aria-pressed='true'] {
+  background: var(--color-ink);
+  color: var(--color-on-ink);
+}
+
+.setting-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.setting-switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+}
+
+.switch-track {
+  position: relative;
+  flex: none;
+  width: var(--hit-target);
+  height: var(--space-6);
+  border: var(--border) solid var(--color-ink);
+  border-radius: var(--radius-full);
+  background: var(--color-paper);
+}
+
+.switch-thumb {
+  position: absolute;
+  top: 50%;
+  left: var(--border);
+  width: var(--space-4);
+  height: var(--space-4);
+  border-radius: var(--radius-full);
+  background: var(--color-ink);
+  transform: translateY(-50%);
+  transition: left var(--duration-choice) var(--ease-out);
+}
+
+[aria-checked='true'] .switch-track {
+  background: var(--color-ink);
+}
+
+[aria-checked='true'] .switch-thumb {
+  left: calc(100% - var(--space-4) - var(--border));
+  background: var(--color-on-ink);
+}
+
+.setting-note {
+  margin: var(--space-1) 0 0;
+  padding: 0 var(--space-3);
+  color: var(--color-ink-soft);
+  font-size: var(--text-small);
+  line-height: var(--leading-tight);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .switch-thumb {
+    transition: none;
+  }
+}
+
+:root[data-reduced-motion='true'] .switch-thumb {
+  transition: none;
+}
