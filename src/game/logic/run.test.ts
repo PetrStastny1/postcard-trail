@@ -156,6 +156,62 @@ test('two different random sources give a different choice order on at least one
   }
 })
 
+/** Sort rank of each source choice's English and Czech label, so the label sets order the choices differently. */
+interface LabelRanks {
+  en: number[]
+  cs: number[]
+}
+
+const labelSets: Record<string, LabelRanks> = {
+  // English sorts like the source order and Czech against it.
+  Alpha: { en: [0, 1, 2, 3], cs: [3, 2, 1, 0] },
+  // English sorts against the source order and Czech like it.
+  Omega: { en: [3, 2, 1, 0], cs: [0, 1, 2, 3] },
+  // Both languages share the text, in an order unrelated to the source.
+  Sigma: { en: [2, 0, 3, 1], cs: [2, 0, 3, 1] },
+}
+
+/** The same route with its own English and Czech texts, so only the labels and the language differ. */
+function relabeled(source: Route, tag: string): Route {
+  const ranks = labelSets[tag]
+  const label = (field: string) => ({ en: `${tag} english ${field}`, cs: `${tag} česky ${field}` })
+  const choiceLabel = (choiceIndex: number, field: string) => {
+    const sameText = ranks.en.join() === ranks.cs.join()
+    const en = `${'ABCD'[ranks.en[choiceIndex]]} ${tag} english ${field}`
+    return { en, cs: sameText ? en : `${'ABCD'[ranks.cs[choiceIndex]]} ${tag} česky ${field}` }
+  }
+  return {
+    ...source,
+    name: label(source.id),
+    stops: source.stops.map((routeStop) => ({
+      ...routeStop,
+      place: label(`${routeStop.id} place`),
+      sceneAlt: label(`${routeStop.id} scene`),
+      question: label(`${routeStop.id} question`),
+      feedback: label(`${routeStop.id} feedback`),
+      choices: [
+        { ...routeStop.choices[0], label: choiceLabel(0, routeStop.choices[0].id) },
+        { ...routeStop.choices[1], label: choiceLabel(1, routeStop.choices[1].id) },
+        { ...routeStop.choices[2], label: choiceLabel(2, routeStop.choices[2].id) },
+        { ...routeStop.choices[3], label: choiceLabel(3, routeStop.choices[3].id) },
+      ],
+    })),
+  }
+}
+
+test('the choice order does not depend on labels or language and the run holds no text or locale', () => {
+  const choiceOrders = (run: RunState) => run.stops.map((runStop) => runStop.choiceIds)
+  const unlabeled = startCityRun({ route: paris, runId: 'run-1', untimed: false, random: seeded(7) })
+  assert.ok(unlabeled.stops.some((runStop, index) => runStop.choiceIds.join() !== paris.stops[index].choices.map((choice) => choice.id).join()))
+  for (const tag of Object.keys(labelSets)) {
+    const run = startCityRun({ route: relabeled(paris, tag), runId: 'run-1', untimed: false, random: seeded(7) })
+    assert.deepEqual(choiceOrders(run), choiceOrders(unlabeled), tag)
+    const json = JSON.stringify(run)
+    assert.doesNotMatch(json, /Alpha|Omega|Sigma|english|česky/)
+    assert.doesNotMatch(json, /"(en|cs|locale)"/)
+  }
+})
+
 const budapest = route('budapest', 'B')
 budapest.stops[8] = {
   ...stop('B09'),
@@ -537,6 +593,24 @@ test('a new run of the same route has a new ID, new permutations and nothing fro
   assert.equal(restarted.streak, 0)
   assert.equal(restarted.bestStreak, 0)
   assert.equal(restarted.phase, 'loading')
+})
+
+test('a run with an empty run, city, stop or choice ID and a skip request with an empty attempt ID are rejected', () => {
+  const stops = cityRun().stops
+  const base = { runId: 'run-1', mode: 'city' as const, cityId: 'paris', untimed: false, stops }
+  assert.throws(() => createRun({ ...base, runId: '' }), Error)
+  assert.throws(() => createRun({ ...base, cityId: '' }), Error)
+  assert.throws(() => createRun({ ...base, stops: [{ ...stops[0], stopId: '' }, ...stops.slice(1)] }), Error)
+  assert.throws(() => createRun({ ...base, stops: [...stops.slice(0, 9), { ...stops[9], choiceIds: ['', 'b', 'c', 'd'] }] }), Error)
+  assert.throws(() => startCityRun({ route: paris, runId: '', untimed: false, random: () => 0 }), Error)
+
+  const paused = pausedQuestion(atStopIndex(cityRun(), 2))
+  assert.throws(() => reduceRun(paused, { type: 'requestSkip', round: paused.round, attemptId: '' }), Error)
+  assert.throws(() => reduceRun(paused, { type: 'requestSkip', round: paused.round - 1, attemptId: '' }), Error)
+  const finished = next(answer(atStopIndex(cityRun(), 9), true))
+  assert.equal(finished.phase, 'summary')
+  assert.throws(() => reduceRun(finished, { type: 'requestSkip', round: finished.round, attemptId: '' }), Error)
+  assert.equal(reduceRun(paused, { type: 'requestSkip', round: paused.round, attemptId: 'ad-1' }).skipAttemptId, 'ad-1')
 })
 
 test('the reducer does not change the run it receives', () => {

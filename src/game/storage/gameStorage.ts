@@ -33,7 +33,8 @@ export class GameStorage {
   readonly #tabId: string
   /** Last value read from or written for each section, used once the section is memory-only. */
   readonly #memory = new Map<StorageKey, string | null>()
-  readonly #memoryOnlyKeys = new Set<StorageKey>()
+  /** Why each section is memory-only: its store call threw, or a newer build wrote it. */
+  readonly #memoryOnlyKeys = new Map<StorageKey, 'failed' | 'newer'>()
   #notice: 'none' | 'pending' | 'taken' = 'none'
 
   constructor(store: KeyValueStore, tabId: string) {
@@ -100,7 +101,7 @@ export class GameStorage {
     if (!this.#ownsRun(run.runId)) return { status: 'notOwner' }
     const summary = applyCompletedCityRun(this.loadProgress(), { cityId: run.cityId, correct: run.correct }, catalog)
     this.#writeSection(storageKeys.progress, summary.progress)
-    this.#writeSection(storageKeys.activeRun, null)
+    this.#removeCompletedRun(storageKeys.progress)
     return { status: 'completed', summary }
   }
 
@@ -108,7 +109,7 @@ export class GameStorage {
     const dailyResults = recordDailyRun(this.loadDailyResults(), run)
     if (!this.#ownsRun(run.runId)) return { status: 'notOwner' }
     this.#writeSection(storageKeys.dailyResults, dailyResults)
-    this.#writeSection(storageKeys.activeRun, null)
+    this.#removeCompletedRun(storageKeys.dailyResults)
     return { status: 'completed', dailyResults }
   }
 
@@ -121,6 +122,16 @@ export class GameStorage {
 
   #activeRun(): ActiveRun | null {
     return parseActiveRun(this.#readSection(storageKeys.activeRun))
+  }
+
+  /**
+   * Rewards that failed to reach the store leave the stored run in place, so a reload can complete it again;
+   * the run is then removed only from this session's memory. A newer rewards section would never take this
+   * build's rewards, so there the run is removed as usual.
+   */
+  #removeCompletedRun(rewardsKey: StorageKey): void {
+    if (this.#memoryOnlyKeys.get(rewardsKey) === 'failed') this.#keepInMemory(storageKeys.activeRun, 'failed')
+    this.#writeSection(storageKeys.activeRun, null)
   }
 
   #ownsRun(runId: string): boolean {
@@ -138,10 +149,10 @@ export class GameStorage {
           this.#memory.set(key, stored)
           return section.status === 'usable' ? section.data : undefined
         }
-        this.#keepInMemory(key)
+        this.#keepInMemory(key, 'newer')
       } catch {
         // An unavailable store is expected (private mode, blocked storage); the session continues in memory.
-        this.#keepInMemory(key)
+        this.#keepInMemory(key, 'failed')
       }
     }
     const remembered = decodeSection(this.#memory.get(key) ?? null)
@@ -158,12 +169,12 @@ export class GameStorage {
       this.#store.write(key, encoded)
     } catch {
       // A failed write (quota, blocked storage) keeps the section in memory, so the session reads its own data back.
-      this.#keepInMemory(key)
+      this.#keepInMemory(key, 'failed')
     }
   }
 
-  #keepInMemory(key: StorageKey): void {
-    this.#memoryOnlyKeys.add(key)
+  #keepInMemory(key: StorageKey, reason: 'failed' | 'newer'): void {
+    this.#memoryOnlyKeys.set(key, reason)
     if (this.#notice === 'none') this.#notice = 'pending'
   }
 }

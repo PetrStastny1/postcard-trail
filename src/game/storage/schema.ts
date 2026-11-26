@@ -154,6 +154,8 @@ function isRunState(value: unknown): value is RunState {
     new Set(value.usedLifelines).size === value.usedLifelines.length &&
     (value.skipAttemptId === null || isNonEmptyString(value.skipAttemptId)) &&
     results.length === answeredStops &&
+    results.every((result, index) => result.stopId === stops[index].stopId) &&
+    (phase !== 'summary' || stopIndex === stops.length - 1) &&
     value.correct === results.filter((result) => result.outcome === 'correct').length &&
     isCount(value.streak) &&
     isCount(value.bestStreak)
