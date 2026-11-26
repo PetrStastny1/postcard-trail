@@ -13,8 +13,8 @@ Požadavky jsou v [spec.md](spec.md). WP1 je první, protože ostatní stavějí
 
 ## WP2 Zástupné scény a velikost buildu (`wp/content/scenes`)
 
-- [ ] Generátor `tools/content/placeholders.ts` a 200 scén v `public/scenes/` s `placeholders.json` (R5).
-- [ ] Test buildu: trasy v samostatných chuncích, `dist` do 36 MB (R7).
+- [x] Generátor `tools/content/placeholders.ts` a 200 scén v `public/scenes/` s `placeholders.json` (R5).
+- [x] Test buildu: trasy v samostatných chuncích, `dist` do 36 MB (R7).
 
 ## WP3 Validátor (`wp/content/validator`)
 

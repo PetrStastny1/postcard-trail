@@ -14,7 +14,7 @@ Oblast převádí městské soubory `docs/game/cities/*.md` do dat hry, drží k
 | `src/content/index.ts` | `loadRoute(cityId)`, lazy-load tras. | ručně |
 | `tools/content/validate.ts` | Validátor, `npm run validate:content`. | ručně |
 | `tools/content/placeholders.ts` | Generátor zástupných scén, `npm run content:placeholders`. | ručně |
-| `public/scenes/<stopId>.webp` | Scéna 1280 × 1280. | generátor nebo výtvarník |
+| `public/scenes/<stopId>.webp` | Scéna 1280 × 1280, commituje se. | generátor nebo výtvarník |
 | `public/scenes/placeholders.json` | `{ "stopIds": string[] }`, scény, které jsou zatím zástupné. | generátor |
 
 ## R1 Import městských souborů
@@ -96,10 +96,21 @@ Scénáře: ke každé kontrole existuje test na záměrně poškozených datech
 
 ## R5 Zástupné scény
 
-- `npm run content:placeholders` vytvoří pro každou zastávku bez finální scény soubor `public/scenes/<id>.webp` (WebP 1280 × 1280, do 150 kB) a zapíše `public/scenes/placeholders.json` se všemi zástupnými ID v pořadí katalogu.
-- Scéna je abstraktní kompozice v ilustrační paletě BRIEF §9 (proměnné `--scene-*` v `src/styles/tokens.css`), odlišená podle zastávky a deterministická pro stejné ID. Jediný text ve scéně je ID zastávky, nikdy název volby, místa ani města.
-- Finální scéna je soubor, jehož ID v `placeholders.json` není. Generátor ji nikdy nepřepíše ani nepřidá do seznamu.
-- Převod do WebP dělá Chromium z Playwrightu (`canvas.toDataURL('image/webp')`), bez nové závislosti.
+- `npm run content:placeholders` vytvoří pro každou zastávku bez finální scény soubor `public/scenes/<id>.webp` (WebP 1280 × 1280, nejvýš 150 000 B) a zapíše `public/scenes/placeholders.json` (`{ "stopIds": [...] }`, odsazení 2 mezery, koncový nový řádek) se všemi zástupnými ID v pořadí katalogu a tras. ID zastávek bere z `src/content/catalog.json` a `src/content/routes/*.json`. Příkaz bere `--root <adresář>` se stejnou strukturou jako repozitář, výchozí kořen je repozitář.
+- Scéna je abstraktní kompozice v ilustrační paletě BRIEF §9. Barvy generátor čte z proměnných `--scene-*` v `src/styles/tokens.css`, chybějící proměnná je chyba. Kompozici popisuje čistá funkce `sceneComposition(stopId, palette)` (tvary a jejich barvy v pořadí kreslení), Chromium ji jen vykreslí. Kompozice je pro stejné ID vždy stejná (seed z ID, bez `Math.random()`) a liší se mezi zastávkami: náladou (den, soumrak, večer, noc, podzemí) a tvarem siluety. Jediný text ve scéně je ID zastávky na štítku, nikdy název volby, místa ani města. Štítek má barvu z palety, která se liší od barvy země nebo nástupiště pod ním, a text má jinou barvu než štítek.
+- Finální scéna je soubor, jehož ID v `placeholders.json` není. Generátor ji nikdy nepřepíše ani nepřidá do seznamu. Seznam je proto libovolná podmnožina ID katalogu ve stejném pořadí, ne nutně všech 200.
+- Skryté soubory ve `public/scenes/` (název začíná tečkou, např. `.DS_Store`) generátor ignoruje: nekreslí je, nemaže je a nehlásí je.
+- Poškozený `placeholders.json` (neplatný JSON, chybí `stopIds` nebo to není pole řetězců) ukončí běh kódem 1 se zprávou, která uvádí cestu k souboru, bez stack trace, a nic se nezapíše.
+- Zástupná scéna, jejíž ID je v seznamu, ale už není v katalogu, se smaže a ze seznamu vypadne. Jiný soubor ve `public/scenes/` (finální scéna bez zastávky, soubor jiného typu) generátor nesmaže: skončí kódem 1, vypíše každý takový soubor na řádek a nic nezapíše.
+- Převod do WebP dělá Chromium z Playwrightu (`canvas.toDataURL('image/webp', kvalita)`), bez nové závislosti. Generátor zkouší kvality 0,85, 0,7, 0,55 a 0,4 a vezme první, se kterou je scéna do limitu; když se nevejde ani s nejnižší, skončí chybou. Když Chromium chybí, skončí kódem 1 se zprávou, která uvádí `npx playwright install chromium`. Nic se nezapíše, dokud nejsou vykreslené všechny scény. Když není co vykreslit (všechny scény jsou finální), prohlížeč se nespouští.
+- Generátor se spouští ručně a výstup se commituje. `npm test` prohlížeč nespouští.
+
+Scénáře:
+
+- Běh nad repozitářem bez finálních scén vytvoří 200 scén a seznam s 200 ID. Opakovaný běh na stejném systému dá bajtově stejné soubory (žádný diff). Na jiném systému se může lišit vykreslení ID na štítku, protože písmo `system-ui` je závislé na OS; kompozice (`sceneComposition`) je stejná všude.
+- Soubor `PAR01.webp`, který v seznamu není, zůstane po běhu beze změny a do seznamu se nepřidá.
+- Zástupná scéna s ID mimo katalog se smaže, finální soubor s ID mimo katalog ukončí běh chybou s jeho cestou.
+- Bez nainstalovaného Chromia skončí běh kódem 1 se zprávou o `npx playwright install chromium` a ve `public/scenes/` nic nevznikne.
 
 ## R6 Pravidla pro ostatní oblasti
 
@@ -108,4 +119,4 @@ Scénáře: ke každé kontrole existuje test na záměrně poškozených datech
 
 ## R7 Velikost buildu
 
-Test buildu ověří, že build se vstupem, který používá `catalog` a `loadRoute`, má každou trasu v samostatném chunku a vstupní chunk neobsahuje texty tras, a že celý `dist` včetně 200 scén má nejvýš 36 MB.
+Test buildu (`tools/content/build-size.test.ts`) spustí Vite build přes jeho API do dočasného adresáře se vstupem, který importuje `catalog` a `loadRoute`, a s `public/` repozitáře. Ověří, že každá z tras je v samostatném chunku mimo vstupní chunk, vstupní chunk neobsahuje texty tras (otázky PAR01 a B09 v obou jazycích) a celý `dist` včetně 200 scén má nejvýš 36 MB (36 000 000 B, BRIEF §14). Naměřené velikosti (vstupní chunk i gzip, součet scén, celý build) vypíše do výstupu testu.
