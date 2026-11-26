@@ -30,7 +30,11 @@ export interface FeedbackSettings {
 }
 
 export interface Feedback {
-  /** Call from the handler of the first player input (pointerdown, keydown). Creates or resumes the audio context. */
+  /**
+   * Call from the handler of every player input (pointerdown, keydown), not only the first: a resume the browser
+   * refused, or an iOS interruption, is retried only on the next call. Creates or resumes the audio context;
+   * cheap and idempotent.
+   */
   unlock(): void
   play(cue: FeedbackCue): void
   setSoundEnabled(enabled: boolean): void
@@ -44,6 +48,7 @@ export interface Feedback {
 export function createFeedback(settings: FeedbackSettings): Feedback
 ```
 
+- App volá `unlock()` v handleru každého vstupu hráče (`pointerdown`, `keydown`), ne jen prvního. Obnova zvuku po odmítnutém `resume()` nebo po přerušení na iOS (`interrupted`) spoléhá na další `unlock()`. Volání je levné a idempotentní: kontext už běží nebo se obnovuje, tak nic nedělá.
 - Nastavení zvuku a vibrací ukládá oblast logic, feedback dostává jen jejich hodnoty.
 - Úvod je tichý: app na úvodní obrazovce `play` nevolá.
 - Každý podnět má viditelný ekvivalent v UI (zajišťuje app).
@@ -137,7 +142,7 @@ Platí pro adaptéry Poki a CrazyGames.
 
 ### P8 Zvuk
 
-- **S8.1** Před `unlock()` se nevytváří `AudioContext` a `play` nehraje zvuk. `unlock()` vytvoří kontext s hlavní hlasitostí 0,6, nebo obnoví existující kontext, který neběží (`suspended`, na iOS Safari po přerušení `interrupted`). Uzavřený kontext (`closed`) neobnovuje. Opakované `unlock()` nový kontext nevytváří. Odmítnutí `resume()` nic nehází, zvuk se zkusí obnovit při dalším `unlock()`. Bez Web Audio API, nebo když vytvoření kontextu selže (např. `NotSupportedError`), hra pokračuje bez zvuku: `unlock()` nic nehází, další pokus o vytvoření kontextu už nedělá a `play` jen vibruje.
+- **S8.1** Před `unlock()` se nevytváří `AudioContext` a `play` nehraje zvuk. `unlock()` vytvoří kontext s hlavní hlasitostí 0,6, nebo obnoví existující kontext, který neběží (`suspended`, na iOS Safari po přerušení `interrupted`). Uzavřený kontext (`closed`) neobnovuje. Opakované `unlock()` nový kontext nevytváří a během probíhající obnovy `resume()` znovu nevolá. Kontext, který po vytvoření rovnou běží, neobnovuje. Odmítnutí `resume()` nic nehází, zvuk se zkusí obnovit při dalším `unlock()`. Bez Web Audio API, nebo když vytvoření kontextu selže (např. `NotSupportedError`), hra pokračuje bez zvuku: `unlock()` nic nehází, další pokus o vytvoření kontextu už nedělá a `play` jen vibruje.
 - **S8.2** Podněty (syntéza oscilátory s obálkou bez lupnutí):
 
 | Podnět | Zvuk |
@@ -156,7 +161,7 @@ Zvolené hodnoty (pojmenované konstanty v `src/game/feedback/index.ts`). Každ�
 | `wrong` | trojúhelník 196 Hz (G3), 220 ms, vrchol 0,3 |
 | `postcard` | sinus 523,25, 659,25 a 783,99 Hz (C dur) současně, 500 ms, vrchol 0,18 na hlas |
 
-Tóny se plánují jen do kontextu ve stavu `running`. V jiném stavu (`suspended`, `interrupted`, `closed`) `play` nevytvoří oscilátor, aby podněty z doby pozastavení nezazněly po obnovení najednou. Vibrace se tím nemění.
+Tóny se plánují do kontextu ve stavu `running` a do kontextu, na jehož obnovu (`resume()` z `unlock()`) se čeká. Nový i obnovovaný kontext přejde do `running` až asynchronně, takže `play` ve stejném handleru jako `unlock()` (např. první volba po obnovené otázce) zazní hned po rozběhnutí. Pozastavený kontext bez probíhající obnovy (`suspended`, `interrupted`, `closed`, i po odmítnutém `resume()`) oscilátor nedostane, aby podněty z doby pozastavení nezazněly po obnovení najednou. Vibrace se tím nemění.
 
 - **S8.3** `setSoundEnabled(false)` ztlumí hlavní hlasitost ihned (v aktuálním čase kontextu, naplánované změny se zruší), i probíhající tón, a další `play` nevytvoří oscilátor. Vypnutí před `unlock()` znamená, že kontext začne potichu. `setSoundEnabled(true)` vrátí 0,6.
 - **S8.4** `muteForAd()` ztlumí ihned. `restoreAfterAd()` vrátí uloženou úroveň: 0,6 při zapnutém zvuku, jinak ticho. Zapnutí zvuku během reklamy se projeví až po `restoreAfterAd()`.

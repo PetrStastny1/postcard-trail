@@ -6,7 +6,11 @@ export interface FeedbackSettings {
 }
 
 export interface Feedback {
-  /** Call from the handler of the first player input (pointerdown, keydown). Creates or resumes the audio context. */
+  /**
+   * Call from the handler of every player input (pointerdown, keydown), not only the first: a resume the browser
+   * refused, or an iOS interruption, is retried only on the next call. Creates or resumes the audio context;
+   * cheap and idempotent.
+   */
   unlock(): void
   play(cue: FeedbackCue): void
   setSoundEnabled(enabled: boolean): void
@@ -72,6 +76,8 @@ export function createFeedback(settings: FeedbackSettings): Feedback {
   let mutedForAd = false
   let audio: { context: AudioContext; master: GainNode } | undefined
   let audioUnavailable = false
+  // A new or resumed context reaches 'running' only asynchronously; a cue played in the same input handler must still sound.
+  let pendingResume: Promise<void> | undefined
 
   function masterLevel(): number {
     return soundEnabled && !mutedForAd ? MASTER_VOLUME : 0
@@ -103,9 +109,13 @@ export function createFeedback(settings: FeedbackSettings): Feedback {
 
   // iOS Safari reports 'interrupted' after a call or Siri, so anything short of running is resumed.
   function resumeIfHalted(context: AudioContext): void {
-    if (context.state === 'running' || context.state === 'closed') return
+    if (pendingResume || context.state === 'running' || context.state === 'closed') return
+    const resume = context.resume()
+    pendingResume = resume
     // A rejected resume only means the browser does not allow sound yet; the next player input tries again.
-    context.resume().catch(() => undefined)
+    resume.catch(() => undefined).finally(() => {
+      pendingResume = undefined
+    })
   }
 
   function vibrate(durationMs: number): void {
@@ -139,8 +149,8 @@ export function createFeedback(settings: FeedbackSettings): Feedback {
       if (mutedForAd) return
       const vibrationMs = CUE_VIBRATION_MS[cue]
       if (vibrationEnabled && vibrationMs !== undefined) vibrate(vibrationMs)
-      // A halted context keeps its clock still, so tones scheduled now would all sound at once on resume.
-      if (!audio || !soundEnabled || audio.context.state !== 'running') return
+      // A halted context keeps its clock still, so tones scheduled during a long pause would all sound at once on resume.
+      if (!audio || !soundEnabled || (audio.context.state !== 'running' && !pendingResume)) return
       for (const tone of CUE_TONES[cue]) playTone(audio.context, audio.master, tone)
     },
 

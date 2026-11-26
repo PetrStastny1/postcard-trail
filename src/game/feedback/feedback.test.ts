@@ -53,7 +53,8 @@ class FakeOscillator {
 
 class FakeAudioContext {
   static instances: FakeAudioContext[] = []
-  static initialState: 'suspended' | 'running' = 'running'
+  // Per the Web Audio spec a new context is 'suspended' and reaches 'running' only asynchronously.
+  static initialState: 'suspended' | 'running' = 'suspended'
   static constructorError: Error | undefined
   static resumeRejects = false
   state: 'suspended' | 'running' | 'closed' | 'interrupted' = FakeAudioContext.initialState
@@ -79,8 +80,9 @@ class FakeAudioContext {
   resume() {
     this.resumeCalls += 1
     if (FakeAudioContext.resumeRejects) return Promise.reject(new Error('NotAllowedError'))
-    this.state = 'running'
-    return Promise.resolve()
+    return Promise.resolve().then(() => {
+      this.state = 'running'
+    })
   }
   master(): FakeGain {
     const master = this.gains.find((gain) => gain.target === this.destination)
@@ -109,6 +111,10 @@ function installNavigator(withVibrate: boolean) {
   Object.defineProperty(globalThis, 'navigator', { value: fakeNavigator, configurable: true, writable: true })
 }
 
+function settle() {
+  return new Promise((resolve) => setImmediate(resolve))
+}
+
 function onlyContext(): FakeAudioContext {
   assert.equal(FakeAudioContext.instances.length, 1)
   const context = FakeAudioContext.instances[0]
@@ -118,7 +124,7 @@ function onlyContext(): FakeAudioContext {
 
 beforeEach(() => {
   FakeAudioContext.instances = []
-  FakeAudioContext.initialState = 'running'
+  FakeAudioContext.initialState = 'suspended'
   FakeAudioContext.constructorError = undefined
   FakeAudioContext.resumeRejects = false
   vibrations = []
@@ -156,12 +162,15 @@ test('S8.1 unlock creates one context with master volume 0.6', () => {
   assert.equal(FakeAudioContext.instances.length, 1)
 })
 
-test('S8.1 unlock resumes a suspended context, also on a repeated call', () => {
-  FakeAudioContext.initialState = 'suspended'
+test('S8.1 unlock resumes a suspended context, also on a repeated call', async () => {
   const feedback = createFeedback(allOn)
   feedback.unlock()
   const context = onlyContext()
   assert.equal(context.resumeCalls, 1)
+  feedback.unlock()
+  assert.equal(context.resumeCalls, 1, 'a resume in progress is not requested again')
+  await settle()
+  assert.equal(context.state, 'running')
   feedback.unlock()
   assert.equal(context.resumeCalls, 1, 'a running context is not resumed again')
   context.state = 'suspended'
@@ -170,13 +179,22 @@ test('S8.1 unlock resumes a suspended context, also on a repeated call', () => {
   assert.equal(FakeAudioContext.instances.length, 1)
 })
 
-test('S8.1 unlock resumes an interrupted context but not a closed one', () => {
+test('S8.1 a context that starts running is not resumed', () => {
+  FakeAudioContext.initialState = 'running'
+  const feedback = createFeedback(allOn)
+  feedback.unlock()
+  assert.equal(onlyContext().resumeCalls, 0)
+})
+
+test('S8.1 unlock resumes an interrupted context but not a closed one', async () => {
+  FakeAudioContext.initialState = 'running'
   const feedback = createFeedback(allOn)
   feedback.unlock()
   const context = onlyContext()
   context.state = 'interrupted'
   feedback.unlock()
   assert.equal(context.resumeCalls, 1)
+  await settle()
   context.state = 'closed'
   feedback.unlock()
   assert.equal(context.resumeCalls, 1, 'a closed context cannot be resumed')
@@ -200,18 +218,20 @@ test('S8.1 a rejected resume leaves no unhandled rejection and the next unlock t
   const onUnhandled = (reason: unknown) => unhandled.push(reason)
   process.on('unhandledRejection', onUnhandled)
   try {
-    FakeAudioContext.initialState = 'suspended'
     FakeAudioContext.resumeRejects = true
     const feedback = createFeedback(allOn)
     feedback.unlock()
     const context = onlyContext()
-    await new Promise((resolve) => setImmediate(resolve))
+    await settle()
     assert.deepEqual(unhandled, [])
     assert.equal(context.state, 'suspended')
+    feedback.play('choice')
+    assert.equal(context.oscillators.length, 0, 'a refused resume plays nothing')
 
     FakeAudioContext.resumeRejects = false
     feedback.unlock()
     assert.equal(context.resumeCalls, 2)
+    await settle()
     assert.equal(context.state, 'running')
   } finally {
     process.off('unhandledRejection', onUnhandled)
@@ -232,10 +252,35 @@ test('S8.1 S9.2 a context constructor that throws leaves the game without sound 
   assert.deepEqual(vibrations, [25])
 })
 
-test('S8.2 S9.2 a context halted after unlock schedules no tones but still vibrates', () => {
+test('S8.2 a cue played in the same handler as unlock sounds on a fresh context', () => {
+  const feedback = createFeedback(allOn)
+  feedback.unlock()
+  feedback.play('choice')
+  const context = onlyContext()
+  assert.equal(context.state, 'suspended', 'the fake context is still starting')
+  assert.equal(context.oscillators.length, 1)
+})
+
+test('S8.2 a cue played in the same handler as unlock sounds on a context being resumed', async () => {
   const feedback = createFeedback(allOn)
   feedback.unlock()
   const context = onlyContext()
+  await settle()
+  for (const halted of ['suspended', 'interrupted'] as const) {
+    context.state = halted
+    feedback.unlock()
+    feedback.play('choice')
+    assert.equal(context.state, halted, 'the fake context is still resuming')
+    await settle()
+  }
+  assert.equal(context.oscillators.length, 2)
+})
+
+test('S8.2 S9.2 a context halted after unlock schedules no tones but still vibrates', async () => {
+  const feedback = createFeedback(allOn)
+  feedback.unlock()
+  const context = onlyContext()
+  await settle()
   for (const halted of ['suspended', 'interrupted', 'closed'] as const) {
     context.state = halted
     feedback.play('correct')
@@ -246,6 +291,7 @@ test('S8.2 S9.2 a context halted after unlock schedules no tones but still vibra
 
   context.state = 'suspended'
   feedback.unlock()
+  await settle()
   feedback.play('choice')
   assert.equal(context.oscillators.length, 1, 'tones play again once the context runs')
 })
