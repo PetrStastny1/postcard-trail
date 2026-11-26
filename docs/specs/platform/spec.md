@@ -147,7 +147,16 @@ Platí pro adaptéry Poki a CrazyGames.
 | `wrong` | jeden měkký nízký tón |
 | `postcard` | krátký akord: tři tóny současně, do 600 ms |
 
-- **S8.3** `setSoundEnabled(false)` ztlumí hlavní hlasitost ihned, i probíhající tón, a další `play` nic nepřehraje. `setSoundEnabled(true)` vrátí 0,6.
+Zvolené hodnoty (pojmenované konstanty v `src/game/feedback/index.ts`). Každý tón jde přes vlastní obálku: od 0 náběh 4 ms na vrchol a lineární doběh na 0 v okamžiku zastavení oscilátoru. Obálky vedou do hlavní hlasitosti.
+
+| Podnět | Tóny |
+|---|---|
+| `choice` | trojúhelník 660 Hz, 30 ms, vrchol 0,25 |
+| `correct` | sinus 523,25 Hz (C5) 90 ms, hned po něm sinus 783,99 Hz (G5) 140 ms, vrchol 0,3 |
+| `wrong` | trojúhelník 196 Hz (G3), 220 ms, vrchol 0,3 |
+| `postcard` | sinus 523,25, 659,25 a 783,99 Hz (C dur) současně, 500 ms, vrchol 0,18 na hlas |
+
+- **S8.3** `setSoundEnabled(false)` ztlumí hlavní hlasitost ihned (v aktuálním čase kontextu, naplánované změny se zruší), i probíhající tón, a další `play` nevytvoří oscilátor. Vypnutí před `unlock()` znamená, že kontext začne potichu. `setSoundEnabled(true)` vrátí 0,6.
 - **S8.4** `muteForAd()` ztlumí ihned. `restoreAfterAd()` vrátí uloženou úroveň: 0,6 při zapnutém zvuku, jinak ticho. Zapnutí zvuku během reklamy se projeví až po `restoreAfterAd()`.
 
 ### P9 Vibrace

@@ -25,12 +25,12 @@ Závisí na balíčku 1.
 
 ## Balíček 3: feedback (zvuk a vibrace)
 
-- [ ] `createFeedback` podle veřejného rozhraní ve spec.md.
-- [ ] Odemčení zvuku prvním vstupem a hlasitost 0,6 (S8.1).
-- [ ] Syntéza podnětů `choice`, `correct`, `wrong`, `postcard` (S8.2).
-- [ ] Vypnutí zvuku a ztlumení po dobu reklamy (S8.3, S8.4).
-- [ ] Vibrace 25 ms a 35 ms podle nastavení (S9.1–S9.3).
-- [ ] Unit testy s nahrazeným `AudioContext` a `navigator.vibrate`.
+- [x] `createFeedback` podle veřejného rozhraní ve spec.md.
+- [x] Odemčení zvuku prvním vstupem a hlasitost 0,6 (S8.1).
+- [x] Syntéza podnětů `choice`, `correct`, `wrong`, `postcard` (S8.2).
+- [x] Vypnutí zvuku a ztlumení po dobu reklamy (S8.3, S8.4).
+- [x] Vibrace 25 ms a 35 ms podle nastavení (S9.1–S9.3).
+- [x] Unit testy s nahrazeným `AudioContext` a `navigator.vibrate`.
 
 ## Předání oblasti
 
