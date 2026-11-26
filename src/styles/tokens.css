@@ -1,0 +1,78 @@
+/*
+ * Design tokens for Postcard Trail: the only source of colours, type, spacing and motion.
+ * Interface palette from brief §9. The game uses one fixed warm palette, no dark mode.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* Interface colours */
+  --color-paper: #fff4e0;
+  --color-paper-deep: #f7e3bf;
+  --color-ink: #151f44;
+  --color-ink-soft: #3a4366;
+  --color-on-ink: #ffffff;
+  --color-accent: #ffbf36;
+  --color-on-accent: #151f44;
+  --color-correct: #186045;
+  --color-on-correct: #ffffff;
+  --color-wrong: #9c2e32;
+  --color-on-wrong: #ffffff;
+  --color-focus: #151f44;
+  --color-focus-halo: #ffbf36;
+  --color-separator: rgb(21 31 68 / 18%);
+  --color-scrim: rgb(21 31 68 / 72%);
+
+  /* Illustration palette, used by placeholder scenes and the title animation */
+  --scene-stone: #e4a855;
+  --scene-cream: #ffd796;
+  --scene-light: #fff0c8;
+  --scene-navy: #202740;
+  --scene-violet: #514568;
+  --scene-ochre: #91562f;
+  --scene-water: #426fad;
+  --scene-reflection: #e7a36c;
+  --scene-dusk: #d184a8;
+  --scene-leaf: #6d773f;
+
+  /* Typography */
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --text-display: clamp(1.5rem, 1rem + 2.5vw, 2.5rem); /* 24–40 px headings */
+  --text-title: 1.5rem;
+  --text-question: clamp(1.125rem, 1rem + 0.6vw, 1.5rem); /* 18–24 px */
+  --text-control: 1rem; /* choices and controls 16 px */
+  --text-small: 0.875rem;
+  --weight-regular: 400;
+  --weight-semibold: 600;
+  --weight-bold: 800;
+  --leading-tight: 1.15;
+  --leading-normal: 1.4;
+
+  /* Spacing: 4 px grid, 8 px default gap */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Shapes and sizes */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-full: 999px;
+  --border: 2px;
+  --focus-ring: 3px;
+  --hit-target: 44px;
+  --primary-height: 56px;
+  --play-max-width: 1120px;
+
+  /* Motion from brief §8 */
+  --ease-out: cubic-bezier(0.2, 0.7, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.45, 0, 0.55, 1);
+  --duration-choice: 120ms;
+  --duration-result: 220ms;
+  --duration-scene: 250ms;
+  --duration-postcard: 550ms;
+  --duration-title-loop: 8000ms;
+}
