@@ -792,6 +792,7 @@ test('a daily run whose result write fails stays stored and records one result a
   assert.deepEqual(storedRun(store), run)
   assert.equal(storage.loadActiveRun(), null)
   assert.deepEqual(storage.loadDailyResults(), { '2026-12-02': { cityId: 'rome', correct: 2 } })
+  assert.deepEqual(storage.completeDailyRun(run), { status: 'notOwner' })
 
   store.healed = true
   const reloaded = new GameStorage(store, 'tab-reloaded')
@@ -804,6 +805,29 @@ test('a daily run whose result write fails stays stored and records one result a
   assert.equal(store.values.get('daily-results'), v1({ '2026-12-02': { cityId: 'rome', correct: 2 } }))
   assert.equal(storedRun(store), undefined)
   assert.deepEqual(reloaded.completeDailyRun(restored), { status: 'notOwner' })
+})
+
+test('a city run whose progress write keeps failing reports its rewards again in every new session without saving them', () => {
+  const store = storeFailingWritesTo('progress')
+  const run = finish(cityRun('paris', 'run-1'), 9)
+  const first = new GameStorage(store, 'tab-a')
+  first.startRun(run)
+  assert.equal(first.completeCityRun(run, catalog).status, 'completed')
+  assert.equal(first.takeUnavailableNotice(), true)
+
+  for (const tabId of ['tab-b', 'tab-c']) {
+    const reloaded = new GameStorage(store, tabId)
+    const restored = reloaded.resumeRun()
+    assert.ok(restored)
+    assert.equal(restored.phase, 'summary')
+    const completion = reloaded.completeCityRun(restored, catalog)
+    assert.equal(completion.status === 'completed' && completion.summary.postcardEarned, true)
+    assert.equal(completion.status === 'completed' && completion.summary.newlyUnlockedCityId, 'london')
+    assert.equal(store.values.has('progress'), false)
+    assert.deepEqual(storedRun(store), run)
+    assert.equal(reloaded.takeUnavailableNotice(), true)
+    assert.equal(reloaded.takeUnavailableNotice(), false)
+  }
 })
 
 test('a store whose reads fail still keeps session data readable', () => {

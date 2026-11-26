@@ -121,6 +121,8 @@ export function startCityRun(options: { route: Route; runId: string; untimed: bo
 }
 
 export function reduceRun(run: RunState, action: RunAction): RunState {
+  // An empty ID would not survive the save, and `null` already means no attempt.
+  if (action.type === 'requestSkip' && action.attemptId === '') throw new Error('An ad attempt ID must not be empty.')
   if (run.phase === 'summary') return run
   if (action.type === 'adResult') return applyAdResult(run, action.result)
   if (action.round !== run.round) return run
@@ -176,8 +178,6 @@ export function reduceRun(run: RunState, action: RunAction): RunState {
       return run.paused ? { ...run, paused: false, skipAttemptId: null } : run
 
     case 'requestSkip':
-      // An empty ID would not survive the save, and `null` already means no attempt.
-      if (action.attemptId === '') throw new Error('An ad attempt ID must not be empty.')
       return canUseSkip(run) && run.skipAttemptId === null ? { ...run, skipAttemptId: action.attemptId } : run
 
     case 'next': {
