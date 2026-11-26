@@ -1,0 +1,104 @@
+# Specifikace oblasti content
+
+Oblast převádí městské soubory `docs/game/cities/*.md` do dat hry, drží katalog vydaných tras, načítá trasy po částech, validuje obsah a vyrábí zástupné scény. Kontrakt dat je `src/content/types.ts`, rozhraní pro ostatní oblasti `docs/plan/API.md`. Rozhodnutí jsou v `docs/decisions/LOG.md`.
+
+## Soubory
+
+| Cesta | Obsah | Kdo ho píše |
+|---|---|---|
+| `tools/content/import.ts` | Importér, `npm run content:import`. | ručně |
+| `tools/content/city-coordinates.json` | Souřadnice center měst se zdrojem každé hodnoty. | ručně |
+| `src/content/routes/<cityId>.json` | Jedna trasa (`Route`), commituje se. | importér |
+| `src/content/catalog.json` | Katalog (`Catalog`). `cities` píše importér, `versions` jen člověk nebo importér s výslovným datem. | importér + ručně |
+| `src/content/catalog.ts` | `export const catalog: Catalog`. | ručně |
+| `src/content/index.ts` | `loadRoute(cityId)`, lazy-load tras. | ručně |
+| `tools/content/validate.ts` | Validátor, `npm run validate:content`. | ručně |
+| `tools/content/placeholders.ts` | Generátor zástupných scén, `npm run content:placeholders`. | ručně |
+| `public/scenes/<stopId>.webp` | Scéna 1280 × 1280. | generátor nebo výtvarník |
+| `public/scenes/placeholders.json` | `{ "stopIds": string[] }`, scény, které jsou zatím zástupné. | generátor |
+
+## R1 Import městských souborů
+
+Importér přečte všech 20 městských souborů z pořadí v BRIEF §5 a zapíše `src/content/routes/<cityId>.json` a `cities` v `src/content/catalog.json`. Texty přenáší 1:1, mění jen typografii nutnou ke zpracování (odstraní tučné značky a koncovou tečku za poslední volbou). Výstup je deterministický: JSON s odsazením 2 mezery, klíče v pořadí podle `types.ts`, koncový nový řádek.
+
+Mapování:
+
+| Markdown | Data |
+|---|---|
+| název souboru | `Route.id`, `CatalogCity.id` |
+| `# <CS> / <EN>` (nebo jen `# <název>` pro oba jazyky) | `name.cs`, `name.en` |
+| `**Pohlednice** — scéna <ID>.` | `postcardQuestionId` |
+| `**Ověřeno** — D. M. RRRR.` | `verifiedOn` všech zastávek (`YYYY-MM-DD`) |
+| `## <ID> · Lehká / Těžká / Expert` | `id`, `difficulty` `easy` / `hard` / `expert` |
+| `**Místo CS / EN**` | `place` |
+| `**Popis scény CS / EN**` | `sceneAlt` |
+| `**CS**`, `**EN**` | `question` (text do posledního `?` včetně) a čtyři volby oddělené ` · ` nebo ` / `; tučná je správná |
+| `**Po odpovědi CS**`, `**After answering EN**` | `feedback` |
+| `**Stabilní**` / `**Může se změnit (<fakt>)**` | `stability` `stable` / `changeable`, u `changeable` `changeableFact` = text v závorce |
+| odkazy na řádku stálosti | `photoReferenceUrls` = odkazy s textem „fotografický podklad“, `sourceUrls` = ostatní |
+| `**Rozlišovací znak**` | `distinguishingFeature` |
+| `**Scéna**` | nepřenáší se, je to výrobní pokyn pro ilustraci |
+
+- Volby mají ID `a`, `b`, `c`, `d` podle pořadí ve zdroji. `correctChoiceId` je ID tučné volby. `sceneAsset` je `scenes/<id>.webp`.
+- Pohlednice v katalogu: `stopId` = `postcardQuestionId`, `sceneAsset` téže zastávky, `sentence` = její `feedback`.
+- Souřadnice bere importér z `tools/content/city-coordinates.json` (WGS84, 4 desetinná místa, u každého města zdroj). Nové město musí mít řádek v tabulce.
+
+Scénáře:
+
+- Import nad repozitářem vytvoří 20 tras a katalog, druhé spuštění soubory nezmění (žádný diff).
+- B09 má otázku „Na kterou linku metra právě čekáš?“ / „Which metro line are you waiting for?“, volby M1, M2, M3, M4 v tomto pořadí a správnou M1.
+- LIS03 a B09 jsou `changeable` s `changeableFact`, ostatních 198 je `stable` bez `changeableFact`.
+- Zastávka, u které CS a EN označí tučně jinou pozici, nemá právě jednu tučnou volbu, nemá čtyři volby, postrádá povinné pole nebo má neznámou obtížnost, import ukončí nenulovým kódem a čitelnou chybou s ID zastávky. Nic se nezapíše.
+- Město bez řádku v tabulce souřadnic import ukončí chybou.
+
+## R2 Katalog a verze katalogu
+
+- `cities` jsou vydaná města v pořadí odemykání podle BRIEF §5.
+- `versions` jsou seřazené vzestupně podle `effectiveUtcDate`, každá verze obsahuje všechna do té doby vydaná města v pořadí odemykání a pozdější verze jen přidává města na konec.
+- Poslední verze má `orderedCityIds` shodné s pořadím `cities`.
+- Datum první verze je `2026-12-01` (LOG, k potvrzení Petrem) a je zapsané jen v `src/content/catalog.json`, nikde v kódu.
+- Importér `versions` zachová. Když se seznam vydaných měst liší od poslední verze, vyžaduje parametr `--effective-date=YYYY-MM-DD` a přidá novou verzi. Bez něj skončí chybou a nic nezapíše.
+
+## R3 Načítání tras
+
+- `src/content/catalog.ts` exportuje `catalog: Catalog` staticky.
+- `src/content/index.ts` exportuje `loadRoute(cityId: string): Promise<Route>`. Každá trasa je v buildu ve vlastním chunku a vstupní chunk texty tras neobsahuje.
+- Neznámé `cityId` vrátí odmítnutý promise s chybou, která ID uvádí.
+
+## R4 Validace obsahu
+
+`npm run validate:content` (součást `npm test` i `npm run build`) zkontroluje data a při jakékoli chybě skončí nenulovým kódem a vypíše seznam chyb, každou na řádek s ID trasy nebo zastávky. Nikdy nevypíše stack trace. Cestu ke kořeni dat jde předat parametrem (`--root <adresář>` se stejnou strukturou jako repozitář), výchozí je repozitář.
+
+Pořadí: nejdřív se ověří existence souborů a struktura JSON (typy polí, povinná pole, n-tice čtyř voleb, lokalizované texty v `en` i `cs`). Věcné kontroly běží jen nad strukturálně platnými daty.
+
+Kontroly:
+
+1. Složka `src/content/routes` existuje, počet tras se rovná počtu měst v katalogu a ID tras odpovídají katalogu i názvům souborů.
+2. Katalog má 20 měst v pořadí BRIEF §5, splňuje R2 a souřadnice leží v rozsahu Evropy (zeměpisná šířka 34–72, délka −25 až 50, pokrývá Reykjavík i města §5 řazená v M49 do Asie).
+3. Každá trasa má právě 10 zastávek, ID zastávek jsou jedinečná napříč katalogem a odpovídají vzoru `^[A-Z]+[0-9]{2}$`, `postcardQuestionId` je jedna ze zastávek trasy a pohlednice v katalogu jí odpovídá.
+4. Obtížnost podle pořadí: zastávky 1–4 `easy`, 5–8 `hard`, 9–10 `expert`. Expertní zastávky mají `distinguishingFeature`.
+5. Čtyři volby mají různá ID a v každém jazyce různé neprázdné popisky. `correctChoiceId` je jedna z nich.
+6. `sceneAsset` je `scenes/<id>.webp`, `sourceUrls` a `photoReferenceUrls` mají aspoň jednu adresu `https://`, `verifiedOn` je platné datum `YYYY-MM-DD`, `stability` je `stable` nebo `changeable`, `changeableFact` je neprázdný právě u `changeable`.
+7. B09 zobrazuje přesně „Na kterou linku metra právě čekáš?“ / „Which metro line are you waiting for?“ a volby M1, M2, M3, M4 v tomto pořadí ve zdroji.
+8. Otázky na stát nebo státní vlajku jsou jen PAR02 a P01. Pozná je podle klíčových slov v anglické i české otázce (vlajka a stát / země, flag a country / state). Na současných datech kontrola najde právě PAR02 a P01, jinde nic.
+9. Únik odpovědi (K7): `question` ani `sceneAlt` v žádném jazyce neobsahuje popisek správné volby, porovnává se bez ohledu na velikost písmen a diakritiku. Žádný text v `src/i18n/*.json` (pokud existují) neobsahuje popisek správné volby žádné zastávky jako celé slovo či slovní spojení. `place` se nekontroluje, protože je to text výsledku (R6).
+10. Generovaná data odpovídají zdroji: import městských souborů v paměti dá stejné trasy a stejné `cities` jako commitnuté soubory.
+11. Scény: pro každou zastávku existuje `public/scenes/<id>.webp`, je to WebP 1280 × 1280 a má nejvýš 150 kB. `public/scenes/placeholders.json` má tvar `{ "stopIds": string[] }`, obsahuje jen existující ID bez duplicit. Ve složce nejsou scény bez zastávky.
+
+Scénáře: ke každé kontrole existuje test na záměrně poškozených datech a aspoň jeden test spustí validátor jako proces nad vadnou kopií dat a ověří nenulový kód a čitelný výpis.
+
+## R5 Zástupné scény
+
+- `npm run content:placeholders` vytvoří pro každou zastávku bez finální scény soubor `public/scenes/<id>.webp` (WebP 1280 × 1280, do 150 kB) a zapíše `public/scenes/placeholders.json` se všemi zástupnými ID v pořadí katalogu.
+- Scéna je abstraktní kompozice v ilustrační paletě BRIEF §9 (proměnné `--scene-*` v `src/styles/tokens.css`), odlišená podle zastávky a deterministická pro stejné ID. Jediný text ve scéně je ID zastávky, nikdy název volby, místa ani města.
+- Finální scéna je soubor, jehož ID v `placeholders.json` není. Generátor ji nikdy nepřepíše ani nepřidá do seznamu.
+- Převod do WebP dělá Chromium z Playwrightu (`canvas.toDataURL('image/webp')`), bez nové závislosti.
+
+## R6 Pravidla pro ostatní oblasti
+
+- `place` je text pro výsledek zastávky. Na obrazovce otázky (i v denní výzvě a po obnovení) se nezobrazuje, protože u 30 zastávek obsahuje název správné volby.
+- Pod zástupnou scénou (ID v `placeholders.json`) aplikace ukáže `sceneAlt` v aktuálním jazyce.
+
+## R7 Velikost buildu
+
+Test buildu ověří, že build se vstupem, který používá `catalog` a `loadRoute`, má každou trasu v samostatném chunku a vstupní chunk neobsahuje texty tras, a že celý `dist` včetně 200 scén má nejvýš 36 MB.
