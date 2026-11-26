@@ -80,6 +80,15 @@ describe('the validator as a process', () => {
     assert.doesNotMatch(result.stderr, /^\s+at /m)
   })
 
+  test('reports a catalog that is a directory without a stack trace', () => {
+    const root = copyContent()
+    rmSync(path.join(root, catalogPath))
+    mkdirSync(path.join(root, catalogPath))
+    const result = runValidator(root)
+    assert.equal(result.status, 1)
+    assert.equal(result.stderr, 'Content validation failed:\nsrc/content/catalog.json: cannot read (EISDIR)\n')
+  })
+
   test('reports a missing data folder without a stack trace', () => {
     const result = runValidator(path.join(copyContent(), 'missing'))
     assert.equal(result.status, 1)
@@ -127,6 +136,13 @@ describe('structure', () => {
       'paris PAR03: "choices[1].label" must be an object with "en" and "cs" strings',
       'paris stops[10]: stop must be an object',
     ])
+  })
+
+  test('a routes path that is a file is reported', () => {
+    const root = copyContent()
+    rmSync(path.join(root, routesDir), { recursive: true })
+    writeFileSync(path.join(root, routesDir), '')
+    assert.deepEqual(validateContent(root), ['src/content/routes: cannot read (ENOTDIR)'])
   })
 
   test('a catalog without cities is reported', () => {
@@ -387,9 +403,13 @@ describe('country and flag questions', () => {
     editStop(root, 'rome', 'ROM03', (stop) => {
       stop.question.cs = 'Ve kterém státě stojíš?'
     })
+    editStop(root, 'rome', 'ROM04', (stop) => {
+      stop.question.cs = 'V kolika státech platí tahle mince?'
+    })
     assert.deepEqual(factProblems(root), [
       'rome ROM02: asks about a country or a flag, only PAR02 and P01 may',
       'rome ROM03: asks about a country or a flag, only PAR02 and P01 may',
+      'rome ROM04: asks about a country or a flag, only PAR02 and P01 may',
     ])
   })
 })
@@ -429,6 +449,21 @@ describe('answer leaks (K7)', () => {
     ])
   })
 
+  test('a leak in an i18n file whose root is a string is reported at (root)', () => {
+    const root = copyContent()
+    writeJson(root, 'src/i18n/en.json', 'Take the siklo up the hill')
+    assert.deepEqual(validateContent(root), [
+      'src/i18n/en.json (root): reveals "Sikló", the correct choice of stop B02',
+    ])
+  })
+
+  test('an i18n path that is a file is reported', () => {
+    const root = copyContent()
+    mkdirSync(path.join(root, 'src'), { recursive: true })
+    writeFileSync(path.join(root, 'src/i18n'), '')
+    assert.deepEqual(validateContent(root), ['src/i18n: cannot read (ENOTDIR)'])
+  })
+
   test('invalid JSON in i18n is reported', () => {
     const root = copyContent()
     mkdirSync(path.join(root, 'src/i18n'), { recursive: true })
@@ -449,6 +484,23 @@ describe('source match', () => {
       'paris: route differs from docs/game/cities/paris.md, run npm run content:import',
       'catalog paris: city differs from docs/game/cities/paris.md, run npm run content:import',
     ])
+  })
+
+  test('a coordinates row for a city that is not released is reported', () => {
+    const root = copyContent()
+    const coordinatesPath = 'tools/content/city-coordinates.json'
+    const table = readJson<Record<string, unknown>>(root, coordinatesPath)
+    writeJson(root, coordinatesPath, { ...table, tallinn: { lat: 59.437, lon: 24.7454, source: 'Wikidata Q1770' } })
+    assert.deepEqual(validateContent(root), [
+      'tools/content/city-coordinates.json: tallinn is not a released city',
+    ])
+  })
+
+  test('a city file that is a directory is reported', () => {
+    const root = copyContent()
+    rmSync(path.join(root, 'docs/game/cities/oslo.md'))
+    mkdirSync(path.join(root, 'docs/game/cities/oslo.md'))
+    assert.deepEqual(validateContent(root), ['source: cannot read (EISDIR)'])
   })
 
   test('city files the importer cannot read are reported without a stack trace', () => {

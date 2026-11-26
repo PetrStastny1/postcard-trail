@@ -9,6 +9,7 @@ const repoRoot = path.resolve(import.meta.dirname, '../..')
 const routesDir = 'src/content/routes'
 const catalogPath = 'src/content/catalog.json'
 const i18nDir = 'src/i18n'
+const coordinatesPath = 'tools/content/city-coordinates.json'
 
 const locales: Locale[] = ['en', 'cs']
 const releasedCityCount = 20
@@ -24,7 +25,7 @@ const metroStop = {
 // Word forms are matched on folded text, so `zemekouli` (globe) or `statue` do not count.
 const countryQuestionWords: Record<Locale, RegExp> = {
   en: /\b(flags?|country|countries|states?)\b/,
-  cs: /\b(vlajk\w*|vlajce|stat|statu|state|statem|staty|statni\w*|zem|zeme|zemi|zemim|zemich|zememi)\b/,
+  cs: /\b(vlajk\w*|vlajce|stat(u|e|em|y|um|ech|ni\w*)?|zem|zeme|zemi|zemim|zemich|zememi)\b/,
 }
 
 /** Lines prefixed with the route, stop or file they belong to. */
@@ -157,13 +158,29 @@ function catalogStructureProblems(catalog: unknown): Problems {
   return problems
 }
 
+/** A file system error such as EISDIR or ENOTDIR, reported as a problem line instead of a stack trace. */
+function isFileSystemError(error: unknown): error is NodeJS.ErrnoException & { code: string } {
+  return error instanceof Error && 'code' in error && typeof error.code === 'string' && 'syscall' in error
+}
+
 function readJson(root: string, relativePath: string, problems: Problems): unknown {
   try {
     return JSON.parse(readFileSync(path.join(root, relativePath), 'utf8'))
   } catch (error) {
-    if (!(error instanceof SyntaxError)) throw error
-    problems.push(`${relativePath}: invalid JSON (${error.message})`)
+    if (isFileSystemError(error)) problems.push(`${relativePath}: cannot read (${error.code})`)
+    else if (error instanceof SyntaxError) problems.push(`${relativePath}: invalid JSON (${error.message})`)
+    else throw error
     return undefined
+  }
+}
+
+function readJsonFileNames(root: string, relativePath: string, problems: Problems): string[] {
+  try {
+    return readdirSync(path.join(root, relativePath)).filter((name) => name.endsWith('.json')).sort()
+  } catch (error) {
+    if (!isFileSystemError(error)) throw error
+    problems.push(`${relativePath}: cannot read (${error.code})`)
+    return []
   }
 }
 
@@ -184,7 +201,7 @@ function readCommittedContent(root: string, problems: Problems): CommittedConten
   const routesByFile = new Map<string, Route>()
   if (!existsSync(path.join(root, routesDir))) problems.push(`${routesDir}: directory not found`)
   else {
-    for (const file of readdirSync(path.join(root, routesDir)).filter((name) => name.endsWith('.json')).sort()) {
+    for (const file of readJsonFileNames(root, routesDir, problems)) {
       const fileCityId = file.slice(0, -'.json'.length)
       const fileProblemCount = problems.length
       const route = readJson(root, `${routesDir}/${file}`, problems)
@@ -397,13 +414,14 @@ function i18nProblems(root: string, routes: Route[]): Problems {
       return [...labels].map((label) => ({ stopId: stop.id, label }))
     }),
   )
-  for (const file of readdirSync(path.join(root, i18nDir)).filter((name) => name.endsWith('.json')).sort()) {
+  for (const file of readJsonFileNames(root, i18nDir, problems)) {
     const relativePath = `${i18nDir}/${file}`
     const messages = readJson(root, relativePath, problems)
     for (const { keyPath, text } of textStrings(messages, '')) {
+      const keyLabel = keyPath || '(root)'
       const leaks = correctChoices.filter(({ label }) => containsPhrase(text, label))
       for (const { stopId, label } of leaks) {
-        problems.push(`${relativePath} ${keyPath}: reveals "${label}", the correct choice of stop ${stopId}`)
+        problems.push(`${relativePath} ${keyLabel}: reveals "${label}", the correct choice of stop ${stopId}`)
       }
     }
   }
@@ -416,11 +434,20 @@ function sourceProblems(root: string, { catalog, routesByFile }: CommittedConten
   try {
     source = readContent(root)
   } catch (error) {
+    if (isFileSystemError(error)) {
+      const file = error.path ? ` ${path.relative(root, error.path)}` : ''
+      return [`source${file}: cannot read (${error.code})`]
+    }
     if (!(error instanceof ContentImportError)) throw error
     return error.message.split('\n').slice(1).map((problem) => `source ${problem}`)
   }
   const problems: Problems = []
   const sourceCityIds = source.cities.map((city) => city.id)
+  // readContent has already checked that the table is an object of valid rows.
+  const coordinateTable = JSON.parse(readFileSync(path.join(root, coordinatesPath), 'utf8')) as Record<string, unknown>
+  for (const cityId of Object.keys(coordinateTable).filter((candidate) => !sourceCityIds.includes(candidate))) {
+    problems.push(`${coordinatesPath}: ${cityId} is not a released city`)
+  }
   const catalogCityIds = catalog.cities.map((city) => city.id)
   if (!isDeepStrictEqual(sourceCityIds, catalogCityIds)) {
     problems.push(`catalog: cities must be ${sourceCityIds.join(', ')} in the order of BRIEF §5, ${hint}`)
