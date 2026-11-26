@@ -1011,23 +1011,40 @@ for (const environment of ['crazygames', 'local'] as const) {
   }
 }
 
-test('S10.2 crazygames: a muteAudio change reaches every listener once, other settings changes do not', async () => {
+test('S10.1 crazygames: an SDK that calls the settings listener on registration does not report the start value as a change', async () => {
+  const crazyGames = fakeCrazyGames('crazygames', 'resolves', true)
+  crazyGames.sdk.game.addSettingsChangeListener = (listener) => {
+    crazyGames.settingsListeners.push(listener)
+    listener(crazyGames.sdk.game.settings)
+  }
+  const adapter = crazyGamesAdapter(crazyGames.sdk)
+  const changes = recordPortalMute(adapter)
+
+  await adapter.init()
+
+  assert.equal(adapter.portalAudioMuted(), true)
+  assert.deepEqual(changes, [])
+  crazyGames.changeSettings({ muteAudio: false })
+  assert.deepEqual(changes, [false])
+})
+
+test('S10.2 crazygames: a muteAudio change reaches every listener once in registration order, other settings changes do not', async () => {
   const crazyGames = fakeCrazyGames()
   const adapter = crazyGamesAdapter(crazyGames.sdk)
-  const beforeInit = recordPortalMute(adapter)
+  const deliveries: string[] = []
+  adapter.onPortalAudioMutedChange((muted) => deliveries.push(`before init: ${muted}`))
   await adapter.init()
-  const afterInit = recordPortalMute(adapter)
+  adapter.onPortalAudioMutedChange((muted) => deliveries.push(`after init: ${muted}`))
 
   crazyGames.changeSettings({ muteAudio: true })
   assert.equal(adapter.portalAudioMuted(), true)
   crazyGames.changeSettings({ disableChat: true })
   crazyGames.changeSettings({ muteAudio: true })
-  assert.deepEqual(beforeInit, [true])
+  assert.deepEqual(deliveries, ['before init: true', 'after init: true'])
   crazyGames.changeSettings({ muteAudio: false })
 
   assert.equal(adapter.portalAudioMuted(), false)
-  assert.deepEqual(beforeInit, [true, false])
-  assert.deepEqual(afterInit, [true, false])
+  assert.deepEqual(deliveries, ['before init: true', 'after init: true', 'before init: false', 'after init: false'])
   assert.equal(crazyGames.settingsListeners.length, 1, 'the adapter subscribes to the SDK once')
   assert.deepEqual(crazyGames.calls, [], 'settings changes send nothing to the SDK')
 })
@@ -1061,6 +1078,30 @@ for (const [setup, environment, init] of [
     assert.equal(adapter.portalAudioMuted(), false)
     assert.equal(crazyGames.settingsListeners.length, 0)
     assert.deepEqual(changes, [])
+  })
+}
+
+for (const breakage of ['game.settings is missing', 'addSettingsChangeListener throws'] as const) {
+  test(`S10.3 crazygames: when ${breakage} init() resolves, portalAudioMuted() stays false and ads and signals still work`, async () => {
+    const crazyGames = fakeCrazyGames('crazygames', 'resolves', true)
+    if (breakage === 'game.settings is missing') Reflect.deleteProperty(crazyGames.sdk.game, 'settings')
+    else
+      crazyGames.sdk.game.addSettingsChangeListener = () => {
+        throw new Error('settings API unavailable')
+      }
+    const adapter = crazyGamesAdapter(crazyGames.sdk)
+    const changes = recordPortalMute(adapter)
+
+    await adapter.init()
+    crazyGames.changeSettings({ muteAudio: false })
+    crazyGames.changeSettings({ muteAudio: true })
+    adapter.loadingStarted()
+    await settle()
+
+    assert.equal(adapter.portalAudioMuted(), false)
+    assert.deepEqual(changes, [])
+    assert.equal(adapter.rewardedAdsOffered(), true)
+    assert.deepEqual(crazyGames.calls, ['loadingStart'])
   })
 }
 

@@ -86,13 +86,19 @@ export function createCrazyGamesAdapter({ development, openStorage, loadSdk }: C
       if (!sdk || sdk.environment === 'disabled') return
       adsOffered = true
       session.connect(sdk, sdk.game)
+      // Read before subscribing: an SDK that calls the listener on registration must not report the start value as a change.
       // Not routed through the session: the SDK calls the game here, so a running spot does not block it.
-      sdk.game.addSettingsChangeListener(({ muteAudio }) => {
-        if (muteAudio === portalAudioMuted) return
-        portalAudioMuted = muteAudio
-        for (const listener of portalAudioMutedListeners) listener(muteAudio)
-      })
-      portalAudioMuted = sdk.game.settings.muteAudio
+      try {
+        portalAudioMuted = sdk.game.settings.muteAudio
+        sdk.game.addSettingsChangeListener(({ muteAudio }) => {
+          if (muteAudio === portalAudioMuted) return
+          portalAudioMuted = muteAudio
+          for (const listener of portalAudioMutedListeners) listener(muteAudio)
+        })
+      } catch {
+        // A portal SDK without a working settings API must not fail init(): the game keeps its own sound setting.
+        portalAudioMuted = false
+      }
     },
     loadingStarted() {
       if (loadingSignal === 'start') return
