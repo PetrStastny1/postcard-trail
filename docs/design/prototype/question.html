@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Postcard Trail – question screen prototype</title>
+    <link rel="stylesheet" href="../../../src/styles/tokens.css" />
+    <link rel="stylesheet" href="./question.css" />
+  </head>
+  <body>
+    <div class="play" data-state="question">
+      <header class="play-bar">
+        <button class="icon-button" type="button" data-text="home-label" aria-label="Save and go to Home">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg>
+        </button>
+        <p class="play-title"><span data-text="city">Paris</span> · 4/10</p>
+        <button class="icon-button pause-button" type="button" data-text="pause-label" aria-label="Pause">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5v14M15 5v14" /></svg>
+        </button>
+      </header>
+
+      <main class="play-main" aria-labelledby="question">
+        <div class="trail-row">
+          <ol class="trail" data-text="trail-label" aria-label="Route, stop 4 of 10">
+            <li class="done"></li><li class="done"></li><li class="done"></li>
+            <li class="current" aria-current="step"></li>
+            <li></li><li></li><li></li><li></li><li></li><li></li>
+          </ol>
+          <p class="difficulty" data-text="difficulty">Easy</p>
+          <p class="streak"><span data-text="streak">Streak</span> <span class="streak-count">3</span></p>
+        </div>
+
+        <section class="scene" data-text="scene-label" aria-label="Scene">
+          <div class="scene-box">
+            <figure class="scene-frame">
+              <svg class="scene-art" viewBox="0 0 1280 1280" aria-hidden="true">
+                <defs>
+                  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#514568" />
+                    <stop offset="0.55" stop-color="#d184a8" />
+                    <stop offset="1" stop-color="#e7a36c" />
+                  </linearGradient>
+                </defs>
+                <rect width="1280" height="1280" fill="url(#sky)" />
+                <circle cx="930" cy="330" r="96" fill="#fff0c8" opacity="0.85" />
+                <path d="M0 760 L120 700 L220 730 L330 640 L460 690 L560 600 L700 660 L820 590 L960 650 L1080 610 L1280 680 V1280 H0 Z" fill="#514568" />
+                <path d="M0 860 L160 800 L300 840 L420 770 L560 820 L700 760 L860 820 L1000 770 L1140 810 L1280 780 V1280 H0 Z" fill="#91562f" />
+                <path d="M0 960 H1280 V1280 H0 Z" fill="#426fad" />
+                <path d="M80 1010 H460 M620 1060 H1180 M200 1130 H760" stroke="#e7a36c" stroke-width="10" stroke-linecap="round" opacity="0.7" />
+                <text x="640" y="1210" text-anchor="middle" fill="#fff0c8" font-family="system-ui, sans-serif" font-size="56" font-weight="700" letter-spacing="6">PAR04</text>
+              </svg>
+              <div class="scene-loading" role="status">
+                <span class="scene-loading-bar" aria-hidden="true"></span>
+                <span data-text="loading">Loading the scene…</span>
+              </div>
+              <div class="scene-error" role="alert">
+                <p data-text="error">Stop 4 could not load.</p>
+                <div class="scene-error-actions">
+                  <button class="primary" type="button" data-text="retry">Try again</button>
+                  <button class="secondary" type="button" data-text="home">Home</button>
+                </div>
+              </div>
+            </figure>
+            <p class="scene-caption" data-text="caption">A gilded dome over a pale façade.</p>
+            <button class="zoom-button" type="button" data-text="zoom-label" aria-label="Enlarge the scene">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" /></svg>
+            </button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h1 id="question" class="question" data-text="question">Which Paris complex has this gilded dome above a broad courtyard?</h1>
+
+          <ol class="choices">
+            <li><button class="choice" type="button" aria-keyshortcuts="1"><span class="choice-key" aria-hidden="true">1</span><span class="choice-label" data-text="c1">Panthéon</span><span class="choice-mark"></span></button></li>
+            <li><button class="choice" type="button" aria-keyshortcuts="2"><span class="choice-key" aria-hidden="true">2</span><span class="choice-label" data-text="c2">Les Invalides</span><span class="choice-mark"></span></button></li>
+            <li><button class="choice" type="button" aria-keyshortcuts="3"><span class="choice-key" aria-hidden="true">3</span><span class="choice-label" data-text="c3">Palace of Versailles</span><span class="choice-mark"></span></button></li>
+            <li><button class="choice" type="button" aria-keyshortcuts="4"><span class="choice-key" aria-hidden="true">4</span><span class="choice-label" data-text="c4">Sainte-Chapelle</span><span class="choice-mark"></span></button></li>
+          </ol>
+
+          <div class="action-row">
+            <div class="timer" role="timer" data-text="timer-label" aria-label="Time left">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8" /><path d="M12 9v4l2 2M10 2h4" /></svg>
+              <span class="timer-value">18 s</span>
+              <span class="timer-track" aria-hidden="true"><span class="timer-fill"></span></span>
+            </div>
+            <div class="lifelines" role="group" data-text="lifelines-label" aria-label="Lifelines">
+              <button class="lifeline" type="button" data-lifeline="fifty" data-text="fifty-label" aria-label="50:50, removes two choices">50:50</button>
+              <button class="lifeline" type="button" data-lifeline="time" data-text="time-label" aria-label="Plus 10 seconds">+10 s</button>
+            </div>
+
+            <div class="result" role="status">
+              <p class="result-verdict"><span class="result-icon"></span><span class="result-word"></span></p>
+              <p class="result-sentence" data-text="sentence">From the forecourt of Les Invalides, the gilded church dome dominates the view.</p>
+              <button class="primary next" type="button" data-text="next">Next</button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      // Prototype only: query parameters switch states, language and focus for review screenshots.
+      const params = new URLSearchParams(location.search)
+      const play = document.querySelector('.play')
+      const state = params.get('state') ?? 'question'
+      const czech = params.get('lang') === 'cs'
+      const choices = [...document.querySelectorAll('.choice')]
+      const lifelines = [...document.querySelectorAll('.lifeline')]
+      const icons = {
+        check: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>',
+        cross: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg>',
+        clock: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8" /><path d="M12 9v4l2 2M10 2h4" /></svg>',
+      }
+
+      const cs = {
+        'home-label': 'Uložit a přejít na úvod', city: 'Paříž', 'pause-label': 'Pauza',
+        'trail-label': 'Trasa, zastávka 4 z 10', streak: 'Série', 'scene-label': 'Scéna',
+        loading: 'Načítám scénu…', error: 'Zastávku 4 se nepodařilo načíst.', retry: 'Zkusit znovu', home: 'Úvod',
+        caption: 'Zlatá kupole nad světlým průčelím.', 'zoom-label': 'Zvětšit scénu', difficulty: 'Lehká',
+        question: 'Který pařížský komplex poznáš podle pozlacené kupole nad velkým nádvořím?',
+        c1: 'Panthéon', c2: 'Invalidovna', c3: 'Palác ve Versailles', c4: 'Sainte-Chapelle',
+        'timer-label': 'Zbývající čas', 'lifelines-label': 'Žolíky', 'fifty-label': '50:50, odebere dvě volby',
+        'time-label': 'Plus 10 sekund', next: 'Další',
+        sentence: 'Ve dvoře před Invalidovnou dominuje výhledu zlatá kupole kostela.',
+      }
+      const words = czech
+        ? { yourChoice: 'Tvoje volba', correct: 'Správně', wrongVerdict: 'Tentokrát ne', correctVerdict: 'Správně!', timeoutVerdict: 'Čas vypršel' }
+        : { yourChoice: 'Your choice', correct: 'Correct answer', wrongVerdict: 'Not quite', correctVerdict: 'Correct!', timeoutVerdict: "Time's up" }
+      if (czech) {
+        document.documentElement.lang = 'cs'
+        for (const element of document.querySelectorAll('[data-text]')) {
+          const value = cs[element.dataset.text]
+          if (element.hasAttribute('aria-label')) element.setAttribute('aria-label', value)
+          else element.textContent = value
+        }
+      }
+
+      function mark(choice, kind, label) {
+        choice.classList.add(`is-${kind}`)
+        choice.querySelector('.choice-mark').innerHTML =
+          `${kind === 'correct' ? icons.check : icons.cross}<span class="visually-hidden">${label}</span>`
+      }
+
+      function showResult(verdict) {
+        play.dataset.state = 'result'
+        play.dataset.verdict = verdict
+        choices.forEach((choice) => (choice.disabled = true))
+        if (verdict === 'wrong') mark(choices[0], 'wrong', words.yourChoice)
+        mark(choices[1], 'correct', verdict === 'correct' ? words.yourChoice : words.correct)
+        const icon = { correct: icons.check, wrong: icons.cross, timeout: icons.clock }[verdict]
+        document.querySelector('.result-icon').innerHTML = icon
+        document.querySelector('.result-word').textContent = words[`${verdict}Verdict`]
+        if (verdict === 'correct') document.querySelector('.streak-count').textContent = '4'
+        else play.dataset.streak = 'hidden'
+      }
+
+      play.dataset.state = state
+      if (state === 'loading') {
+        choices.forEach((choice) => (choice.disabled = true))
+        lifelines.forEach((lifeline) => (lifeline.disabled = true))
+        document.querySelector('.timer-value').textContent = '25 s'
+      }
+      if (state === 'error') choices.concat(lifelines).forEach((control) => (control.disabled = true))
+      if (state === 'fifty') {
+        for (const index of [2, 3]) {
+          choices[index].classList.add('is-removed')
+          choices[index].disabled = true
+          choices[index].setAttribute('aria-hidden', 'true')
+          choices[index].removeAttribute('aria-keyshortcuts')
+        }
+        lifelines[0].disabled = true
+        lifelines[0].classList.add('is-used')
+      }
+      if (state === 'untimed') play.dataset.untimed = 'true'
+      if (state === 'result') showResult('wrong')
+      if (state === 'result-correct') showResult('correct')
+      if (state === 'result-timeout') showResult('timeout')
+
+      // A choice name never breaks inside a word: when a label does not fit two columns, the grid stacks.
+      function fitChoices() {
+        const grid = document.querySelector('.choices')
+        grid.classList.remove('is-stacked')
+        const overflowing = [...grid.querySelectorAll('.choice-label')].some((label) => label.scrollWidth > label.clientWidth + 1)
+        grid.classList.toggle('is-stacked', overflowing)
+      }
+      fitChoices()
+      addEventListener('resize', fitChoices)
+
+      // After the answer the choices and the result come into view together, so the result never covers a choice.
+      if (play.dataset.state === 'result') {
+        const landscape = matchMedia('(orientation: landscape)').matches
+        if (landscape) document.querySelector('.choices').scrollIntoView({ block: 'start' })
+        else document.querySelector('.action-row').scrollIntoView({ block: 'end' })
+      }
+
+      // A shadow above the pinned action row shows that more content continues below it.
+      const actionRow = document.querySelector('.action-row')
+      function markMore() {
+        const scroller = [document.querySelector('.panel'), document.querySelector('.play-main')]
+          .find((element) => element.scrollHeight > element.clientHeight + 1 && getComputedStyle(element).overflowY === 'auto')
+        actionRow.classList.toggle('has-more', Boolean(scroller) && scroller.scrollTop + scroller.clientHeight < scroller.scrollHeight - 1)
+      }
+      markMore()
+      for (const element of document.querySelectorAll('.panel, .play-main')) element.addEventListener('scroll', markMore)
+      addEventListener('resize', markMore)
+
+      const focus = params.get('focus')
+      if (focus === 'choice') choices[1].focus({ focusVisible: true })
+      if (focus === 'next') document.querySelector('.next').focus({ focusVisible: true })
+    </script>
+  </body>
+</html>
