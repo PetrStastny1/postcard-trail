@@ -32,26 +32,26 @@ Tato specifikace popisuje chování. Přesné podpisy veřejných funkcí a typ�
 
 Průchod drží: ID průchodu, režim (`city` / `daily`), ID trasy, u denní výzvy datum UTC a `effectiveUtcDate` použité verze katalogu, příznak nečasovaného režimu zvolený při startu, seznam zastávek průchodu (ID, číslo zastávky v trase 1–10, časový limit, zobrazené pořadí ID voleb, ID správné volby), index aktuální zastávky, číslo kola, fázi, zbývající čas v ms, pauzu, skryté volby po 50:50, použité žolíky, ID právě probíhajícího pokusu o reklamu, výsledky (ID zastávky, výsledek `correct | wrong | timeout | skipped`, zvolené ID volby), počet správných, aktuální a nejlepší sérii.
 
-Fáze: `loading` (scéna se načítá, čas neběží), `question` (čas běží, pokud není pauza), `feedback` (výsledek, čas stojí), `summary` (průchod dokončen). Pauza je příznak nad fází.
+Fáze: `loading` (scéna se načítá, čas neběží; zbývající čas je limit zastávky), `question` (čas běží, pokud není pauza), `feedback` (výsledek, čas stojí), `summary` (průchod dokončen). Pauza je příznak nad fází.
 
 ### Požadavky
 
 - **R1 Časy.** Zastávka s číslem v trase 1–4 má 25 000 ms, 5–8 má 20 000 ms, 9–10 má 18 000 ms. V denní výzvě platí číslo zastávky v trase, ne pořadí v průchodu.
 - **R2 Start odpočtu.** Odpočet začne až akcí „scéna připravena“ ve fázi `loading`. Do té doby žádná akce čas nemění.
-- **R3 Uplynulý čas.** Akce v běžící otázce (`question`, bez pauzy) nesou `elapsedMs` od poslední započtené akce. Reducer nejdřív odečte `elapsedMs`. Je-li `elapsedMs >= remainingMs`, otázka skončí timeoutem a vlastní akce se zahodí. Volba nebo žolík přesně na nule tedy prohrají.
-- **R4 Kola.** Každá zastávka má vlastní číslo kola. Akce nesou číslo kola. Akce s jiným číslem kola než aktuálním se ignorují (stav se vrátí beze změny, stejná reference).
+- **R3 Uplynulý čas.** Akce v běžící otázce (`question`, bez pauzy) nesou `elapsedMs` od poslední započtené akce. Reducer nejdřív odečte `elapsedMs`. Je-li `elapsedMs >= remainingMs`, otázka skončí timeoutem a vlastní akce se zahodí. Volba nebo žolík přesně na nule tedy prohrají. Odečtení platí i tehdy, když se vlastní akce potom nepoužije (skrytá nebo neznámá volba, už použitý žolík), takže app po každé takové akci měří čas od ní.
+- **R4 Kola.** Každá zastávka má vlastní číslo kola, první zastávka má kolo 1 a každé „Další“ ho zvýší o 1. Akce nesou číslo kola. Akce s jiným číslem kola než aktuálním se ignorují (stav se vrátí beze změny, stejná reference).
 - **R5 První akce platí.** Volba ve fázi `question` uzamkne otázku a přejde do `feedback`. Další volba, žolík nebo opakované „Další“ ve stejném kole stav nezmění.
 - **R6 Skóre a série.** Správná volba: +1 správná, série +1, nejlepší série je maximum. Chybná volba a timeout: série 0. Přeskočení za video: počet správných i série beze změny.
 - **R7 50:50.** Jednou za průchod, jen ve fázi `question` bez pauzy. Skryje dvě nesprávné volby; zůstane správná a první nesprávná v zobrazeném pořadí. Skrytou volbu nelze zvolit.
 - **R8 +10 s.** Jednou za průchod, jen ve fázi `question` bez pauzy a jen v časovaném režimu. Přičte 10 000 ms. V nečasovaném režimu je nedostupný a akce se ignoruje.
 - **R9 Kombinace.** Na jedné otázce lze použít 50:50 i +10 s a pak správně odpovědět.
 - **R10 Nečasovaný režim.** Volba se přebírá jen při startu nového průchodu. Odpočet neběží, timeout nenastane, `elapsedMs` se ignoruje.
-- **R11 Pauza.** Pauza zmrazí čas (`elapsedMs` pauzovací akce se započte podle R3). Pokračování po pauze čas nemění. Pauza je možná i ve fázi `loading` a `feedback` a čas tam neovlivní.
+- **R11 Pauza.** Pauza zmrazí čas (`elapsedMs` pauzovací akce se započte podle R3). Pokračování po pauze čas nemění. Pauza je možná i ve fázi `loading` a `feedback` a čas tam neovlivní. Pauza přesně na nule skončí timeoutem podle R3 a průchod zůstane v pauze i ve fázi `feedback`, takže „Další“ čeká na pokračování. Pokračování zruší probíhající pokus o reklamu (R13).
 - **R12 Přeskočit za video – dostupnost.** Jen v pauze ve fázi `question`, jednou za průchod, od 3. zastávky průchodu (index ≥ 2): ve městě od 3. z 10, v denní výzvě jen u 3. ze 3 (rozhodnutí v LOG.md). Zda portál reklamy nabízí, rozhoduje app podle adaptéru; logika žolík jen povolí nebo zakáže podle stavu.
-- **R13 Přeskočit za video – pokus.** Žádost o reklamu uloží ID pokusu. Výsledek reklamy se přijme jen s ID právě probíhajícího pokusu a jen jednou. `completed` uzavře otázku jako `skipped`, označí žolík jako použitý, zruší pauzu a přejde do `feedback`. `cancelled` a `unavailable` pokus zruší, otázka zůstane v pauze se stejným časem a žolík zůstane k dispozici. Výsledek s jiným ID, opakovaný výsledek nebo výsledek bez probíhajícího pokusu se ignoruje. Bez potvrzeného `completed` přeskočení nevznikne.
-- **R14 Další.** „Další“ je jediná akce, která ve fázi `feedback` posouvá hru. Po zastávce, která není poslední, přejde na další zastávku do `loading` s novým číslem kola. Po poslední přejde do `summary`.
+- **R13 Přeskočit za video – pokus.** Žádost o reklamu uloží ID pokusu, jen když je žolík dostupný podle R12 a žádný pokus neprobíhá. Výsledek reklamy se přijme jen s ID právě probíhajícího pokusu a jen jednou. `completed` uzavře otázku jako `skipped`, označí žolík jako použitý, zruší pauzu a přejde do `feedback`. `cancelled` a `unavailable` pokus zruší, otázka zůstane v pauze se stejným časem a žolík zůstane k dispozici. Výsledek s jiným ID, opakovaný výsledek nebo výsledek bez probíhajícího pokusu se ignoruje. Bez potvrzeného `completed` přeskočení nevznikne. Pokračování z pauzy pokus zruší, takže pozdní výsledek běžící otázku nepřeskočí.
+- **R14 Další.** „Další“ je jediná akce, která ve fázi `feedback` posouvá hru, a v pauze se ignoruje. Po zastávce, která není poslední, přejde na další zastávku do `loading` s novým číslem kola. Po poslední přejde do `summary`.
 - **R15 Dokončení.** Průchod je dokončen ve fázi `summary` i s nulou správných.
-- **R16 Obnova.** Obnova uloženého průchodu vrátí stejnou fázi, zastávku, žolíky, výsledky, čas a pořadí voleb, vždy s pauzou. Probíhající pokus o reklamu se zruší (přerušená reklama je nedokončená) a žolík zůstane.
+- **R16 Obnova.** Obnova uloženého průchodu vrátí stejnou fázi, zastávku, žolíky, výsledky, čas a pořadí voleb, vždy s pauzou (kromě dokončeného průchodu ve fázi `summary`). Probíhající pokus o reklamu se zruší (přerušená reklama je nedokončená) a žolík zůstane.
 - **R17 Restart.** Nový průchod stejné trasy (opakování, „Hrát znovu“) je nový stav s novým ID průchodu, novými permutacemi a bez žolíků, výsledků a série předchozího průchodu.
 - **R18 Jazyk.** Stav neobsahuje texty ani jazyk. Změna jazyka pořadí voleb nemění.
 
@@ -65,6 +65,8 @@ Fáze: `loading` (scéna se načítá, čas neběží), `question` (čas běží
 - Výsledek reklamy s cizím ID, opakovaný `completed`, `completed` po `cancelled` stejného pokusu → nic dalšího se nestane.
 - Reklama na 2. zastávce města nebo na 2. otázce denní výzvy → zakázáno. Na 3. otázce denní výzvy začínající zastávkou 1, 2 i 6 → povoleno.
 - Nečasovaný režim: libovolně velké `elapsedMs` nevede k timeoutu, +10 s nejde použít.
+- Pokus o reklamu, pak pokračování z pauzy a pozdní `completed` → ignorováno, otázka běží dál.
+- Pauza s `elapsedMs` rovným zbývajícímu času → timeout, fáze `feedback` v pauze, „Další“ ignorováno do pokračování.
 - Pauza, obnova ze serializovaného JSON a pokračování → stejný zbývající čas a pořadí voleb.
 - Deset timeoutů → `summary`, 0 správných.
 
@@ -153,8 +155,8 @@ Sekci doplňují vývojáři balíčků přesnými podpisy a typy, jak jsou v k�
 
 ```ts
 export type RandomSource = () => number // [0, 1)
-export function keepsSourceOrder(stopId: string): boolean
-export function shuffledChoiceIds(stop: Stop, random: RandomSource): string[]
+export function keepsSourceOrder(stopId: string): boolean // jen 'B09'
+export function shuffledChoiceIds(stop: Stop, random: RandomSource): string[] // 3 volání náhody, u B09 žádné
 export function permutedChoiceIds(stop: Stop, permutationNumber: number): string[] // 0–23 podle CO2
 ```
 
@@ -166,7 +168,26 @@ export type StopOutcome = 'correct' | 'wrong' | 'timeout' | 'skipped'
 export interface RunStop { stopId: string; routeStopNumber: number; timeLimitMs: number; choiceIds: string[]; correctChoiceId: string }
 export interface StopResult { stopId: string; outcome: StopOutcome; chosenChoiceId: string | null }
 export interface DailyRunInfo { utcDate: string; catalogEffectiveUtcDate: string }
-export interface RunState { /* viz Stav */ }
+export interface RunState {
+  runId: string
+  mode: RunMode // ze src/platform/types.ts
+  cityId: string
+  daily: DailyRunInfo | null
+  untimed: boolean
+  stops: RunStop[]
+  stopIndex: number
+  round: number
+  phase: RunPhase
+  remainingMs: number
+  paused: boolean
+  hiddenChoiceIds: string[]
+  usedLifelines: LifelineKind[] // ze src/platform/types.ts
+  skipAttemptId: string | null
+  results: StopResult[]
+  correct: number
+  streak: number
+  bestStreak: number
+}
 export type RunAction =
   | { type: 'sceneReady'; round: number }
   | { type: 'tick'; round: number; elapsedMs: number }
@@ -181,11 +202,11 @@ export type RunAction =
 export function timeLimitMs(routeStopNumber: number): number
 export function createRun(options: { runId: string; mode: RunMode; cityId: string; untimed: boolean; stops: RunStop[]; daily?: DailyRunInfo }): RunState
 export function startCityRun(options: { route: Route; runId: string; untimed: boolean; random: RandomSource }): RunState
-export function reduceRun(run: RunState, action: RunAction): RunState
+export function reduceRun(run: RunState, action: RunAction): RunState // akce bez účinku vrací stejnou referenci, pokud nezapočte čas podle R3
 export function restoreRun(run: RunState): RunState
 export function currentStop(run: RunState): RunStop
 export function visibleChoiceIds(run: RunState): string[]
-export function canUseSkip(run: RunState): boolean
+export function canUseSkip(run: RunState): boolean // dostupnost podle R12, bez ohledu na probíhající pokus
 ```
 
 ### `src/game/logic/progress.ts`
