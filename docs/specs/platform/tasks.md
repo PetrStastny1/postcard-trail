@@ -35,4 +35,4 @@ Závisí na balíčku 1.
 
 ## Předání oblasti
 
-- [ ] Review a QA oblasti proti akceptačním kritériím, `.handoff/REPORT.md`.
+- [x] Review a QA oblasti proti akceptačním kritériím, `.handoff/REPORT.md`.
