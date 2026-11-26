@@ -2,7 +2,6 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync
 import path from 'node:path'
 import { parseArgs } from 'node:util'
 import { chromium } from '@playwright/test'
-import type { Catalog, Route } from '../../src/content/types.ts'
 import { maxSceneBytes, sceneSize } from './scene-limits.ts'
 
 const repoRoot = path.resolve(import.meta.dirname, '../..')
@@ -58,7 +57,7 @@ export class PlaceholderError extends Error {
 
 /** Reads the `--scene-*` colours from tokens.css, the single source of the illustration palette. */
 export function readPalette(root = repoRoot): ScenePalette {
-  const css = readFileSync(path.join(root, tokensPath), 'utf8')
+  const css = readSource(root, tokensPath)
   const declared = new Map([...css.matchAll(/--scene-([a-z-]+):\s*(#[0-9a-fA-F]{6})\s*;/g)].map((match) => [match[1], match[2].toLowerCase()]))
   const missing = paletteNames.filter((name) => !declared.has(name))
   if (missing.length > 0) {
@@ -67,12 +66,40 @@ export function readPalette(root = repoRoot): ScenePalette {
   return Object.fromEntries(paletteNames.map((name) => [name, declared.get(name)])) as ScenePalette
 }
 
-/** Stop IDs in catalog order, then route order. */
+function readSource(root: string, relativePath: string): string {
+  const absolutePath = path.join(root, relativePath)
+  if (!existsSync(absolutePath)) throw new PlaceholderError([`${relativePath}: file not found`])
+  return readFileSync(absolutePath, 'utf8')
+}
+
+function parseJson(relativePath: string, source: string): unknown {
+  try {
+    return JSON.parse(source)
+  } catch (error) {
+    if (!(error instanceof SyntaxError)) throw error
+    throw new PlaceholderError([`${relativePath}: not valid JSON (${error.message})`])
+  }
+}
+
+/** The IDs of `listing[key]`, or undefined when it is not a list of objects with a string `id`. */
+function idsOf(listing: unknown, key: string): string[] | undefined {
+  const entries = typeof listing === 'object' && listing !== null && key in listing ? (listing as Record<string, unknown>)[key] : undefined
+  if (!Array.isArray(entries)) return undefined
+  const ids = entries.map((entry: unknown) =>
+    typeof entry === 'object' && entry !== null && 'id' in entry && typeof entry.id === 'string' ? entry.id : undefined,
+  )
+  return ids.every((id) => id !== undefined) ? ids : undefined
+}
+
+/** Stop IDs in catalog order, then route order. The generator reads only city and stop IDs. */
 export function readStopIds(root = repoRoot): string[] {
-  const catalog = JSON.parse(readFileSync(path.join(root, catalogPath), 'utf8')) as Catalog
-  return catalog.cities.flatMap((city) => {
-    const route = JSON.parse(readFileSync(path.join(root, routesDir, `${city.id}.json`), 'utf8')) as Route
-    return route.stops.map((stop) => stop.id)
+  const cityIds = idsOf(parseJson(catalogPath, readSource(root, catalogPath)), 'cities')
+  if (!cityIds) throw new PlaceholderError([`${catalogPath}: expected { "cities": [{ "id": string }] }`])
+  return cityIds.flatMap((cityId) => {
+    const routePath = `${routesDir}/${cityId}.json`
+    const stopIds = idsOf(parseJson(routePath, readSource(root, routePath)), 'stops')
+    if (!stopIds) throw new PlaceholderError([`${routePath}: expected { "stops": [{ "id": string }] }`])
+    return stopIds
   })
 }
 
@@ -326,19 +353,24 @@ export function planScenes(stopIds: string[], listedPlaceholders: string[], dire
   }
 }
 
-function readListedPlaceholders(root: string): string[] {
-  const file = path.join(root, placeholdersPath)
-  if (!existsSync(file)) return []
-  let listing: unknown
-  try {
-    listing = JSON.parse(readFileSync(file, 'utf8'))
-  } catch (error) {
-    if (!(error instanceof SyntaxError)) throw error
-    throw new PlaceholderError([`${placeholdersPath}: not valid JSON (${error.message}); fix or delete the file`])
+/**
+ * Without the list a final scene cannot be told from a placeholder, so the generator draws from scratch
+ * only when there are no scenes either.
+ */
+function readListedPlaceholders(root: string, sceneFiles: string[]): string[] {
+  if (!existsSync(path.join(root, placeholdersPath))) {
+    const scenes = sceneFiles.filter((file) => !file.startsWith('.') && file.endsWith('.webp')).sort()
+    if (scenes.length === 0) return []
+    throw new PlaceholderError([
+      `${placeholdersPath}: file not found while ${scenesDir} has scenes, so final scenes cannot be told from placeholders.` +
+        ' Restore the list (for example with git checkout) or move these scenes away:',
+      ...scenes.map((file) => `${scenesDir}/${file}`),
+    ])
   }
+  const listing = parseJson(placeholdersPath, readSource(root, placeholdersPath))
   const stopIds = typeof listing === 'object' && listing !== null && 'stopIds' in listing ? listing.stopIds : undefined
   if (!Array.isArray(stopIds) || !stopIds.every((stopId) => typeof stopId === 'string')) {
-    throw new PlaceholderError([`${placeholdersPath}: expected { "stopIds": string[] }; fix or delete the file`])
+    throw new PlaceholderError([`${placeholdersPath}: expected { "stopIds": string[] }; fix the file or restore it from git`])
   }
   return stopIds
 }
@@ -419,7 +451,7 @@ export async function generatePlaceholders(options: { root?: string } = {}): Pro
   const stopIds = readStopIds(root)
   const directory = path.join(root, scenesDir)
   const sceneFiles = existsSync(directory) ? readdirSync(directory) : []
-  const plan = planScenes(stopIds, readListedPlaceholders(root), sceneFiles)
+  const plan = planScenes(stopIds, readListedPlaceholders(root, sceneFiles), sceneFiles)
   if (plan.unknownFiles.length > 0) {
     throw new PlaceholderError(
       plan.unknownFiles.map((file) => `${scenesDir}/${file}: not a scene of a catalog stop and not a listed placeholder; remove or rename it by hand`),

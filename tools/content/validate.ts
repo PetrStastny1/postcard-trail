@@ -29,7 +29,7 @@ const metroStop = {
 // Word forms are matched on folded text, so `zemekouli` (globe) or `statue` do not count.
 const countryQuestionWords: Record<Locale, RegExp> = {
   en: /\b(flags?|country|countries|states?)\b/,
-  cs: /\b(vlajk\w*|vlajce|stat(u|e|em|y|um|ech|ni\w*)?|zem|zeme|zemi|zemim|zemich|zememi)\b/,
+  cs: /\b(vlajk\w*|vlajce|vlajek|stat(u|e|em|y|um|ech|ni\w*)?|zem|zeme|zemi|zemim|zemich|zememi)\b/,
 }
 
 /** Lines prefixed with the route, stop or file they belong to. */

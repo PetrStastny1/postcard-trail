@@ -185,13 +185,19 @@ function parseStop(file: string, section: string, verifiedOn: string, problems: 
     if (line.trim() === '') continue
     const stabilityMatch = line.match(/^- \*\*(Stabilní|Může se změnit \((.+)\))\*\*/)
     // A bullet with links only continues the source list of the stability line (LIS10).
-    if (stabilityMatch || line.startsWith('- [')) {
+    const linksOnly = line.startsWith('- [')
+    if (stabilityMatch || linksOnly) {
+      // A bare URL may hold one level of parentheses, as Wikimedia file names often do.
+      const linkPattern = /\[([^\]]+)\]\((?:<([^>]+)>|((?:[^()\s]|\([^()\s]*\))+))\)/g
+      // Separators between links are all such a bullet may hold besides them; anything else would be dropped silently.
+      if (linksOnly && !/^-[\s,.·]*$/.test(line.replace(linkPattern, ''))) {
+        stopProblems.push(`unexpected line "${line}"`)
+        continue
+      }
       if (stabilityMatch) {
         if (stability) stopProblems.push('stability line appears twice')
         stability = stabilityMatch[2] === undefined ? {} : { changeableFact: stabilityMatch[2] }
       }
-      // A bare URL may hold one level of parentheses, as Wikimedia file names often do.
-      const linkPattern = /\[([^\]]+)\]\((?:<([^>]+)>|((?:[^()\s]|\([^()\s]*\))+))\)/g
       for (const [, text, bracketedUrl, bareUrl] of line.matchAll(linkPattern)) {
         links.push({ text, url: bracketedUrl ?? bareUrl })
       }
