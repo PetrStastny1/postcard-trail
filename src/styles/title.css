@@ -64,9 +64,16 @@
   gap: var(--space-1);
 }
 
-/* Locked until the first city: the deeper paper tone and the softer condition set it apart from the open tiles. */
+/*
+ * Locked until the first city: drawn as unavailable (dashed edge, soft name, no fill), and across the whole row so its
+ * taller two-line content does not stretch the open tile beside it.
+ */
 .title-daily[data-locked] {
-  background: var(--color-paper-deep);
+  grid-column: 1 / -1;
+  border-style: dashed;
+  border-color: var(--color-ink-soft);
+  background: transparent;
+  color: var(--color-ink-soft);
 }
 
 .title-daily-condition {
@@ -74,6 +81,7 @@
   font-size: var(--text-small);
   font-weight: var(--weight-regular);
   line-height: var(--leading-tight);
+  text-wrap: balance;
 }
 
 .title-progress {

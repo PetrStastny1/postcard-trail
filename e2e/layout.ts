@@ -17,7 +17,7 @@ export interface LayoutOptions {
 
 /**
  * Checks the screen as shown: no horizontal scrolling, controls at least 44 × 44 CSS px, no two controls overlapping,
- * every scroller whose content continues below its bottom edge shows the `has-more` signal, and every control
+ * every scroller whose content (a child box) continues below its bottom edge shows the `has-more` signal, and every control
  * visible and on top either at once or after scrolling it into view. With a modal dialog open, only the dialog's
  * controls count, because the screen behind it is inert.
  */
@@ -30,7 +30,10 @@ export async function expectUsableLayout(page: Page, { controls = 'button, a[hre
           .filter((node) => {
             const overflowY = getComputedStyle(node).overflowY
             const scrolls = (overflowY === 'auto' || overflowY === 'scroll') && node.scrollHeight > node.clientHeight + 1
-            return scrolls && node.scrollHeight - node.scrollTop - node.clientHeight > 1 && !node.classList.contains('has-more')
+            if (!scrolls || node.classList.contains('has-more')) return false
+            // Content, not the scroller's own bottom padding: a child box ends below the visible bottom edge.
+            const visibleBottom = node.getBoundingClientRect().top + node.clientTop + node.clientHeight
+            return [...node.children].some((child) => child.getBoundingClientRect().bottom - visibleBottom > 1)
           })
           .map((node) => `${node.tagName.toLowerCase()}.${node.className} hides content below without the has-more signal`),
       ),

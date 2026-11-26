@@ -43,6 +43,26 @@ test.describe('title screen', () => {
     await expect(page.locator('.title-progress li')).toHaveText(['0/20 cities', /^0\/60 ★/, '0 postcards'])
   })
 
+  test('the locked daily tile reads as unavailable and spans the menu row without stretching the open tiles', async ({ page }) => {
+    for (const size of [
+      { width: 375, height: 812 },
+      { width: 568, height: 320 },
+      { width: 1440, height: 900 },
+    ]) {
+      await page.setViewportSize(size)
+      await openTitle(page)
+      const daily = page.locator('.title-daily')
+      await expect(daily).toHaveCSS('border-top-style', 'dashed')
+      await expect(daily).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
+      await expect(daily.locator('.title-daily-name')).toHaveCSS('color', 'rgb(58, 67, 102)')
+      await expect(daily.locator('.title-daily-condition')).toHaveCSS('text-wrap', 'balance')
+      const menuWidth = (await page.locator('.title-menu').boundingBox())!.width
+      expect(Math.abs((await daily.boundingBox())!.width - menuWidth)).toBeLessThan(1)
+      const openHeights = await page.locator('.title-menu button:not(.title-daily)').evaluateAll((tiles) => tiles.map((tile) => tile.getBoundingClientRect().height))
+      expect(new Set(openHeights).size).toBe(1)
+    }
+  })
+
   test('the progress comes from the saved progress', async ({ page }) => {
     await seedStorage(page, {
       progress: {
@@ -456,6 +476,58 @@ test.describe('short landscape screens show the whole title and settings without
   })
 })
 
+test.describe('the has-more signal on the title panel with the storage notice', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(window, 'localStorage', {
+        get() {
+          throw new DOMException('Storage is blocked.', 'SecurityError')
+        },
+      })
+    })
+  })
+
+  test('title at 568 × 320 fades the panel edge exactly while content is cut below it', async ({ page }) => {
+    await page.setViewportSize({ width: 568, height: 320 })
+    await openTitle(page)
+    await expect(page.getByText('This browser is not saving the game.')).toBeVisible()
+    const panel = page.locator('.title-panel')
+    const contentCut = () =>
+      panel.evaluate((node) => {
+        const visibleBottom = node.getBoundingClientRect().top + node.clientTop + node.clientHeight
+        return [...node.children].some((child) => child.getBoundingClientRect().bottom - visibleBottom > 1)
+      })
+    expect(await contentCut()).toBe(true)
+    await expect(panel).toHaveClass(/has-more/)
+    await expectUsableLayout(page)
+
+    await panel.evaluate((node) => node.scrollTo({ top: node.scrollHeight }))
+    await expect(panel).not.toHaveClass(/has-more/)
+    for (const state of await wholeInView(page, '.title-progress')) expect(state).toBe('whole')
+  })
+
+  test('overflow made only of the panel padding does not fade the edge', async ({ page }) => {
+    await page.setViewportSize({ width: 640, height: 360 })
+    await openTitle(page)
+    const panel = page.locator('.title-panel')
+    await expect(panel).not.toHaveClass(/has-more/)
+    await page.addStyleTag({ content: '.title-panel { padding-bottom: 20rem; }' })
+    await expect.poll(() => panel.evaluate((node) => node.scrollHeight > node.clientHeight + 1)).toBe(true)
+    for (const state of await wholeInView(page, titleParts)) expect(state).toBe('whole')
+    await expect(panel).not.toHaveClass(/has-more/)
+    await expectUsableLayout(page)
+  })
+
+  test('the layout check still demands the signal when content is cut', async ({ page }) => {
+    await page.setViewportSize({ width: 568, height: 320 })
+    await openTitle(page)
+    const panel = page.locator('.title-panel')
+    await expect(panel).toHaveClass(/has-more/)
+    await panel.evaluate((node) => node.classList.remove('has-more'))
+    await expect(expectUsableLayout(page)).rejects.toThrow(/hides content below without the has-more signal/)
+  })
+})
+
 test('settings float as a rounded window over the Poki 836 × 470 frame', async ({ page }) => {
   await page.setViewportSize({ width: 836, height: 470 })
   await openTitle(page)
@@ -466,6 +538,22 @@ test('settings float as a rounded window over the Poki 836 × 470 frame', async 
   expect(box.height).toBeLessThan(470)
   expect(box.y).toBeGreaterThan(0)
 })
+
+for (const size of [
+  { width: 1031, height: 580 },
+  { width: 1440, height: 900 },
+]) {
+  test(`settings content starts at the × in the sheet bar at ${size.width} × ${size.height}`, async ({ page }) => {
+    await page.setViewportSize(size)
+    await openTitle(page)
+    await page.getByRole('button', { name: 'Settings' }).click()
+    const dialog = page.getByRole('dialog')
+    await expect(dialog).toHaveCSS('border-top-left-radius', '20px')
+    const closeLeft = (await dialog.locator('.window-bar .icon-button svg').boundingBox())!.x
+    const contentLefts = await dialog.locator('.setting-heading, .setting-choices, .setting-list').evaluateAll((parts) => parts.map((part) => part.getBoundingClientRect().left))
+    for (const left of contentLefts) expect(Math.abs(left - closeLeft)).toBeLessThanOrEqual(2)
+  })
+}
 
 test.describe('large text', () => {
   test.use({ viewport: { width: 375, height: 812 } })

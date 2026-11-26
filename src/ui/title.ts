@@ -10,7 +10,7 @@ export interface TitleOptions {
   onOpenSettings(): void
 }
 
-// Same markup as the static logo in index.html, so the loading screen turns into the title without a jump.
+// Same markup as the static logo in index.html, so the loading screen and the title show the same logo; keep them in sync.
 const logoMarkup = `<svg class="logo-arc" viewBox="0 0 240 60" aria-hidden="true"><path d="M12 56 Q120 -22 228 56" /></svg>
 <span class="logo-line">Postcard</span> <span class="logo-line">Trail</span>`
 

@@ -99,9 +99,9 @@ svg {
   background: var(--color-on-ink);
 }
 
-/* Play keeps its amber on hover; only devices that really hover get the hover tone. */
+/* Play keeps its amber on hover and a locked tile stays flat; only devices that really hover get the hover tone. */
 @media (hover: hover) {
-  .secondary:hover {
+  .secondary:not([data-locked]):hover {
     background: var(--color-paper-deep);
   }
 }
