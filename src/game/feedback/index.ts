@@ -10,7 +10,8 @@ export interface Feedback {
    * Call at the start of the handler of every activating player input (`click`, `keydown`), not only the first
    * and not from `pointerdown`: browsers allow audio to start only on an activating input, and a resume that was
    * refused, never finished, or was cut by an iOS interruption is retried only on the next call. Creates the audio
-   * context if there is none and asks a halted one to resume; a cue played in the same handler still sounds.
+   * context if there is none and asks a halted one to resume; a cue played in the same listener before its first
+   * `await` still sounds.
    */
   unlock(): void
   play(cue: FeedbackCue): void
@@ -78,7 +79,8 @@ export function createFeedback(settings: FeedbackSettings): Feedback {
   let audio: { context: AudioContext; master: GainNode } | undefined
   let audioUnavailable = false
   // A new or resumed context reaches 'running' only asynchronously; a cue played in the same input handler must still sound.
-  // The flag lives only until the end of the current task, so a resume that never finishes cannot keep scheduling tones.
+  // The flag is cleared in a microtask, i.e. when the current listener returns or awaits, so a resume that never finishes
+  // cannot keep scheduling tones.
   let resumeRequestedInThisTask = false
 
   function masterLevel(): number {

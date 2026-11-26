@@ -162,7 +162,7 @@ Zvolené hodnoty (pojmenované konstanty v `src/game/feedback/index.ts`). Každ�
 | `wrong` | trojúhelník 196 Hz (G3), 220 ms, vrchol 0,3 |
 | `postcard` | sinus 523,25, 659,25 a 783,99 Hz (C dur) současně, 500 ms, vrchol 0,18 na hlas |
 
-Tóny se plánují do kontextu ve stavu `running`, nebo když `unlock()` požádal o obnovu ve stejné synchronní úloze (do konce aktuálního handleru). Nový i obnovovaný kontext přejde do `running` až asynchronně, takže `play` ve stejném handleru jako `unlock()` (např. první volba po obnovené otázce) zazní hned po rozběhnutí. V pozdější úloze kontext, který neběží (`suspended`, `interrupted`, `closed`, i po odmítnutém nebo nedokončeném `resume()`), oscilátor nedostane, aby podněty z doby pozastavení nezazněly po obnovení najednou. Vibrace se tím nemění.
+Tóny se plánují do kontextu ve stavu `running`, nebo když `unlock()` požádal o obnovu v tomtéž synchronním běhu kódu (příznak se maže v microtasku, tedy po návratu z aktuálního listeneru nebo při prvním `await`). Nový i obnovovaný kontext přejde do `running` až asynchronně, takže `play` ve stejném handleru jako `unlock()` (např. první volba po obnovené otázce) zazní hned po rozběhnutí. V pozdější úloze kontext, který neběží (`suspended`, `interrupted`, `closed`, i po odmítnutém nebo nedokončeném `resume()`), oscilátor nedostane, aby podněty z doby pozastavení nezazněly po obnovení najednou. Vibrace se tím nemění. Když se `resume()` nedaří (například během hovoru na iOS), může po pozdějším obnovení zaznít nejvýš jeden podnět za každý takový pokus o odemčení. Toto riziko je přijaté.
 
 - **S8.3** `setSoundEnabled(false)` ztlumí hlavní hlasitost ihned (v aktuálním čase kontextu, naplánované změny se zruší), i probíhající tón, a další `play` nevytvoří oscilátor. Vypnutí před `unlock()` znamená, že kontext začne potichu. `setSoundEnabled(true)` vrátí 0,6.
 - **S8.4** `muteForAd()` ztlumí ihned. `restoreAfterAd()` vrátí uloženou úroveň: 0,6 při zapnutém zvuku, jinak ticho. Zapnutí zvuku během reklamy se projeví až po `restoreAfterAd()`.
@@ -175,7 +175,7 @@ Tóny se plánují do kontextu ve stavu `running`, nebo když `unlock()` požád
 
 ## Otevřené body pro ředitele a app
 
-- App volá `feedback.unlock()` na začátku handleru každého aktivujícího vstupu hráče (`click`, `keydown`), ne jen prvního a ne z `pointerdown`. Jinak zvuk po odmítnutém nebo nedokončeném `resume()` či po přerušení na iOS do konce relace nezazní.
+- App volá `feedback.unlock()` na začátku handleru každého aktivujícího vstupu hráče (`click`, `keydown`), ne jen prvního a ne z `pointerdown`. `unlock()` a `play()` téhož vstupu musí být ve stejném listeneru a před prvním `await`, jinak první podnět po startu nebo po přerušení nezazní. Rozhodnutí je v LOG.md („Platform: kdy app volá `feedback.unlock()`“). Jinak zvuk po odmítnutém nebo nedokončeném `resume()` či po přerušení na iOS do konce relace nezazní.
 - CrazyGames vyžaduje respektovat `SDK.game.settings.muteAudio` s předností před herním nastavením. Kontrakt `PlatformAdapter` ho nevystavuje. Návrh změny kontraktu je v předávací zprávě oblasti.
 - Poki doporučuje `commercialBreak()` při návratu z pauzy. Zadání nastavuje průběžné reklamy na 0 (§12, K5), adaptér je proto nevolá.
 - CrazyGames nechce `gameplayStop` při pouhé ztrátě fokusu. Hra se ale po skrytí stránky skutečně pozastaví a čeká na „Pokračovat“, takže `gameplayStop` při skrytí je oprávněný.
