@@ -26,7 +26,7 @@ Závisí na balíčku 1.
 ## Balíček 3: feedback (zvuk a vibrace)
 
 - [x] `createFeedback` podle veřejného rozhraní ve spec.md.
-- [x] Odemčení zvuku prvním vstupem a hlasitost 0,6 (S8.1).
+- [x] Odemčení a obnova zvuku při každém aktivujícím vstupu (`unlock()` volá `resume()`, dokud kontext neběží) a hlasitost 0,6 (S8.1).
 - [x] Syntéza podnětů `choice`, `correct`, `wrong`, `postcard` (S8.2).
 - [x] Vypnutí zvuku a ztlumení po dobu reklamy (S8.3, S8.4).
 - [x] Vibrace 25 ms a 35 ms podle nastavení (S9.1–S9.3).

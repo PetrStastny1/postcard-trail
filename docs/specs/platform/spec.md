@@ -31,9 +31,10 @@ export interface FeedbackSettings {
 
 export interface Feedback {
   /**
-   * Call from the handler of every player input (pointerdown, keydown), not only the first: a resume the browser
-   * refused, or an iOS interruption, is retried only on the next call. Creates or resumes the audio context;
-   * cheap and idempotent.
+   * Call at the start of the handler of every activating player input (`click`, `keydown`), not only the first
+   * and not from `pointerdown`: browsers allow audio to start only on an activating input, and a resume that was
+   * refused, never finished, or was cut by an iOS interruption is retried only on the next call. Creates the audio
+   * context if there is none and asks a halted one to resume; a cue played in the same handler still sounds.
    */
   unlock(): void
   play(cue: FeedbackCue): void
@@ -48,7 +49,7 @@ export interface Feedback {
 export function createFeedback(settings: FeedbackSettings): Feedback
 ```
 
-- App volá `unlock()` v handleru každého vstupu hráče (`pointerdown`, `keydown`), ne jen prvního. Obnova zvuku po odmítnutém `resume()` nebo po přerušení na iOS (`interrupted`) spoléhá na další `unlock()`. Volání je levné a idempotentní: kontext už běží nebo se obnovuje, tak nic nedělá.
+- App volá `unlock()` na začátku handleru každého aktivujícího vstupu hráče (`click`, `keydown`), ne jen prvního a ne z `pointerdown`. Prohlížeče dovolí spustit zvuk jen při aktivujícím vstupu (dotykový `pointerdown` jím není). Obnova zvuku po odmítnutém nebo nedokončeném `resume()` a po přerušení na iOS (`interrupted`) spoléhá na další `unlock()`.
 - Nastavení zvuku a vibrací ukládá oblast logic, feedback dostává jen jejich hodnoty.
 - Úvod je tichý: app na úvodní obrazovce `play` nevolá.
 - Každý podnět má viditelný ekvivalent v UI (zajišťuje app).
@@ -142,7 +143,7 @@ Platí pro adaptéry Poki a CrazyGames.
 
 ### P8 Zvuk
 
-- **S8.1** Před `unlock()` se nevytváří `AudioContext` a `play` nehraje zvuk. `unlock()` vytvoří kontext s hlavní hlasitostí 0,6, nebo obnoví existující kontext, který neběží (`suspended`, na iOS Safari po přerušení `interrupted`). Uzavřený kontext (`closed`) neobnovuje. Opakované `unlock()` nový kontext nevytváří a během probíhající obnovy `resume()` znovu nevolá. Kontext, který po vytvoření rovnou běží, neobnovuje. Odmítnutí `resume()` nic nehází, zvuk se zkusí obnovit při dalším `unlock()`. Bez Web Audio API, nebo když vytvoření kontextu selže (např. `NotSupportedError`), hra pokračuje bez zvuku: `unlock()` nic nehází, další pokus o vytvoření kontextu už nedělá a `play` jen vibruje.
+- **S8.1** Před `unlock()` se nevytváří `AudioContext` a `play` nehraje zvuk. `unlock()` vytvoří kontext s hlavní hlasitostí 0,6, nebo obnoví existující kontext, který neběží (`suspended`, na iOS Safari po přerušení `interrupted`). Uzavřený kontext (`closed`) neobnovuje. Opakované `unlock()` nový kontext nevytváří. Dokud kontext neběží, volá každé `unlock()` znovu `resume()`, i když předchozí `resume()` ještě neskončilo (Chrome ho bez aktivace uživatele nechá viset). Kontext, který po vytvoření rovnou běží, neobnovuje. Odmítnutí `resume()` nic nehází, zvuk se zkusí obnovit při dalším `unlock()`. Bez Web Audio API, nebo když vytvoření kontextu selže (např. `NotSupportedError`), hra pokračuje bez zvuku: `unlock()` nic nehází, další pokus o vytvoření kontextu už nedělá a `play` jen vibruje.
 - **S8.2** Podněty (syntéza oscilátory s obálkou bez lupnutí):
 
 | Podnět | Zvuk |
@@ -161,7 +162,7 @@ Zvolené hodnoty (pojmenované konstanty v `src/game/feedback/index.ts`). Každ�
 | `wrong` | trojúhelník 196 Hz (G3), 220 ms, vrchol 0,3 |
 | `postcard` | sinus 523,25, 659,25 a 783,99 Hz (C dur) současně, 500 ms, vrchol 0,18 na hlas |
 
-Tóny se plánují do kontextu ve stavu `running` a do kontextu, na jehož obnovu (`resume()` z `unlock()`) se čeká. Nový i obnovovaný kontext přejde do `running` až asynchronně, takže `play` ve stejném handleru jako `unlock()` (např. první volba po obnovené otázce) zazní hned po rozběhnutí. Pozastavený kontext bez probíhající obnovy (`suspended`, `interrupted`, `closed`, i po odmítnutém `resume()`) oscilátor nedostane, aby podněty z doby pozastavení nezazněly po obnovení najednou. Vibrace se tím nemění.
+Tóny se plánují do kontextu ve stavu `running`, nebo když `unlock()` požádal o obnovu ve stejné synchronní úloze (do konce aktuálního handleru). Nový i obnovovaný kontext přejde do `running` až asynchronně, takže `play` ve stejném handleru jako `unlock()` (např. první volba po obnovené otázce) zazní hned po rozběhnutí. V pozdější úloze kontext, který neběží (`suspended`, `interrupted`, `closed`, i po odmítnutém nebo nedokončeném `resume()`), oscilátor nedostane, aby podněty z doby pozastavení nezazněly po obnovení najednou. Vibrace se tím nemění.
 
 - **S8.3** `setSoundEnabled(false)` ztlumí hlavní hlasitost ihned (v aktuálním čase kontextu, naplánované změny se zruší), i probíhající tón, a další `play` nevytvoří oscilátor. Vypnutí před `unlock()` znamená, že kontext začne potichu. `setSoundEnabled(true)` vrátí 0,6.
 - **S8.4** `muteForAd()` ztlumí ihned. `restoreAfterAd()` vrátí uloženou úroveň: 0,6 při zapnutém zvuku, jinak ticho. Zapnutí zvuku během reklamy se projeví až po `restoreAfterAd()`.
@@ -174,6 +175,7 @@ Tóny se plánují do kontextu ve stavu `running` a do kontextu, na jehož obnov
 
 ## Otevřené body pro ředitele a app
 
+- App volá `feedback.unlock()` na začátku handleru každého aktivujícího vstupu hráče (`click`, `keydown`), ne jen prvního a ne z `pointerdown`. Jinak zvuk po odmítnutém nebo nedokončeném `resume()` či po přerušení na iOS do konce relace nezazní.
 - CrazyGames vyžaduje respektovat `SDK.game.settings.muteAudio` s předností před herním nastavením. Kontrakt `PlatformAdapter` ho nevystavuje. Návrh změny kontraktu je v předávací zprávě oblasti.
 - Poki doporučuje `commercialBreak()` při návratu z pauzy. Zadání nastavuje průběžné reklamy na 0 (§12, K5), adaptér je proto nevolá.
 - CrazyGames nechce `gameplayStop` při pouhé ztrátě fokusu. Hra se ale po skrytí stránky skutečně pozastaví a čeká na „Pokračovat“, takže `gameplayStop` při skrytí je oprávněný.

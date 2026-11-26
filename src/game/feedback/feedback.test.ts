@@ -57,6 +57,8 @@ class FakeAudioContext {
   static initialState: 'suspended' | 'running' = 'suspended'
   static constructorError: Error | undefined
   static resumeRejects = false
+  // Chrome keeps resume() pending without user activation; a touch pointerdown does not count as one.
+  static resumeNeverSettles = false
   state: 'suspended' | 'running' | 'closed' | 'interrupted' = FakeAudioContext.initialState
   currentTime = 10
   destination = { kind: 'destination' }
@@ -80,6 +82,7 @@ class FakeAudioContext {
   resume() {
     this.resumeCalls += 1
     if (FakeAudioContext.resumeRejects) return Promise.reject(new Error('NotAllowedError'))
+    if (FakeAudioContext.resumeNeverSettles) return new Promise<void>(() => undefined)
     return Promise.resolve().then(() => {
       this.state = 'running'
     })
@@ -127,6 +130,7 @@ beforeEach(() => {
   FakeAudioContext.initialState = 'suspended'
   FakeAudioContext.constructorError = undefined
   FakeAudioContext.resumeRejects = false
+  FakeAudioContext.resumeNeverSettles = false
   vibrations = []
   installAudioContext()
   installNavigator(true)
@@ -162,21 +166,35 @@ test('S8.1 unlock creates one context with master volume 0.6', () => {
   assert.equal(FakeAudioContext.instances.length, 1)
 })
 
-test('S8.1 unlock resumes a suspended context, also on a repeated call', async () => {
+test('S8.1 unlock resumes a suspended context on every call until it runs', async () => {
   const feedback = createFeedback(allOn)
   feedback.unlock()
   const context = onlyContext()
   assert.equal(context.resumeCalls, 1)
   feedback.unlock()
-  assert.equal(context.resumeCalls, 1, 'a resume in progress is not requested again')
+  assert.equal(context.resumeCalls, 2, 'a context that is not running yet is asked again')
   await settle()
   assert.equal(context.state, 'running')
   feedback.unlock()
-  assert.equal(context.resumeCalls, 1, 'a running context is not resumed again')
+  assert.equal(context.resumeCalls, 2, 'a running context is not resumed again')
   context.state = 'suspended'
   feedback.unlock()
-  assert.equal(context.resumeCalls, 2)
+  assert.equal(context.resumeCalls, 3)
   assert.equal(FakeAudioContext.instances.length, 1)
+})
+
+test('S8.1 a resume that never finishes is requested again by the next unlock', async () => {
+  FakeAudioContext.resumeNeverSettles = true
+  const feedback = createFeedback(allOn)
+  feedback.unlock()
+  const context = onlyContext()
+  await settle()
+  assert.equal(context.state, 'suspended')
+  feedback.unlock()
+  assert.equal(context.resumeCalls, 2)
+  await settle()
+  feedback.unlock()
+  assert.equal(context.resumeCalls, 3)
 })
 
 test('S8.1 a context that starts running is not resumed', () => {
@@ -259,6 +277,36 @@ test('S8.2 a cue played in the same handler as unlock sounds on a fresh context'
   const context = onlyContext()
   assert.equal(context.state, 'suspended', 'the fake context is still starting')
   assert.equal(context.oscillators.length, 1)
+})
+
+test('S8.2 a cue played in a later task than unlock on a suspended context makes no sound but vibrates', async () => {
+  FakeAudioContext.resumeNeverSettles = true
+  const feedback = createFeedback(allOn)
+  feedback.unlock()
+  const context = onlyContext()
+  await Promise.resolve()
+  feedback.play('correct')
+  await settle()
+  feedback.play('postcard')
+  assert.equal(context.state, 'suspended')
+  assert.equal(context.oscillators.length, 0, 'tones from a long pause must not pile up for the resume')
+  assert.deepEqual(vibrations, [25, 35])
+
+  feedback.unlock()
+  feedback.play('choice')
+  assert.equal(context.oscillators.length, 1, 'the next unlock lets a cue in the same handler sound again')
+})
+
+test('S8.2 once the context runs, cues are scheduled without unlock', async () => {
+  const feedback = createFeedback(allOn)
+  feedback.unlock()
+  const context = onlyContext()
+  await settle()
+  assert.equal(context.state, 'running')
+  feedback.play('correct')
+  await settle()
+  feedback.play('choice')
+  assert.equal(context.oscillators.length, 3)
 })
 
 test('S8.2 a cue played in the same handler as unlock sounds on a context being resumed', async () => {
