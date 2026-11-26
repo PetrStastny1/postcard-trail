@@ -4,12 +4,12 @@ Požadavky a scénáře jsou ve [spec.md](spec.md). Vývojář balíčku zaškrt
 
 ## Balíček 1: Průchod trasou (`run`)
 
-- [ ] `choiceOrder.ts`: Fisher–Yates s předanou náhodou, lexikografické permutace 0–23, pevné pořadí B09 (CO1–CO3)
-- [ ] `run.ts`: typy stavu a akcí, časy podle čísla zastávky, start městské trasy (R1, R2, R17)
-- [ ] Reducer: odpočet, hranice času, kola, první akce platí, skóre a série (R3–R6, R14, R15)
-- [ ] Žolíky 50:50 a +10 s, kombinace, nečasovaný režim, pauza (R7–R11)
-- [ ] Přeskočení za video s ID pokusu, obnova s pauzou (R12, R13, R16)
-- [ ] Testy scénářů ze spec.md §1 a §2, Rozhraní doplněné
+- [x] `choiceOrder.ts`: Fisher–Yates s předanou náhodou, lexikografické permutace 0–23, pevné pořadí B09 (CO1–CO3)
+- [x] `run.ts`: typy stavu a akcí, časy podle čísla zastávky, start městské trasy (R1, R2, R17)
+- [x] Reducer: odpočet, hranice času, kola, první akce platí, skóre a série (R3–R6, R14, R15)
+- [x] Žolíky 50:50 a +10 s, kombinace, nečasovaný režim, pauza (R7–R11)
+- [x] Přeskočení za video s ID pokusu, obnova s pauzou (R12, R13, R16)
+- [x] Testy scénářů ze spec.md §1 a §2, Rozhraní doplněné
 
 ## Balíček 2: Postup hráče (`progress`)
 
