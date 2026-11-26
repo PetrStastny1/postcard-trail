@@ -268,7 +268,7 @@ test('the countdown shows whole seconds rounded up, a choice just before zero co
 
   await page.locator('.next').click()
   await expectState(page, 'question')
-  await page.clock.runFor(24_990)
+  await page.clock.runFor(24_999)
   await expect(timer(page)).toHaveText('1 s')
   await correctChoice(page, paris.stops[1]).click()
   await expect(verdict(page)).toHaveText('Correct!')
