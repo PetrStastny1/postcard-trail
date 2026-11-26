@@ -102,11 +102,11 @@ Fáze: `loading` (scéna se načítá, čas neběží; zbývající čas je limi
 - **D3 Zamčená města.** Rozvrh nezávisí na postupu hráče, zahrnuje i zamčená města.
 - **D4 Permutace.** Pořadí voleb každé denní zastávky je permutace číslo `FNV-1a 32bit("YYYY-MM-DD:cityId:stopId") mod 24` podle CO2 (FNV-1a nad UTF-8 bajty, offset basis `2166136261`, prime `16777619`, výsledek bez znaménka). Výjimka B09 podle CO3.
 - **D5 Uložení startu.** Denní průchod nese datum, `effectiveUtcDate` verze a ID tří zastávek. Obnova a pokračování po půlnoci nebo po aktualizaci katalogu používá uložená data, výpočet se znovu nedělá.
-- **D6 Jeden výsledek na den.** Pro každé datum se ukládá nejvýš jeden výsledek (ID města a počet správných 0–3). Výsledek patří datu startu. Datum s výsledkem další pokus neotevře. Při slučování zůstává první uložený výsledek.
+- **D6 Jeden výsledek na den.** Pro každé datum se ukládá nejvýš jeden výsledek (ID města a počet správných 0–3). Výsledek se zapisuje jen z dokončeného denního průchodu (fáze `summary`, režim `daily`) k datu uloženému v průchodu, tedy k datu startu; zápis jiného průchodu je chyba. Datum s výsledkem další pokus neotevře (logika řekne, zda datum výsledek má). Při slučování zůstává první uložený výsledek. Výsledky mají klíče (data) seřazené vzestupně, takže stejné výsledky mají jednu podobu v JSON.
 - **D7 Série dnů.** Počet po sobě jdoucích dnů s výsledkem končících dnes nebo včera (podle předaného dnešního data), jinak 0. Nezávisí na pořadí, v jakém se výsledky uložily.
 - **D8 Bez vlivu na postup.** Denní výsledek nemění hvězdy, pohlednice, dokončená města ani odemčení.
 - **D9 Zpřístupnění.** Denní přehled je dostupný po dokončení prvního města (alespoň jedno dokončené město).
-- **D10 Datum z času.** Funkce převede čas v ms od epochy na datum UTC (pomocí `Date` s předaným časem, bez čtení hodin).
+- **D10 Datum z času.** Funkce převede čas v ms od epochy na datum UTC (pomocí `Date` s předaným časem, bez čtení hodin). Výsledek nezávisí na místním časovém pásmu.
 
 ### Scénáře (K4)
 
@@ -120,7 +120,11 @@ Fáze: `loading` (scéna se načítá, čas neběží; zbývající čas je limi
 - Průchod začatý před vydáním nové verze katalogu a obnovený po něm → uložené zastávky beze změny.
 - Stejné datum a katalog dvakrát → stejné město, zastávky a pořadí voleb (shoda s pevnými očekávanými hodnotami FNV-1a).
 - Výsledky dnes, včera, předevčírem → série 3. Výsledky včera a předevčírem → 2. Výsledek před třemi dny → 0. Stejné výsledky uložené v obráceném pořadí → stejná série.
-- Druhý výsledek pro stejné datum → zůstane první.
+- Druhý výsledek pro stejné datum → zůstane první. Datum s výsledkem je poznat.
+- Sloučení výsledků dvou karet → pro každé datum výsledek uloženého stavu, sjednocená data, klíče seřazené.
+- Série přes hranici měsíce, roku a přestupného dne → správný počet.
+- Zápis nedokončeného nebo městského průchodu jako denního výsledku → chyba.
+- Dokončení a zápis denního průchodu → `Progress` beze změny. Bez dokončeného města denní přehled zamčený, s jedním dostupný.
 
 ## 5. Uložení (`src/game/storage/`)
 
@@ -232,19 +236,24 @@ export function mergeProgress(a: Progress, b: Progress): Progress
 ### `src/game/logic/daily.ts`
 
 ```ts
-export interface DailyPlan { utcDate: string; catalogEffectiveUtcDate: string; cityId: string; firstStopNumber: number }
-export interface DailyResult { cityId: string; correct: number }
-export type DailyResults = Record<string, DailyResult> // klíč je datum UTC
-export function fnv1a32(text: string): number
+export interface DailyPlan { utcDate: string; catalogEffectiveUtcDate: string; cityId: string; firstStopNumber: number } // firstStopNumber 1–8
+export interface DailyResult { cityId: string; correct: number } // correct 0–3
+/** Keyed by the UTC date the run started on; keys are sorted ascending, so equal results have one JSON form. */
+export type DailyResults = Record<string, DailyResult>
+export const emptyDailyResults: DailyResults
+export function fnv1a32(text: string): number // nad UTF-8 bajty, bez znaménka
 export function utcDateOf(epochMs: number): string
-export function catalogVersionFor(catalog: Catalog, utcDate: string): CatalogVersion | null
-export function dailyPlan(catalog: Catalog, utcDate: string): DailyPlan | null
+export function catalogVersionFor(catalog: Catalog, utcDate: string): CatalogVersion | null // null = před první verzí
+export function dailyPlan(catalog: Catalog, utcDate: string): DailyPlan | null // null = výzva se nenabízí
 export function startDailyRun(options: { route: Route; plan: DailyPlan; runId: string; untimed: boolean }): RunState
-export function recordDailyResult(results: DailyResults, utcDate: string, result: DailyResult): DailyResults
+export function recordDailyRun(results: DailyResults, run: RunState): DailyResults // vyhodí Error, není-li run dokončený denní průchod
+export function hasDailyResult(results: DailyResults, utcDate: string): boolean
 export function dailyStreak(results: DailyResults, todayUtcDate: string): number
 export function mergeDailyResults(stored: DailyResults, incoming: DailyResults): DailyResults
 export function dailyUnlocked(progress: Progress): boolean
 ```
+
+`startDailyRun` dostává trasu města `plan.cityId` a staví průchod přes `createRun` s `mode: 'daily'` a `daily` z plánu; časové limity podle čísla zastávky v trase (`timeLimitMs`), pořadí voleb `` permutedChoiceIds(stop, fnv1a32(`${plan.utcDate}:${route.id}:${stop.id}`) % 24) ``. `recordDailyRun` zapíše `{ cityId: run.cityId, correct: run.correct }` k `run.daily.utcDate` přes `mergeDailyResults`, takže už uložený výsledek data zůstane. `mergeDailyResults` pro každé datum ponechá výsledek ze `stored`, sjednotí data a vrací klíče seřazené. `dailyStreak` počítá po sobě jdoucí dny s výsledkem od dneška, a když dnešek výsledek nemá, od včerejška.
 
 ### `src/game/storage/`
 
