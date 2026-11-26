@@ -508,15 +508,12 @@
 }
 
 .result-place {
-  grid-column: 1;
-  margin: 0;
-  font-weight: var(--weight-semibold);
-  line-height: var(--leading-tight);
+  font-weight: var(--weight-bold);
 }
 
 .next {
   grid-column: 2;
-  grid-row: 1 / span 3;
+  grid-row: 1 / span 2;
 }
 
 .play .primary,

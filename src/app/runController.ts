@@ -163,8 +163,7 @@ export function createRunController({ run: initialRun, storage, adapter, feedbac
     /** The enlarged scene covers the choices, so a running question waits for it to close. */
     zoomOpened(): void {
       if (stopped) return
-      adapter.gameplayStop()
-      if (!running()) return
+      if (!running()) return adapter.gameplayStop()
       pausedByZoom = true
       pause()
     },
@@ -179,18 +178,18 @@ export function createRunController({ run: initialRun, storage, adapter, feedbac
     /** The page was hidden: a question that is loading or running pauses, the checkpoint is saved and play stops. */
     pageHidden(): void {
       if (stopped) return
-      if (!run.paused && (run.phase === 'loading' || run.phase === 'question')) pause()
-      else if (storage.saveRunCheckpoint(run) === 'notOwner') return loseOwnership()
-      if (!stopped) adapter.gameplayStop()
+      if (!run.paused && (run.phase === 'loading' || run.phase === 'question')) return pause()
+      if (storage.saveRunCheckpoint(run) === 'notOwner') return loseOwnership()
+      adapter.gameplayStop()
     },
 
     /** × or Home: saves the run paused where it is and leaves the game screen. */
     leave(): void {
       if (stopped) return
       if (!run.paused && run.phase !== 'feedback') pause()
+      else adapter.gameplayStop()
       if (stopped) return
       stopped = true
-      adapter.gameplayStop()
       if (storage.saveRunCheckpoint(run) === 'notOwner') return
       adapter.track({ name: 'route_left', cityId: run.cityId, mode: run.mode, index: run.stopIndex + 1, reason: 'paused' })
     },

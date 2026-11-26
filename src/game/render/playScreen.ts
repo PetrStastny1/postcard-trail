@@ -195,8 +195,8 @@ export function createPlayScreen(handlers: PlayHandlers): PlayScreen {
     next.addEventListener('click', handlers.onNext)
     result.replaceChildren(
       element('p', { class: 'result-verdict' }, icon(verdictIcon, { class: 'result-icon' }), element('span', { class: 'result-word' }, t(verdictKey))),
-      element('p', { class: 'result-place' }, stop.place[locale]),
-      element('p', { class: 'result-sentence' }, stop.feedback[locale]),
+      // The place leads the sentence instead of taking its own line, so short landscape screens keep the sentence in view.
+      element('p', { class: 'result-sentence' }, element('strong', { class: 'result-place' }, stop.place[locale]), ' · ', stop.feedback[locale]),
       next,
     )
   }
