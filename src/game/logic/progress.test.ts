@@ -231,6 +231,28 @@ test('two tabs completing different cities merge into both postcards', () => {
   assert.deepEqual(mergeProgress(tabB, tabA), mergeProgress(tabA, tabB))
 })
 
+test('merging in either order gives the same JSON with sorted star keys', () => {
+  const a: Progress = {
+    completedCityIds: ['paris', 'rome'],
+    bestStars: { rome: 2, paris: 1 },
+    postcardCityIds: ['paris', 'rome'],
+  }
+  const b: Progress = {
+    completedCityIds: ['london', 'paris'],
+    bestStars: { paris: 3, london: 0 },
+    postcardCityIds: ['london', 'paris'],
+  }
+
+  assert.equal(JSON.stringify(mergeProgress(a, b)), JSON.stringify(mergeProgress(b, a)))
+  assert.deepEqual(Object.keys(mergeProgress(a, b).bestStars), ['london', 'paris', 'rome'])
+})
+
+test('completions in different orders give the same JSON', () => {
+  const forward = completeAll(['paris', 'london', 'rome'], 8, threeCities)
+  const backward = completeAll(['rome', 'london', 'paris'], 8, threeCities)
+  assert.equal(JSON.stringify(forward), JSON.stringify(backward))
+})
+
 test('functions do not modify their inputs', () => {
   const progress = deepFreeze(completeAll(['paris'], 4, threeCities))
   const other = deepFreeze<Progress>({ completedCityIds: ['rome'], bestStars: { rome: 1 }, postcardCityIds: ['rome'] })

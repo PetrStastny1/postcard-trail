@@ -192,7 +192,7 @@ export function canUseSkip(run: RunState): boolean
 
 ```ts
 export type Stars = 0 | 1 | 2 | 3
-/** City IDs in both arrays are unique and sorted ascending, so equal progress has one JSON form. */
+/** City IDs in both arrays and the `bestStars` keys are unique and sorted ascending, so equal progress has one JSON form. */
 export interface Progress { completedCityIds: string[]; bestStars: Record<string, Stars>; postcardCityIds: string[] }
 export interface CompletedCityRun { cityId: string; correct: number }
 export interface CityRunSummary { progress: Progress; stars: Stars; postcardEarned: boolean; newlyUnlockedCityId: string | null }
@@ -206,7 +206,7 @@ export function nextCityToPlay(progress: Progress, catalog: Catalog): string | n
 export function mergeProgress(a: Progress, b: Progress): Progress
 ```
 
-`applyCompletedCityRun` je `mergeProgress` s postupem jednoho města. `stars` jsou hvězdy tohoto průchodu (ne nejlepší), `postcardEarned` je `true` jen při první pohlednici města, `newlyUnlockedCityId` je město odemčené tímto dokončením, které předtím odemčené nebylo. `mergeProgress` vrací pole seřazená a bez duplicit, takže je komutativní i podle `deepEqual` a `mergeProgress(a, a)` je shodné s `a` pro každý postup v tomto tvaru.
+`applyCompletedCityRun` je `mergeProgress` s postupem jednoho města. `stars` jsou hvězdy tohoto průchodu (ne nejlepší), `postcardEarned` je `true` jen při první pohlednici města, `newlyUnlockedCityId` je město odemčené tímto dokončením, které předtím odemčené nebylo. `mergeProgress` vrací pole i klíče `bestStars` seřazené a bez duplicit, takže je komutativní podle `deepEqual` i podle `JSON.stringify` a `mergeProgress(a, a)` je shodné s `a` pro každý postup v tomto tvaru.
 
 ### `src/game/logic/daily.ts`
 

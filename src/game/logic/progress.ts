@@ -2,7 +2,7 @@ import type { Catalog } from '../../content/types.ts'
 
 export type Stars = 0 | 1 | 2 | 3
 
-/** City IDs in both arrays are unique and sorted ascending, so equal progress has one JSON form. */
+/** City IDs in both arrays and the `bestStars` keys are unique and sorted ascending, so equal progress has one JSON form. */
 export interface Progress {
   completedCityIds: string[]
   bestStars: Record<string, Stars>
@@ -83,9 +83,11 @@ export function nextCityToPlay(progress: Progress, catalog: Catalog): string | n
 }
 
 export function mergeProgress(a: Progress, b: Progress): Progress {
-  const bestStars: Record<string, Stars> = { ...a.bestStars }
-  for (const [cityId, stars] of Object.entries(b.bestStars)) {
-    if (stars >= (bestStars[cityId] ?? 0)) bestStars[cityId] = stars
+  const bestStars: Record<string, Stars> = {}
+  for (const cityId of sortedUnion(Object.keys(a.bestStars), Object.keys(b.bestStars))) {
+    const starsA = a.bestStars[cityId] ?? 0
+    const starsB = b.bestStars[cityId] ?? 0
+    bestStars[cityId] = starsA >= starsB ? starsA : starsB
   }
   return {
     completedCityIds: sortedUnion(a.completedCityIds, b.completedCityIds),
