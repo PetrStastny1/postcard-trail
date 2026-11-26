@@ -1,0 +1,616 @@
+{
+  "id": "oslo",
+  "name": {
+    "en": "Oslo",
+    "cs": "Oslo"
+  },
+  "coordinates": {
+    "lat": 59.9133,
+    "lon": 10.7389
+  },
+  "postcardQuestionId": "OSL03",
+  "stops": [
+    {
+      "id": "OSL01",
+      "place": {
+        "en": "From the footbridge above the tracks east of Oslo Central",
+        "cs": "Z lávky nad východními kolejemi Oslo S"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/OSL01.webp",
+      "sceneAlt": {
+        "en": "A row of tall narrow buildings with slim gaps between them stands beside the railway tracks",
+        "cs": "Podél kolejí stojí řada štíhlých výškových domů oddělených úzkými mezerami"
+      },
+      "question": {
+        "en": "Which group of Oslo buildings can you see?",
+        "cs": "Kterou skupinu budov v Oslu vidíš?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Aker Brygge",
+            "cs": "Aker Brygge"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Tjuvholmen",
+            "cs": "Tjuvholmen"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Sørenga",
+            "cs": "Sørenga"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Barcode",
+            "cs": "Barcode"
+          }
+        }
+      ],
+      "correctChoiceId": "d",
+      "feedback": {
+        "en": "The narrow buildings along the tracks make up Oslo’s Barcode skyline.",
+        "cs": "Úzké domy rovnoběžné s kolejemi tvoří osloský Barcode."
+      },
+      "sourceUrls": [
+        "https://www.visitoslo.com/attraction/barcode"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Barcode_in_Oslo_seen_from_the_pedestrian_bridge_%22Akrobaten%22.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "OSL02",
+      "place": {
+        "en": "Inside the MUNCH Museum gallery in Bjørvika",
+        "cs": "V galerii muzea MUNCH v Bjørvice"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/OSL02.webp",
+      "sceneAlt": {
+        "en": "A painting of a solitary figure holding both hands to their face beside a diagonal railing under a wavy orange sky",
+        "cs": "Malba osamělé postavy s rukama u tváře vedle šikmého zábradlí pod zvlněnou oranžovou oblohou"
+      },
+      "question": {
+        "en": "Which work by Munch is on view in the case?",
+        "cs": "Které Munchovo dílo je právě ve vitríně?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "The Scream",
+            "cs": "Výkřik"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Anxiety",
+            "cs": "Úzkost"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Madonna",
+            "cs": "Madonna"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Evening on Karl Johan Street",
+            "cs": "Večer na třídě Karla Johana"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "At MUNCH in Bjørvika, a painted version of The Scream shows a solitary figure above the fjord.",
+        "cs": "V Bjørvice vidíš v muzeu MUNCH malovanou verzi Výkřiku s osamělou postavou nad fjordem."
+      },
+      "sourceUrls": [
+        "https://www.munch.no/en/The-Scream/where-can-i-see-the-scream/"
+      ],
+      "photoReferenceUrls": [
+        "https://www.munch.no/en/The-Scream"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "OSL03",
+      "place": {
+        "en": "On the sloping white roof by the fjord",
+        "cs": "Na bílé šikmé střeše u fjordu"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/OSL03.webp",
+      "sceneAlt": {
+        "en": "People on a sloping white surface rising from the waterfront to the roof",
+        "cs": "Chodci na bílé šikmé ploše, která vystupuje od břehu na střechu"
+      },
+      "question": {
+        "en": "Which building can you see on the Oslo waterfront?",
+        "cs": "Kterou stavbu vidíš přímo u osloského nábřeží?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Oslo Opera House",
+            "cs": "Opera v Oslu"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "MUNCH Museum",
+            "cs": "Muzeum MUNCH"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Deichman Bjørvika Library",
+            "cs": "Knihovna Deichman Bjørvika"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Oslo City Hall",
+            "cs": "Radnice v Oslu"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On the sloping white roof by the fjord, you can see a white roof blending into a public ramp with people on foot.",
+        "cs": "Na bílé šikmé střeše u fjordu je dobře vidět bílá střešní plocha přecházející do veřejné rampy s chodci."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Oslo_Opera_House"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Oslo_Opera_House_-_2025.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "OSL04",
+      "place": {
+        "en": "From the outer walk in Bjørvika",
+        "cs": "Z vnějšího chodníku Bjørvika"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/OSL04.webp",
+      "sceneAlt": {
+        "en": "The upper part of the building bending out towards the water",
+        "cs": "Horní část budovy ohnutá směrem k vodě"
+      },
+      "question": {
+        "en": "Which Oslo museum looks like a tall block bent out towards the water?",
+        "cs": "Které osloské muzeum poznáš podle vysokého hranolu zalomeného směrem nad vodu?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "MUNCH Museum",
+            "cs": "Muzeum MUNCH"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "National Museum",
+            "cs": "Norské národní muzeum"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Fram Museum",
+            "cs": "Muzeum Fram"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Astrup Fearnley Museet",
+            "cs": "Astrup Fearnley Museet"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "From the outer walk in Bjørvika, you can see the upper part of the building bending out towards the water.",
+        "cs": "Z vnějšího chodníku Bjørvika je dobře vidět horní část budovy ohnutá směrem k vodě."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Munch_Museum"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:The_new_Munch_Museum_(white_color_sign).jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "OSL05",
+      "place": {
+        "en": "Along the waterfront below the green ramparts",
+        "cs": "Po nábřeží pod zelenými valy"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/OSL05.webp",
+      "sceneAlt": {
+        "en": "A long defensive embankment with castle buildings overlooking the harbour",
+        "cs": "Dlouhý obranný val se stavbami hradu nad přístavem"
+      },
+      "question": {
+        "en": "Which building is in front of you?",
+        "cs": "Kterou stavbu máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Oscarshall",
+            "cs": "Oscarshall"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Royal Palace",
+            "cs": "Královský palác"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Akershus Fortress",
+            "cs": "Pevnost Akershus"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Oscarsborg Fortress",
+            "cs": "Pevnost Oscarsborg"
+          }
+        }
+      ],
+      "correctChoiceId": "c",
+      "feedback": {
+        "en": "Along the waterfront below the green ramparts, you can see a long defensive embankment with castle buildings overlooking the harbour.",
+        "cs": "Po nábřeží pod zelenými valy je dobře vidět dlouhý obranný val se stavbami hradu nad přístavem."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Akershus_Fortress"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:14-09-02-oslo-RalfR-370.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "OSL06",
+      "place": {
+        "en": "On Akershusstrand",
+        "cs": "Na Akershusstrand"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/OSL06.webp",
+      "sceneAlt": {
+        "en": "A broad quay with low buildings below green fortress ramparts",
+        "cs": "Široké molo s nízkými budovami v místě, kde se zelené hradby dotýkají přístavu"
+      },
+      "question": {
+        "en": "Which harbour point lies directly below Akershus Fortress beside a ferry quay?",
+        "cs": "Který přístavní výběžek leží přímo pod hradem Akershus vedle trajektového mola?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Vippetangen",
+            "cs": "Vippetangen"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Tjuvholmen",
+            "cs": "Tjuvholmen"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Sørenga",
+            "cs": "Sørenga"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Bygdøy",
+            "cs": "Bygdøy"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Below the Akershus ramparts is Vippetangen, a harbour point with ferry quays.",
+        "cs": "Pod valy Akershusu leží přístavní výběžek Vippetangen s trajektovými moly."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Vippetangen"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Vippetangen.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "OSL07",
+      "place": {
+        "en": "Outside the city hall from Rådhusplassen",
+        "cs": "Před radnicí při pohledu z Rådhusplassen"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/OSL07.webp",
+      "sceneAlt": {
+        "en": "Two massive dark-brick towers behind the harbourfront",
+        "cs": "Dvě masivní tmavě cihlové věže za nábřežím"
+      },
+      "question": {
+        "en": "Which building is in front of you?",
+        "cs": "Kterou stavbu máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Oslo City Hall",
+            "cs": "Radnice v Oslu"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "National Museum of Norway",
+            "cs": "Norské národní muzeum"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Parliament of Norway",
+            "cs": "Norský parlament"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "National Theatre",
+            "cs": "Národní divadlo"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Outside the city hall from Rådhusplassen, you can see two massive dark-brick towers behind the harbourfront.",
+        "cs": "Před radnicí při pohledu z Rådhusplassen je dobře vidět dvě masivní tmavě cihlové věže za nábřežím."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Oslo_City_Hall"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Lhôtel_de_ville_dOslo_(4854168964).jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "OSL08",
+      "place": {
+        "en": "At the edge of Vestbanen by the square",
+        "cs": "Na okraji Vestbanen u náměstí"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/OSL08.webp",
+      "sceneAlt": {
+        "en": "A long stone block with a translucent upper band",
+        "cs": "Dlouhý kamenný blok s prosvětleným horním pásem"
+      },
+      "question": {
+        "en": "Which building is in front of you?",
+        "cs": "Kterou stavbu máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Munch Museum",
+            "cs": "Munchovo muzeum"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "National Museum of Norway",
+            "cs": "Norské národní muzeum"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Norwegian Maritime Museum",
+            "cs": "Norské námořní muzeum"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Fram Museum",
+            "cs": "Muzeum Fram"
+          }
+        }
+      ],
+      "correctChoiceId": "b",
+      "feedback": {
+        "en": "At the edge of Vestbanen by the square, you can see a long stone block with a translucent upper band.",
+        "cs": "Na okraji Vestbanen u náměstí je dobře vidět dlouhý kamenný blok s prosvětleným horním pásem."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/National_Museum_of_Art,_Architecture_and_Design"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Nye_Nasjonalmuseet_(2022)_(2).jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "OSL09",
+      "place": {
+        "en": "From the footbridge to Tjuvholmen looking back",
+        "cs": "Z mostku k Tjuvholmenu při pohledu zpět"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/OSL09.webp",
+      "sceneAlt": {
+        "en": "A long row of quayside buildings next to sailing boats with both city hall towers beyond the marina",
+        "cs": "Kryté průčelí podél dlouhého mola s plachetnicemi a dvě radniční věže za přístavem"
+      },
+      "question": {
+        "en": "Which Oslo waterfront area can you recognise by the long quay, marina and twin city hall towers in the background?",
+        "cs": "Kterou část osloského nábřeží poznáš podle dlouhého mola, přístavu pro jachty a dvojité věže radnice v pozadí?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Bjørvika",
+            "cs": "Bjørvika"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Sørenga",
+            "cs": "Sørenga"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Aker Brygge",
+            "cs": "Aker Brygge"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Vippetangen",
+            "cs": "Vippetangen"
+          }
+        }
+      ],
+      "correctChoiceId": "c",
+      "feedback": {
+        "en": "From the footbridge to Tjuvholmen, Aker Brygge’s long quay and the city hall towers rise behind the sailboats.",
+        "cs": "Z mostku do Tjuvholmenu máš za plachetnicemi dlouhé molo Aker Brygge a věže radnice."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Aker_Brygge"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Oslo_Aker_Brygge_2005_June_19.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Zpětný výhled z Tjuvholmenu má dlouhé molo s plachetnicemi v popředí a dvě cihlové radniční věže v pozadí. Zbývající nábřeží jsou na jiné straně přístavu."
+    },
+    {
+      "id": "OSL10",
+      "place": {
+        "en": "At the edge of Tjuvholmen",
+        "cs": "Na hraně Tjuvholmenu"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/OSL10.webp",
+      "sceneAlt": {
+        "en": "Low timber buildings gathered under a curved glass roof by the water",
+        "cs": "Nízké dřevěné stavby propojené prohnutou skleněnou střechou u vody"
+      },
+      "question": {
+        "en": "Which museum can you see?",
+        "cs": "Které muzeum je v záběru?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Astrup Fearnley Museet",
+            "cs": "Astrup Fearnley Museet"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "MUNCH Museum",
+            "cs": "Muzeum MUNCH"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Norwegian Maritime Museum",
+            "cs": "Norské námořní muzeum"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Fram Museum",
+            "cs": "Muzeum Fram"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "At the edge of Tjuvholmen, you can see low timber buildings gathered under a curved glass roof by the water.",
+        "cs": "Na hraně Tjuvholmenu je dobře vidět nízké dřevěné stavby propojené prohnutou skleněnou střechou u vody."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Astrup_Fearnley_Museum_of_Modern_Art"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Astrup_Fearnley_Museum_of_Modern_Art.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Dřevěná křídla spojuje velká prohnutá skleněná střecha přímo u vody. MUNCH je vysoký nakloněný blok, Fram má strmé střechy a námořní muzeum jiné členění."
+    }
+  ]
+}

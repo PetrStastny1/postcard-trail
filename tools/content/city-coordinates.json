@@ -1,0 +1,102 @@
+{
+  "paris": {
+    "lat": 48.8567,
+    "lon": 2.3522,
+    "source": "Wikidata Q90, property P625 (https://www.wikidata.org/wiki/Q90#P625), retrieved 2026-11-26"
+  },
+  "london": {
+    "lat": 51.5072,
+    "lon": -0.1275,
+    "source": "Wikidata Q84, property P625 (https://www.wikidata.org/wiki/Q84#P625), retrieved 2026-11-26"
+  },
+  "rome": {
+    "lat": 41.8931,
+    "lon": 12.4828,
+    "source": "Wikidata Q220, property P625 (https://www.wikidata.org/wiki/Q220#P625), retrieved 2026-11-26"
+  },
+  "berlin": {
+    "lat": 52.5167,
+    "lon": 13.3833,
+    "source": "Wikidata Q64, property P625 (https://www.wikidata.org/wiki/Q64#P625), retrieved 2026-11-26"
+  },
+  "madrid": {
+    "lat": 40.4169,
+    "lon": -3.7033,
+    "source": "Wikidata Q2807, property P625 (https://www.wikidata.org/wiki/Q2807#P625), retrieved 2026-11-26"
+  },
+  "amsterdam": {
+    "lat": 52.3667,
+    "lon": 4.8833,
+    "source": "Wikidata Q727, property P625 (https://www.wikidata.org/wiki/Q727#P625), retrieved 2026-11-26"
+  },
+  "athens": {
+    "lat": 37.9842,
+    "lon": 23.7281,
+    "source": "Wikidata Q1524, property P625 (https://www.wikidata.org/wiki/Q1524#P625), retrieved 2026-11-26"
+  },
+  "bratislava": {
+    "lat": 48.1517,
+    "lon": 17.1093,
+    "source": "Wikidata Q1780, property P625 (https://www.wikidata.org/wiki/Q1780#P625), retrieved 2026-11-26"
+  },
+  "vienna": {
+    "lat": 48.2083,
+    "lon": 16.3725,
+    "source": "Wikidata Q1741, property P625 (https://www.wikidata.org/wiki/Q1741#P625), retrieved 2026-11-26"
+  },
+  "prague": {
+    "lat": 50.0875,
+    "lon": 14.4214,
+    "source": "Wikidata Q1085, property P625 (https://www.wikidata.org/wiki/Q1085#P625), retrieved 2026-11-26"
+  },
+  "lisbon": {
+    "lat": 38.708,
+    "lon": -9.139,
+    "source": "Wikidata Q597, property P625 (https://www.wikidata.org/wiki/Q597#P625), retrieved 2026-11-26"
+  },
+  "dublin": {
+    "lat": 53.3497,
+    "lon": -6.2603,
+    "source": "Wikidata Q1761, property P625 (https://www.wikidata.org/wiki/Q1761#P625), retrieved 2026-11-26"
+  },
+  "copenhagen": {
+    "lat": 55.6761,
+    "lon": 12.5689,
+    "source": "Wikidata Q1748, property P625 (https://www.wikidata.org/wiki/Q1748#P625), retrieved 2026-11-26"
+  },
+  "stockholm": {
+    "lat": 59.3294,
+    "lon": 18.0686,
+    "source": "Wikidata Q1754, property P625 (https://www.wikidata.org/wiki/Q1754#P625), retrieved 2026-11-26"
+  },
+  "brussels": {
+    "lat": 50.8467,
+    "lon": 4.3517,
+    "source": "Wikidata Q239, property P625 (https://www.wikidata.org/wiki/Q239#P625), retrieved 2026-11-26"
+  },
+  "budapest": {
+    "lat": 47.4983,
+    "lon": 19.0408,
+    "source": "Wikidata Q1781, property P625 (https://www.wikidata.org/wiki/Q1781#P625), retrieved 2026-11-26"
+  },
+  "warsaw": {
+    "lat": 52.23,
+    "lon": 21.0111,
+    "source": "Wikidata Q270, property P625 (https://www.wikidata.org/wiki/Q270#P625), retrieved 2026-11-26"
+  },
+  "oslo": {
+    "lat": 59.9133,
+    "lon": 10.7389,
+    "source": "Wikidata Q585, property P625 (https://www.wikidata.org/wiki/Q585#P625), retrieved 2026-11-26"
+  },
+  "helsinki": {
+    "lat": 60.1708,
+    "lon": 24.9375,
+    "source": "Wikidata Q1757, property P625 (https://www.wikidata.org/wiki/Q1757#P625), retrieved 2026-11-26"
+  },
+  "reykjavik": {
+    "lat": 64.1475,
+    "lon": -21.935,
+    "source": "Wikidata Q1764, property P625 (https://www.wikidata.org/wiki/Q1764#P625), retrieved 2026-11-26"
+  }
+}

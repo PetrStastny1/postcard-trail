@@ -1,0 +1,618 @@
+{
+  "id": "copenhagen",
+  "name": {
+    "en": "Copenhagen",
+    "cs": "Kodaň"
+  },
+  "coordinates": {
+    "lat": 55.6761,
+    "lon": 12.5689
+  },
+  "postcardQuestionId": "CPH06",
+  "stops": [
+    {
+      "id": "CPH01",
+      "place": {
+        "en": "On City Hall Square",
+        "cs": "Na Radničním náměstí"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/CPH01.webp",
+      "sceneAlt": {
+        "en": "A red-brick façade with a tall clock tower",
+        "cs": "Červené cihlové průčelí s vysokou hodinovou věží"
+      },
+      "question": {
+        "en": "Which Copenhagen landmark has a tall clock tower above this red-brick front?",
+        "cs": "Která známá kodaňská stavba má vysokou hodinovou věž nad červeným cihlovým průčelím?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Copenhagen City Hall",
+            "cs": "Kodaňská radnice"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Christiansborg",
+            "cs": "Christiansborg"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Amalienborg",
+            "cs": "Amalienborg"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Rosenborg Castle",
+            "cs": "Zámek Rosenborg"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On City Hall Square, you can see a red-brick façade with a tall clock tower.",
+        "cs": "Na Radničním náměstí je dobře vidět červené cihlové průčelí s vysokou hodinovou věží."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Copenhagen_City_Hall"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Copenhagen_City_Hall.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "CPH02",
+      "place": {
+        "en": "On Vesterbrogade near City Hall Square",
+        "cs": "Na Vesterbrogade u radničního náměstí"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/CPH02.webp",
+      "sceneAlt": {
+        "en": "Twin small towers with lanterns and an ornate iron arch near a city street",
+        "cs": "Dvě nízké věžičky s lucernami a kovaný oblouk u městské ulice"
+      },
+      "question": {
+        "en": "Which Copenhagen park has this ornate entrance gate on Vesterbrogade?",
+        "cs": "Do kterého kodaňského parku vede tato ozdobná vstupní brána na Vesterbrogade?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Tivoli",
+            "cs": "Tivoli"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Bakken",
+            "cs": "Bakken"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Frederiksberg Have",
+            "cs": "Frederiksberg Have"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Kongens Have",
+            "cs": "Kongens Have"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On Vesterbrogade, you are at the historic gate to the Tivoli Gardens.",
+        "cs": "Na Vesterbrogade stojíš před historickou branou do zahrad Tivoli."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Tivoli_Gardens"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Tivoli_Gardens_4.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "CPH03",
+      "place": {
+        "en": "On Købmagergade among the old buildings",
+        "cs": "Na Købmagergade mezi starými domy"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/CPH03.webp",
+      "sceneAlt": {
+        "en": "A tall cylindrical brick tower with rows of windows and a viewing balustrade on a paved street",
+        "cs": "Vysoká válcová cihlová věž s řadami oken a vyhlídkovým ochozem na okraji dlážděné ulice"
+      },
+      "question": {
+        "en": "Which Copenhagen landmark can you see from the street?",
+        "cs": "Kterou kodaňskou dominantu vidíš v ulici?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Rundetaarn",
+            "cs": "Rundetaarn"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Christiansborg",
+            "cs": "Christiansborg"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Rosenborg",
+            "cs": "Rosenborg"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Marmorkirken",
+            "cs": "Marmorkirken"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On Købmagergade stands Rundetaarn, Copenhagen’s Round Tower, with a lookout at the top.",
+        "cs": "U Købmagergade stojí Rundetaarn, kodaňská Kulatá věž s vyhlídkou nahoře."
+      },
+      "sourceUrls": [
+        "https://www.rundetaarn.dk/en/intro/around-the-tower/"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Rundetaarn.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "CPH04",
+      "place": {
+        "en": "At the canal by Slotsholmen",
+        "cs": "U průplavu k Slotsholmenu"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/CPH04.webp",
+      "sceneAlt": {
+        "en": "Four dragon tails entwined at the tip of the roof",
+        "cs": "Čtyři propletené dračí ocasy na špičce střechy"
+      },
+      "question": {
+        "en": "Which Copenhagen building is known in this historical view for its spire of four entwined dragon tails?",
+        "cs": "Která kodaňská budova je na dobovém pohledu poznat podle věže ze čtyř spletených dračích ocasů?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Old Stock Exchange, Børsen",
+            "cs": "Stará burza Børsen"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "City Hall",
+            "cs": "Radnice"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Christiansborg",
+            "cs": "Christiansborg"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Round Tower",
+            "cs": "Kulatá věž"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "At the canal by Slotsholmen, you can see four dragon tails entwined at the tip of the roof.",
+        "cs": "U průplavu k Slotsholmenu je dobře vidět čtyři propletené dračí ocasy na špičce střechy."
+      },
+      "sourceUrls": [
+        "https://www.visitcopenhagen.com/copenhagen/planning/the-old-stock-exchange-borsen-gdk412232",
+        "https://en.wikipedia.org/wiki/B%C3%B8rsen"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Børsen_on_18_June_2022_(top),_and_Børsen_on_16_April_2024_(bottom).jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "CPH05",
+      "place": {
+        "en": "In the Slotsholmen courtyard",
+        "cs": "Na nádvoří Slotsholmenu"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/CPH05.webp",
+      "sceneAlt": {
+        "en": "A large palace with a tall central tower beyond the riding ground",
+        "cs": "Velký palác s vysokou střední věží za prostorem pro koňské zápřahy"
+      },
+      "question": {
+        "en": "Which building is in front of you?",
+        "cs": "Kterou stavbu máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Amalienborg",
+            "cs": "Amalienborg"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Christiansborg",
+            "cs": "Christiansborg"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Rosenborg",
+            "cs": "Rosenborg"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Frederiksborg",
+            "cs": "Frederiksborg"
+          }
+        }
+      ],
+      "correctChoiceId": "b",
+      "feedback": {
+        "en": "In the Slotsholmen courtyard, you can see a large palace with a tall central tower beyond the riding ground.",
+        "cs": "Na nádvoří Slotsholmenu je dobře vidět velký palác s vysokou střední věží za prostorem pro koňské zápřahy."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Christiansborg_Palace"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Christiansborg_Slot_Copenhagen_2014_01.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "CPH06",
+      "place": {
+        "en": "On the quay lined with colourful houses",
+        "cs": "Na nábřeží pod barevnými domy"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/CPH06.webp",
+      "sceneAlt": {
+        "en": "A row of narrow colourful houses beside historic boats on a long straight quay",
+        "cs": "Řada barevných úzkých domů vedle historických lodí u dlouhé rovné hrany mola"
+      },
+      "question": {
+        "en": "Which Copenhagen canal can you see?",
+        "cs": "Který kodaňský kanál vidíš?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Christianshavns Kanal",
+            "cs": "Christianshavns Kanal"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Frederiksholms Kanal",
+            "cs": "Frederiksholms Kanal"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Nyhavn",
+            "cs": "Nyhavn"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Slotsholmskanalen",
+            "cs": "Slotsholmskanalen"
+          }
+        }
+      ],
+      "correctChoiceId": "c",
+      "feedback": {
+        "en": "On the quay lined with colourful houses, you can see a row of narrow colourful houses beside historic boats on a long straight quay.",
+        "cs": "Na nábřeží pod barevnými domy je dobře vidět řada barevných úzkých domů vedle historických lodí u dlouhé rovné hrany mola."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Nyhavn"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:The_Nyhavn_Canal_3.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "CPH07",
+      "place": {
+        "en": "On the Frederiksgade axis",
+        "cs": "Na ose Frederiksgade"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/CPH07.webp",
+      "sceneAlt": {
+        "en": "A huge copper dome closing the vista between pale palaces",
+        "cs": "Obrovská měděná kupole uzavírá ulici mezi světlými paláci"
+      },
+      "question": {
+        "en": "Which church can you see?",
+        "cs": "Který chrám vidíš?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Church of Our Saviour",
+            "cs": "Kostel Našeho Spasitele"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "St Alban’s Church",
+            "cs": "Kostel sv. Albana"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Copenhagen Cathedral",
+            "cs": "Kodaňská katedrála"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Marble Church",
+            "cs": "Mramorový kostel"
+          }
+        }
+      ],
+      "correctChoiceId": "d",
+      "feedback": {
+        "en": "On the Frederiksgade axis, you can see a huge copper dome closing the vista between pale palaces.",
+        "cs": "Na ose Frederiksgade je dobře vidět obrovská měděná kupole uzavírá ulici mezi světlými paláci."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Frederik%27s_Church"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Marmor_kirken,_Köpenhamn_juli_2003.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "CPH08",
+      "place": {
+        "en": "In the middle of the palace square",
+        "cs": "Uprostřed palácového náměstí"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/CPH08.webp",
+      "sceneAlt": {
+        "en": "Four matching palaces around an octagonal square with an equestrian statue",
+        "cs": "Čtyři odpovídající paláce kolem osmibokého prostoru s jezdeckou sochou"
+      },
+      "question": {
+        "en": "What is the palace complex around the rider called?",
+        "cs": "Jak se jmenuje palácový komplex kolem jezdce?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Amalienborg",
+            "cs": "Amalienborg"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Christiansborg",
+            "cs": "Christiansborg"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Rosenborg",
+            "cs": "Rosenborg"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Frederiksberg",
+            "cs": "Frederiksberg"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "In the middle of the palace square, you can see four matching palaces around an octagonal square with an equestrian statue.",
+        "cs": "Uprostřed palácového náměstí je dobře vidět čtyři odpovídající paláce kolem osmibokého prostoru s jezdeckou sochou."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Amalienborg"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Amalienborg_Palace_(cropped).jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "CPH09",
+      "place": {
+        "en": "By the moat beyond Churchillparken",
+        "cs": "U příkopu za Churchillparken"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/CPH09.webp",
+      "sceneAlt": {
+        "en": "Five grassy bastions with pointed tips, with a moat around them and an approach along a bank",
+        "cs": "Pět travnatých bastionů s ostrými špičkami, kolem nich příkop a násep se vstupem"
+      },
+      "question": {
+        "en": "Which Copenhagen fortress has five grassy bastions surrounded by a moat?",
+        "cs": "Která kodaňská pevnost má pět travnatých bastionů obklopených příkopem?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Kastellet",
+            "cs": "Kastellet"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Trekroner",
+            "cs": "Trekroner"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Fort Charlottenlund",
+            "cs": "Fort Charlottenlund"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Christiansø",
+            "cs": "Christiansø"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "By the moat beyond Churchillparken, you can see sloping green bastions, a broad moat and an entrance along an embankment.",
+        "cs": "U příkopu za Churchillparken je dobře vidět zelené šikmé bastiony, široký příkop a vstup podél náspu."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Kastellet,_Copenhagen"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Kastellet_aerial.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Pět bastionů kolem vodního příkopu s trávou až k okraji a zemní přístup oddělují městskou pevnost od mořských pevností a ostrovů v nabídce."
+    },
+    {
+      "id": "CPH10",
+      "place": {
+        "en": "At the Gefion Fountain at the far end of Churchillparken",
+        "cs": "U Gefioniny fontány na konci Churchillparken"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/CPH10.webp",
+      "sceneAlt": {
+        "en": "Four large horned oxen before a woman with a plough above a cascade",
+        "cs": "Čtyři velcí rohatí voli před ženskou postavou s pluhem nad kaskádou"
+      },
+      "question": {
+        "en": "Which Copenhagen fountain can you see?",
+        "cs": "Kterou kodaňskou fontánu vidíš?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Gefion Fountain",
+            "cs": "Gefionina fontána"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Dragon Fountain",
+            "cs": "Dračí fontána"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Caritas Fountain",
+            "cs": "Kašna Caritas"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Stork Fountain",
+            "cs": "Storkespringvandet"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "By Churchillparken, four bronze oxen pull a plough above the Gefion Fountain’s cascade.",
+        "cs": "U Churchillparken táhnou v Gefionině fontáně čtyři bronzoví voli pluh nad kaskádou."
+      },
+      "sourceUrls": [
+        "https://www.visitcopenhagen.com/copenhagen/planning/gefion-fountain-gdk410604",
+        "https://en.wikipedia.org/wiki/Gefion_Fountain"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Gefion_Fountain,_Copenhagen,_Copenhagen.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Čtyři rohatí voli v horní řadě a vrstvená kaskáda, spolu s postavou orající bohyně. Zbylé kašny mají draky, jinou figuru nebo čápy."
+    }
+  ]
+}

@@ -1,0 +1,616 @@
+{
+  "id": "warsaw",
+  "name": {
+    "en": "Warsaw",
+    "cs": "Varšava"
+  },
+  "coordinates": {
+    "lat": 52.23,
+    "lon": 21.0111
+  },
+  "postcardQuestionId": "WAW08",
+  "stops": [
+    {
+      "id": "WAW01",
+      "place": {
+        "en": "On Plac Defilad",
+        "cs": "Na Plac Defilad"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/WAW01.webp",
+      "sceneAlt": {
+        "en": "A tall stepped stone block with large clocks and a long slender spire",
+        "cs": "Vysoký stupňovitý kamenný blok s velkými hodinami a dlouhou štíhlou špicí"
+      },
+      "question": {
+        "en": "Which Warsaw landmark has this stepped tower with clocks and a long spire?",
+        "cs": "Která varšavská dominanta má stupňovitou věž s hodinami a dlouhou špicí?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Palace of Culture and Science",
+            "cs": "Palác kultury a vědy"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Royal Castle",
+            "cs": "Královský hrad"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Warsaw Barbican",
+            "cs": "Varšavský barbakan"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "National Stadium",
+            "cs": "Národní stadion"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On Plac Defilad, you can see the stepped Palace of Culture tower with clocks and a tall spire.",
+        "cs": "Na Plac Defilad je dobře vidět stupňovitá věž Paláce kultury s hodinami a vysokou špičkou."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Palace_of_Culture_and_Science"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Pałac_Kultury_i_Nauki_24-05-2026.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "WAW02",
+      "place": {
+        "en": "On the main axis of the city garden",
+        "cs": "Na hlavní ose městské zahrady"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/WAW02.webp",
+      "sceneAlt": {
+        "en": "A raised bowl over a round pool at the end of a straight avenue, with pale statues among the trees on either side",
+        "cs": "Vysoká mísa nad kruhovou vodní plochou na konci rovné aleje, světlé sochy v zeleni po stranách"
+      },
+      "question": {
+        "en": "Which Warsaw garden is in the scene?",
+        "cs": "Kterou varšavskou zahradu vidíš?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Royal Łazienki Park",
+            "cs": "Královské lázně"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Saxon Garden",
+            "cs": "Saská zahrada"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Wilanów Gardens",
+            "cs": "Zahrady Wilanówa"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Krasiński Garden",
+            "cs": "Krasińského zahrada"
+          }
+        }
+      ],
+      "correctChoiceId": "b",
+      "feedback": {
+        "en": "The stone fountain with its raised bowl stands on the main axis of the Saxon Garden.",
+        "cs": "Na hlavní ose Saské zahrady stojí kamenná kašna s vyvýšenou mísou."
+      },
+      "sourceUrls": [
+        "https://go2warsaw.pl/en/warsaw-is-awash-with-greenery/"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Warszawa-Ogr%C3%B3d_Saski_fontanna.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "WAW03",
+      "place": {
+        "en": "At the end of the Saxon Garden by the open plaza",
+        "cs": "Na konci Saské zahrady u otevřeného náměstí"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/WAW03.webp",
+      "sceneAlt": {
+        "en": "A remnant of a stone arcade with guards and a flame",
+        "cs": "Osamocený zbytek kamenné arkády se stráží a plamenem"
+      },
+      "question": {
+        "en": "Which Warsaw memorial has an honour guard and eternal flame under the remains of an arcade?",
+        "cs": "Který varšavský památník poznáš podle stráže a věčného ohně pod zbytkem arkád?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Tomb of the Unknown Soldier",
+            "cs": "Hrob neznámého vojína"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Warsaw Uprising Monument",
+            "cs": "Památník Varšavského povstání"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Monument to the Ghetto Heroes",
+            "cs": "Památník hrdinů ghetta"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Sigismund’s Column",
+            "cs": "Sloup Zikmunda III."
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "At the end of the Saxon Garden by the open plaza, you can see a remnant of a stone arcade with guards and a flame.",
+        "cs": "Na konci Saské zahrady u otevřeného náměstí je dobře vidět osamocený zbytek kamenné arkády se stráží a plamenem."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Tomb_of_the_Unknown_Soldier_(Warsaw)"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Grob_Nieznanego_Zołnierza_w_Warszawie_2010_(2).JPG"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "WAW04",
+      "place": {
+        "en": "Outside the Presidential Palace",
+        "cs": "Před Prezidentským palácem"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/WAW04.webp",
+      "sceneAlt": {
+        "en": "A bronze mounted figure in front of the pale entrance façade",
+        "cs": "Bronzová jezdecká socha před světlou vstupní fasádou"
+      },
+      "question": {
+        "en": "Which Warsaw landmark stands behind the equestrian statue of Prince Poniatowski?",
+        "cs": "Která významná varšavská budova stojí za jezdeckou sochou knížete Poniatowského?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Presidential Palace",
+            "cs": "Prezidentský palác"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Royal Castle",
+            "cs": "Královský hrad"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Palace of Culture and Science",
+            "cs": "Palác kultury a vědy"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Wilanów Palace",
+            "cs": "Palác ve Wilanówě"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Outside the Presidential Palace, you can see a bronze mounted figure in front of the pale entrance façade.",
+        "cs": "Před Prezidentským palácem je dobře vidět bronzová jezdecká socha před světlou vstupní fasádou."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Presidential_Palace,_Warsaw"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Warszawa_Pałac_Prezydencki_2011.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "WAW05",
+      "place": {
+        "en": "At the foot of the steps to the lookout",
+        "cs": "Na úpatí schodů k vyhlídce"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/WAW05.webp",
+      "sceneAlt": {
+        "en": "A freestanding square bell tower next to an old street opening onto a broad square",
+        "cs": "Samostatná hranatá zvonice na hraně staré ulice, která se otevírá do širšího prostranství"
+      },
+      "question": {
+        "en": "Which Warsaw street reaches Castle Square beside the freestanding St Anne’s bell tower?",
+        "cs": "Která varšavská ulice ústí k Hradnímu náměstí přímo vedle samostatné zvonice svaté Anny?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Krakowskie Przedmieście",
+            "cs": "Krakowskie Przedmieście"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Nowy Świat",
+            "cs": "Nowy Świat"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Marszałkowska",
+            "cs": "Marszałkowska"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Świętokrzyska",
+            "cs": "Świętokrzyska"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "At the end of Krakowskie Przedmieście, St Anne’s bell tower stands at the entrance to Castle Square.",
+        "cs": "Na konci Krakowskie Przedmieście stojí zvonice svaté Anny u vstupu na Hradní náměstí."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Krakowskie_Przedmie%C5%9Bcie"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Widok_na_krakowskie_przedmiescie_po_remoncie.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "WAW06",
+      "place": {
+        "en": "On Castle Square",
+        "cs": "Na Plac Zamkowy"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/WAW06.webp",
+      "sceneAlt": {
+        "en": "A long red façade with a clock tower above the entrance",
+        "cs": "Dlouhé červené průčelí s hodinovou věží nad vstupem"
+      },
+      "question": {
+        "en": "Which building is in front of you?",
+        "cs": "Kterou stavbu máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Presidential Palace",
+            "cs": "Prezidentský palác"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Wilanów Palace",
+            "cs": "Palác ve Wilanówě"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Royal Castle",
+            "cs": "Královský hrad"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Krasiński Palace",
+            "cs": "Palác Krasińských"
+          }
+        }
+      ],
+      "correctChoiceId": "c",
+      "feedback": {
+        "en": "On Castle Square, you can see a long red façade with a clock tower above the entrance.",
+        "cs": "Na Plac Zamkowy je dobře vidět dlouhé červené průčelí s hodinovou věží nad vstupem."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Royal_Castle,_Warsaw"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Royal_Castle_in_Warsaw,_Poland,_2022,_03.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "WAW07",
+      "place": {
+        "en": "Below the tall column in the square",
+        "cs": "Pod vysokým sloupem na náměstí"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/WAW07.webp",
+      "sceneAlt": {
+        "en": "A smooth tall column beneath a bronze figure with a cross and sword",
+        "cs": "Vysoký hladký sloup pod bronzovou postavou s křížem a mečem"
+      },
+      "question": {
+        "en": "Which Warsaw monument is a bronze figure with a sword and a cross on a tall column?",
+        "cs": "Který samostatný varšavský pomník tvoří bronzová postava s mečem a křížem na vysokém sloupu?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Sigismund’s Column",
+            "cs": "Sloup Zikmunda III."
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Nicolaus Copernicus Monument",
+            "cs": "Pomník Mikuláše Koperníka"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Prince Poniatowski Monument",
+            "cs": "Pomník knížete Poniatowského"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Warsaw Uprising Monument",
+            "cs": "Pomník Varšavského povstání"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Below the tall column in the square, you can see a smooth tall column beneath a bronze figure with a cross and sword.",
+        "cs": "Pod vysokým sloupem na náměstí je dobře vidět vysoký hladký sloup pod bronzovou postavou s křížem a mečem."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Sigismund%27s_Column"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Kolumna_Zygmunta_III_Wazy,Warszawa.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "WAW08",
+      "place": {
+        "en": "In the Old Town Market Place",
+        "cs": "Na Rynku Starého Města"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/WAW08.webp",
+      "sceneAlt": {
+        "en": "A bronze mermaid with a sword and a round shield among gabled townhouses",
+        "cs": "Bronzová mořská víla s mečem a kruhovým štítem mezi štíty měšťanských domů"
+      },
+      "question": {
+        "en": "Which Warsaw square has this shield-bearing mermaid among rows of gabled townhouses?",
+        "cs": "Kterému varšavskému náměstí dominuje siréna se štítem mezi štíty měšťanských domů?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Old Town Market Place",
+            "cs": "Rynek Starého Města"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Castle Square",
+            "cs": "Plac Zamkowy"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Parade Square",
+            "cs": "Plac Defilad"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Piłsudski Square",
+            "cs": "Plac Piłsudskiego"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "In the Old Town Market Place, you can see a bronze mermaid with a sword and a round shield among gabled townhouses.",
+        "cs": "Na Rynku Starého Města je dobře vidět bronzová mořská víla s mečem a kruhovým štítem mezi štíty měšťanských domů."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Mermaid_of_Warsaw"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Syrenka_Warszawska.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "WAW09",
+      "place": {
+        "en": "On Świętojańska Street",
+        "cs": "Na Świętojańské ulici"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/WAW09.webp",
+      "sceneAlt": {
+        "en": "A broad brick gable with tall vertical recesses in a tight street",
+        "cs": "Rozměrný široký cihlový štít s vertikálními výklenky v těsné ulici"
+      },
+      "question": {
+        "en": "Which Warsaw landmark can you see?",
+        "cs": "Kterou varšavskou stavbu vidíš?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "St John’s Archcathedral",
+            "cs": "Katedrála sv. Jana"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "St Florian’s Cathedral",
+            "cs": "Katedrála sv. Floriána"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "St Anne’s Church",
+            "cs": "Kostel sv. Anny"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Holy Cross Church",
+            "cs": "Kostel sv. Kříže"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On Świętojańska Street, you can see a broad brick gable with tall vertical recesses in a tight street.",
+        "cs": "Na Świętojańské ulici je dobře vidět rozměrný široký cihlový štít s vertikálními výklenky v těsné ulici."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/St._John%27s_Archcathedral,_Warsaw"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:StJohnsCathedralWarsawFacade.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Široký stupňovitý cihlový štít bez dvojice předních špičatých věží a těsná ulice před ním. Sv. Florián má dvě špice, sv. Anna světlé průčelí a sv. Kříž jiný rozsah a vstup."
+    },
+    {
+      "id": "WAW10",
+      "place": {
+        "en": "At the end of Nowomiejska Street",
+        "cs": "Na konci Nowomiejské"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/WAW10.webp",
+      "sceneAlt": {
+        "en": "A curved brick belt with battlements and round turrets above a stone passage",
+        "cs": "Oblý cihlový pás s cimbuřím a kulatými věžicemi nad kamenným průchodem"
+      },
+      "question": {
+        "en": "Which Warsaw fortification has a curved brick wall with round turrets above an Old Town gate?",
+        "cs": "Které varšavské opevnění má zakřivenou cihlovou zeď s kulatými věžicemi nad bránou Starého Města?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Warsaw Barbican",
+            "cs": "Varšavský barbakan"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Warsaw Citadel",
+            "cs": "Varšavská citadela"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Royal Castle",
+            "cs": "Královský hrad"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Modlin Fortress",
+            "cs": "Pevnost Modlin"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "At the end of Nowomiejska Street, you can see a curved brick belt with battlements and round turrets above a stone passage.",
+        "cs": "Na konci Nowomiejské je dobře vidět oblý cihlový pás s cimbuřím a kulatými věžicemi nad kamenným průchodem."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Warsaw_Barbican"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Barbakan_w_Warszawie_-_03.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Nad bránou se stáčí cihlová obranná zeď s kulatými věžicemi a cimbuřím. Citadela a Modlin mají rozlehlé zemní či cihelné valy, královský hrad dlouhý palácový front."
+    }
+  ]
+}

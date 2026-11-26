@@ -1,0 +1,619 @@
+{
+  "id": "lisbon",
+  "name": {
+    "en": "Lisbon",
+    "cs": "Lisabon"
+  },
+  "coordinates": {
+    "lat": 38.708,
+    "lon": -9.139
+  },
+  "postcardQuestionId": "LIS07",
+  "stops": [
+    {
+      "id": "LIS01",
+      "place": {
+        "en": "From the castle viewpoint",
+        "cs": "Z vyhlídky u hradu"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/LIS01.webp",
+      "sceneAlt": {
+        "en": "Closely packed terracotta roofs on a steep slope between stone walls and broad water",
+        "cs": "Husté oranžové střechy na příkrém svahu mezi kamennou zdí a širokou vodou"
+      },
+      "question": {
+        "en": "Which part of Lisbon has these closely packed roofs on a steep slope below the castle?",
+        "cs": "Kterou část Lisabonu poznáš podle hustých střech pod hradem a příkrého svahu k řece?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Alfama",
+            "cs": "Alfama"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Belém",
+            "cs": "Belém"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Parque das Nações",
+            "cs": "Parque das Nações"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Baixa",
+            "cs": "Baixa"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "From the castle viewpoint, you can see terracotta roofs in Alfama before a wide expanse of water.",
+        "cs": "Z vyhlídky u hradu je dobře vidět terakotové střechy Alfamy před širokou vodní plochou."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Alfama"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Lisbon_alfalma.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "LIS02",
+      "place": {
+        "en": "On a side slope overlooking the castle hill",
+        "cs": "Na bočním svahu s výhledem na hradní vrch"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/LIS02.webp",
+      "sceneAlt": {
+        "en": "Long stone walls with several square towers on a wooded rocky ridge above densely packed roofs",
+        "cs": "Dlouhé kamenné zdi s několika hranatými věžemi na zalesněném skalnatém hřebeni nad hustými střechami"
+      },
+      "question": {
+        "en": "Which Lisbon landmark can you see?",
+        "cs": "Která lisabonská dominanta je v záběru?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "São Jorge Castle",
+            "cs": "Hrad São Jorge"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Belém Tower",
+            "cs": "Věž Belém"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Jerónimos Monastery",
+            "cs": "Klášter Jeronymitů"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Ajuda Palace",
+            "cs": "Palác Ajuda"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Above Lisbon’s roofs, the walls of São Jorge Castle follow a wooded ridge.",
+        "cs": "Nad hustými střechami Lisabonu se po zalesněném hřebeni táhnou hradby hradu São Jorge."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/S%C3%A3o_Jorge_Castle"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/Category:Views_of_Castelo_de_S%C3%A3o_Jorge_from_the_West"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "LIS03",
+      "place": {
+        "en": "In the street outside the cathedral",
+        "cs": "V ulici před katedrálou"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/LIS03.webp",
+      "sceneAlt": {
+        "en": "A short yellow tram rounding a narrow bend in front of twin towers and a rose window",
+        "cs": "Krátký žlutý tramvajový vůz před dvěma věžemi s rozetou, v úzké zatáčce"
+      },
+      "question": {
+        "en": "Which well-known Lisbon route uses a yellow single-car tram past the Sé?",
+        "cs": "Která slavná lisabonská linka projíždí kolem Sé v tomto žlutém jednovozovém provedení?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Tram 28",
+            "cs": "Tramvaj 28"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Tram 15",
+            "cs": "Tramvaj 15"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Tram 18",
+            "cs": "Tramvaj 18"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Bica Funicular",
+            "cs": "Lanovka Bica"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Tram 28 passes the Sé here, while tram 15 heads towards Belém along the waterfront.",
+        "cs": "Před Sé tudy projíždí tramvaj 28, zatímco 15 směřuje k Belému po pobřežní trase."
+      },
+      "sourceUrls": [
+        "https://www.carris.pt/viaje/carreiras/28e/"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Lisbon._Tram_28_passing_by_S%C3%A9_de_Lisboa._(41223895764).jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "changeable",
+      "changeableFact": "trasa linky"
+    },
+    {
+      "id": "LIS04",
+      "place": {
+        "en": "On Rua dos Bacalhoeiros below the Sé",
+        "cs": "V Rua dos Bacalhoeiros pod Sé"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/LIS04.webp",
+      "sceneAlt": {
+        "en": "A stone frontage studded with small raised pyramids and punctuated by windows of different sizes",
+        "cs": "Kamenné průčelí pokryté stovkami malých vystupujících jehlanů, mezi nimi několik nestejných oken"
+      },
+      "question": {
+        "en": "Which Lisbon landmark is in view?",
+        "cs": "Kterou lisabonskou stavbu vidíš?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Casa dos Bicos",
+            "cs": "Casa dos Bicos"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Ajuda Palace",
+            "cs": "Palác Ajuda"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Belém Tower",
+            "cs": "Věž Belém"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Jerónimos Monastery",
+            "cs": "Klášter Jeronymitů"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Below the cathedral stands Casa dos Bicos, with stone points across its façade.",
+        "cs": "V ulici pod katedrálou stojí Casa dos Bicos s kamennými hroty po celém průčelí."
+      },
+      "sourceUrls": [
+        "https://www.visitlisboa.com/en/places/museum-of-lisbon-archaeology-section"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Fa%C3%A7ade_of_Casa_dos_Bicos,_Lisbon,_Portugal_julesvernex2.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "LIS05",
+      "place": {
+        "en": "On the waterfront by Cais das Colunas",
+        "cs": "Na nábřeží proti Cais das Colunas"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/LIS05.webp",
+      "sceneAlt": {
+        "en": "A broad stretch of water, tidal steps and two columns",
+        "cs": "Široká vodní plocha, schody v přílivovém nábřeží a dva sloupy"
+      },
+      "question": {
+        "en": "Which river is in front of you?",
+        "cs": "Kterou řeku máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Douro",
+            "cs": "Douro"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Guadiana",
+            "cs": "Guadiana"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Mondego",
+            "cs": "Mondego"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Tagus",
+            "cs": "Tejo"
+          }
+        }
+      ],
+      "correctChoiceId": "d",
+      "feedback": {
+        "en": "On the waterfront by Cais das Colunas, you can see a broad stretch of water, tidal steps and two columns.",
+        "cs": "Na nábřeží proti Cais das Colunas je dobře vidět široká vodní plocha, schody v přílivovém nábřeží a dva sloupy."
+      },
+      "sourceUrls": [
+        "https://pt.wikipedia.org/wiki/Cais_das_Colunas",
+        "https://en.wikipedia.org/wiki/Tagus"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/Category:Cais_das_Colunas"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "LIS06",
+      "place": {
+        "en": "Looking from the river towards the yellow wings",
+        "cs": "Při pohledu z nábřeží na žlutá křídla"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/LIS06.webp",
+      "sceneAlt": {
+        "en": "Yellow arcades forming a U open to the water around an equestrian statue",
+        "cs": "Žluté arkády do tvaru U otevřené k vodě a jezdecká socha"
+      },
+      "question": {
+        "en": "Which square can you see?",
+        "cs": "Které náměstí vidíš?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Praça do Comércio",
+            "cs": "Praça do Comércio"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Rossio",
+            "cs": "Rossio"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Praça da Figueira",
+            "cs": "Praça da Figueira"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Praça dos Restauradores",
+            "cs": "Praça dos Restauradores"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Looking from the river towards the yellow wings, you can see yellow arcades forming a U open to the water around an equestrian statue.",
+        "cs": "Při pohledu z nábřeží na žlutá křídla je dobře vidět žluté arkády do tvaru U otevřené k vodě a jezdecká socha."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Pra%C3%A7a_do_Com%C3%A9rcio"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Plaza_del_Comercio,_Lisboa,_Portugal,_2012-05-12,_DD_01-03_PAN.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "LIS07",
+      "place": {
+        "en": "Under the arch at Rua Augusta",
+        "cs": "Pod průjezdem u Rua Augusta"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/LIS07.webp",
+      "sceneAlt": {
+        "en": "A large arch spanning the street with a clock high above the passage",
+        "cs": "Velký oblouk přes ulici a hodiny vysoko nad průchodem"
+      },
+      "question": {
+        "en": "Which building is in front of you?",
+        "cs": "Kterou stavbu máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Santo André Arch",
+            "cs": "Arco de Santo André"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Rua Augusta Arch",
+            "cs": "Oblouk Rua Augusta"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Arc de Triomphe in Paris",
+            "cs": "Arco do Triunfo v Paříži"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "São Jorge Castle Gate",
+            "cs": "Vstup do hradu São Jorge"
+          }
+        }
+      ],
+      "correctChoiceId": "b",
+      "feedback": {
+        "en": "Under the arch at Rua Augusta, you can see a monumental arch with tall columns, a clock on the street side and figures on top.",
+        "cs": "Pod průjezdem u Rua Augusta je dobře vidět monumentální oblouk s vysokými sloupy, hodinami na uliční straně a sochami nahoře."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Rua_Augusta_Arch"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Arco_Triunfal_da_Rua_Augusta_from_Rua_Augusta_55.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "LIS08",
+      "place": {
+        "en": "In a side street in Baixa",
+        "cs": "V boční ulici čtvrti Baixa"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/LIS08.webp",
+      "sceneAlt": {
+        "en": "An iron lift tower with a cabin and a level upper walkway",
+        "cs": "Železná výtahová věž s kabinou a vodorovnou horní lávkou"
+      },
+      "question": {
+        "en": "Which Lisbon transport landmark can you see?",
+        "cs": "Kterou lisabonskou dopravní dominantu máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Santa Justa",
+            "cs": "Santa Justa"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Glória",
+            "cs": "Glória"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Bica",
+            "cs": "Bica"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Lavra",
+            "cs": "Lavra"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "In a side street in Baixa, you can see an iron lift tower with a cabin and a level upper walkway.",
+        "cs": "V boční ulici čtvrti Baixa je dobře vidět železná výtahová věž s kabinou a vodorovnou horní lávkou."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Santa_Justa_Lift"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Elevador_de_Santa_Justa_from_Rua_de_Santa_Justa.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "LIS09",
+      "place": {
+        "en": "From the station side of Rossio",
+        "cs": "Od nádražní strany Rossia"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/LIS09.webp",
+      "sceneAlt": {
+        "en": "Black and white wave paving, two fountains and a high central column",
+        "cs": "Vlnovka v černobílé dlažbě, dva vodní prvky a vysoký středový sloup"
+      },
+      "question": {
+        "en": "Which Lisbon square has black-and-white wave paving, two fountains and a tall central column?",
+        "cs": "Které lisabonské náměstí poznáš podle černobílé vlnovkové dlažby, dvou fontán a sloupu uprostřed?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Rossio",
+            "cs": "Rossio"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Praça do Comércio",
+            "cs": "Praça do Comércio"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Praça da Figueira",
+            "cs": "Praça da Figueira"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Praça dos Restauradores",
+            "cs": "Praça dos Restauradores"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "From the station side of Rossio, you can see black and white wave paving, two fountains and a high central column.",
+        "cs": "Od nádražní strany Rossia je dobře vidět vlnovka v černobílé dlažbě, dva vodní prvky a vysoký středový sloup."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Rossio"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Praça_de_D._Pedro_IV.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Na zvlněné černobílé dlažbě jsou dvě fontány a mezi nimi štíhlý sloup. Náměstí u řeky má obchodní arkády do U, Figueira jezdeckou sochu a Restauradores obelisk."
+    },
+    {
+      "id": "LIS10",
+      "place": {
+        "en": "At the foot of the hill by Restauradores",
+        "cs": "Na úpatí svahu u Restauradores"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/LIS10.webp",
+      "sceneAlt": {
+        "en": "A yellow car tilted on a short steep street lined by plaster façades",
+        "cs": "Žlutý vůz ve sklonu v krátké strmé ulici mezi omítnutými fasádami"
+      },
+      "question": {
+        "en": "Which Lisbon route is shown in the scene?",
+        "cs": "Kterou lisabonskou trať vidíš na scéně?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Glória",
+            "cs": "Glória"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Bica",
+            "cs": "Bica"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Lavra",
+            "cs": "Lavra"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Graça",
+            "cs": "Graça"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "At the foot of Calçada da Glória, the yellow funicular tilts with the slope of the street.",
+        "cs": "Pod svahem u Restauradores vidíš, jak se žlutý vůz lanovky Glória naklání podle sklonu ulice."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Gl%C3%B3ria_Funicular",
+        "https://www.carris.pt/en/discover/fleet/funiculars/"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Elevador_da_Glória,_Lisszabon_(2,_20250815)_4.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Přímá ulička vychází z velkého náměstí, v ní žlutý šikmý vůz. Bica je mezi hustými domy a má výhled k řece, Lavra začíná na úzké ulici a Graça má mnohem otevřenější svah směrem k vyhlídce."
+    }
+  ]
+}

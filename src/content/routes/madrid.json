@@ -1,0 +1,618 @@
+{
+  "id": "madrid",
+  "name": {
+    "en": "Madrid",
+    "cs": "Madrid"
+  },
+  "coordinates": {
+    "lat": 40.4169,
+    "lon": -3.7033
+  },
+  "postcardQuestionId": "MAD09",
+  "stops": [
+    {
+      "id": "MAD01",
+      "place": {
+        "en": "On Plaza de la Armería",
+        "cs": "Na Plaza de la Armería"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/MAD01.webp",
+      "sceneAlt": {
+        "en": "Matching wings and repeated windows on either side of a central entrance",
+        "cs": "Stejně široká křídla a opakovaná okna na obou stranách středního vstupu"
+      },
+      "question": {
+        "en": "What is this large palace on the western edge of central Madrid called?",
+        "cs": "Jak se jmenuje tento rozlehlý palác nad západním okrajem Madridu?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Royal Palace",
+            "cs": "Královský palác"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Palacio de Cibeles",
+            "cs": "Palacio de Cibeles"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "El Escorial",
+            "cs": "Klášter El Escorial"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Palace of Versailles",
+            "cs": "Palác ve Versailles"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On Plaza de la Armería, you can see matching wings and repeated windows on either side of a central entrance.",
+        "cs": "Na Plaza de la Armería je dobře vidět stejně široká křídla a opakovaná okna na obou stranách středního vstupu."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Royal_Palace_of_Madrid"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Palacio_Real_de_Madrid_Julio_2016_(cropped).jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "MAD02",
+      "place": {
+        "en": "On the south side of the square by the palace",
+        "cs": "Na jižní straně náměstí u paláce"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/MAD02.webp",
+      "sceneAlt": {
+        "en": "A pale columned façade with a triangular pediment framed by two square towers",
+        "cs": "Světlé průčelí se sloupy a trojúhelníkovým štítem mezi dvěma hranatými věžemi"
+      },
+      "question": {
+        "en": "Which Madrid landmark can you recognise?",
+        "cs": "Kterou madridskou stavbu poznáváš?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Almudena Cathedral",
+            "cs": "Katedrála Almudena"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "San Francisco el Grande",
+            "cs": "Bazilika sv. Františka Velikého"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Palacio de Cibeles",
+            "cs": "Palacio de Cibeles"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "El Escorial",
+            "cs": "Klášter El Escorial"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Almudena Cathedral faces the Royal Palace across the square.",
+        "cs": "Katedrála Almudena stojí průčelím přímo proti královskému paláci."
+      },
+      "sourceUrls": [
+        "https://www.esmadrid.com/en/tourist-information/catedral-de-la-almudena"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Almudena_2022_-_overview.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "MAD03",
+      "place": {
+        "en": "Under the arcades of Plaza Mayor",
+        "cs": "Pod arkádami Plaza Mayor"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/MAD03.webp",
+      "sceneAlt": {
+        "en": "A regular row of piers and columns along a covered walk",
+        "cs": "Pravidelné pilíře a sloupy před souvislým podloubím"
+      },
+      "question": {
+        "en": "Which Madrid square is enclosed by arcades below red façades?",
+        "cs": "Které madridské náměstí obklopuje ze všech stran souvislé podloubí pod červenými fasádami?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Plaza Mayor",
+            "cs": "Plaza Mayor"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Puerta del Sol",
+            "cs": "Puerta del Sol"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Plaza de España",
+            "cs": "Plaza de España"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Plaza de Cibeles",
+            "cs": "Plaza de Cibeles"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Under the arcades of Plaza Mayor, you can see a regular row of piers and columns along a covered walk.",
+        "cs": "Pod arkádami Plaza Mayor je dobře vidět pravidelné pilíře a sloupy před souvislým podloubím."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Plaza_Mayor,_Madrid"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Madrid_Plaza_Mayor_(48733706273).jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "MAD04",
+      "place": {
+        "en": "On Puerta del Sol",
+        "cs": "Na Puerta del Sol"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/MAD04.webp",
+      "sceneAlt": {
+        "en": "A bronze bear on its hind legs against a tree",
+        "cs": "Bronzový medvěd stojící na zadních a opřený o strom"
+      },
+      "question": {
+        "en": "Which Madrid square is marked by the statue of a bear reaching up a strawberry tree?",
+        "cs": "Které madridské náměstí označuje socha medvěda opřeného o planiku?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Puerta del Sol",
+            "cs": "Puerta del Sol"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Plaza Mayor",
+            "cs": "Plaza Mayor"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Plaza de Oriente",
+            "cs": "Plaza de Oriente"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Plaza de Cibeles",
+            "cs": "Plaza de Cibeles"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On Puerta del Sol, you can see a bronze bear on its hind legs against a tree.",
+        "cs": "Na Puerta del Sol je dobře vidět bronzový medvěd stojící na zadních a opřený o strom."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Statue_of_the_Bear_and_the_Strawberry_Tree"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Oso_Madroño_y_Sol.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "MAD05",
+      "place": {
+        "en": "At the junction of Gran Vía and Alcalá",
+        "cs": "Na křižovatce Gran Vía a Alcalá"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/MAD05.webp",
+      "sceneAlt": {
+        "en": "A rounded corner building with a dark dome and a winged figure on top",
+        "cs": "Zaoblený nárožní dům s tmavou kupolí a okřídlenou postavou nahoře"
+      },
+      "question": {
+        "en": "Which building is in front of you?",
+        "cs": "Kterou stavbu máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Palacio de Cibeles",
+            "cs": "Palacio de Cibeles"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Metropolis Building",
+            "cs": "Budova Metrópolis"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Telefónica Building",
+            "cs": "Budova Telefónica"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Banco de España",
+            "cs": "Banco de España"
+          }
+        }
+      ],
+      "correctChoiceId": "b",
+      "feedback": {
+        "en": "At the junction of Gran Vía and Alcalá, you can see a rounded corner building with a dark dome and a winged figure on top.",
+        "cs": "Na křižovatce Gran Vía a Alcalá je dobře vidět zaoblený nárožní dům s tmavou kupolí a okřídlenou postavou nahoře."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Metropolis_Building"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Edificio_Metrópolis,_calle_de_Alcalá,_Madrid,_España,_2017-05-18,_DD_08.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "MAD06",
+      "place": {
+        "en": "On the traffic island at Cibeles",
+        "cs": "Na ostrově mezi pruhy u Cibeles"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/MAD06.webp",
+      "sceneAlt": {
+        "en": "A goddess’s chariot drawn by two lions in front of a pale palace",
+        "cs": "Vůz bohyně se dvěma lvy, v pozadí bílé průčelí paláce"
+      },
+      "question": {
+        "en": "What is the name of this fountain?",
+        "cs": "Jak se jmenuje tato fontána?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Fountain of Neptune",
+            "cs": "Neptunova fontána"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Fountain of Apollo",
+            "cs": "Apollónova fontána"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Cibeles Fountain",
+            "cs": "Fontána Cibeles"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Galápagos Fountain",
+            "cs": "Fontána Galápagos"
+          }
+        }
+      ],
+      "correctChoiceId": "c",
+      "feedback": {
+        "en": "On the traffic island at Cibeles, you can see a goddess’s chariot drawn by two lions in front of a pale palace.",
+        "cs": "Na ostrově mezi pruhy u Cibeles je dobře vidět vůz bohyně se dvěma lvy, v pozadí bílé průčelí paláce."
+      },
+      "sourceUrls": [
+        "https://www.esmadrid.com/informacion-turistica/fuente-de-la-cibeles",
+        "https://en.wikipedia.org/wiki/Fountain_of_Cibeles"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Fuente_de_Cibeles_-_Dec_2024.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "MAD07",
+      "place": {
+        "en": "On Paseo del Prado beside the roundabout",
+        "cs": "Na Paseo del Prado u kruhového objezdu"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/MAD07.webp",
+      "sceneAlt": {
+        "en": "A figure with a trident above the water and horses drawing the chariot",
+        "cs": "Postava s trojzubcem nad vodou a tažní koně místo lvů"
+      },
+      "question": {
+        "en": "What is the name of this fountain?",
+        "cs": "Jak se jmenuje tato fontána?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Cibeles Fountain",
+            "cs": "Fontána Cibeles"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Fountain of Apollo",
+            "cs": "Apollónova fontána"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Galápagos Fountain",
+            "cs": "Fontána Galápagos"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Fountain of Neptune",
+            "cs": "Neptunova fontána"
+          }
+        }
+      ],
+      "correctChoiceId": "d",
+      "feedback": {
+        "en": "On Paseo del Prado beside the roundabout, you can see a figure with a trident above the water and horses drawing the chariot.",
+        "cs": "Na Paseo del Prado u kruhového objezdu je dobře vidět postava s trojzubcem nad vodou a tažní koně místo lvů."
+      },
+      "sourceUrls": [
+        "https://www.esmadrid.com/en/tourist-information/fuente-de-neptuno",
+        "https://en.wikipedia.org/wiki/Fountain_of_Neptune_(Madrid)"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Fuente_de_Neptuno_(Madrid)_06.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "MAD08",
+      "place": {
+        "en": "By the entrance with the Velázquez statue",
+        "cs": "U vstupu k soše Velázqueze"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/MAD08.webp",
+      "sceneAlt": {
+        "en": "A pale museum with a portico and a seated figure before its entrance",
+        "cs": "Světlé muzeum s portikem a sedící sochou před vstupem"
+      },
+      "question": {
+        "en": "Which building is in front of you?",
+        "cs": "Kterou stavbu máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Prado Museum",
+            "cs": "Muzeum Prado"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Reina Sofía",
+            "cs": "Reina Sofía"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Thyssen-Bornemisza Museum",
+            "cs": "Muzeum Thyssen-Bornemisza"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Sorolla Museum",
+            "cs": "Muzeum Sorolla"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "By the entrance with the Velázquez statue, you can see a low pale museum with a classical portico and a seated figure at the entrance.",
+        "cs": "U vstupu k soše Velázqueze je dobře vidět nízké světlé muzeum s klasickým portikem a sedící sochou před vchodem."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Museo_del_Prado"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Museo_del_Prado_2016_(25185969599).jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "MAD09",
+      "place": {
+        "en": "On the bank of the large lake in El Retiro",
+        "cs": "Na břehu velkého jezera v Retiru"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/MAD09.webp",
+      "sceneAlt": {
+        "en": "Rowing boats and a semicircular colonnade beneath an equestrian monument",
+        "cs": "Veslice a půlkruhová kolonáda pod jezdeckým pomníkem"
+      },
+      "question": {
+        "en": "Which Madrid park has a rowing lake bordered by a semicircular colonnade?",
+        "cs": "Který madridský park poznáš podle jezera s veslicemi a půlkruhové kolonády?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "El Retiro",
+            "cs": "El Retiro"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Casa de Campo",
+            "cs": "Casa de Campo"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Madrid Río",
+            "cs": "Madrid Río"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Parque del Oeste",
+            "cs": "Parque del Oeste"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On the bank of the large lake in El Retiro, you can see rowing boats and a semicircular colonnade beneath an equestrian monument.",
+        "cs": "Na břehu velkého jezera v Retiru je dobře vidět veslice a půlkruhová kolonáda pod jezdeckým pomníkem."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Buen_Retiro_Park"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:MADRID_051116_MXALX_041.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Jezírko s veslicemi, kolonáda se stáčí do půlkruhu a nad ní je jezdecká socha. Ostatní nábřeží a parky nemají tuto trojici v témže záběru."
+    },
+    {
+      "id": "MAD10",
+      "place": {
+        "en": "By the smaller pond in El Retiro",
+        "cs": "U menšího jezírka v Retiru"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/MAD10.webp",
+      "sceneAlt": {
+        "en": "Glass walls and a three-armed iron framework beside a pond",
+        "cs": "Skleněné stěny a železná konstrukce se třemi rameny u jezírka"
+      },
+      "question": {
+        "en": "Which building by the little pond in El Retiro is a glazed pavilion with tall gables?",
+        "cs": "Která stavba stojí u malého jezírka v Retiru jako prosklený pavilon s vysokými štíty?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Crystal Palace",
+            "cs": "Křišťálový palác"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Palacio de Velázquez",
+            "cs": "Palacio de Velázquez"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Royal Observatory",
+            "cs": "Královská observatoř"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Palacio de Cibeles",
+            "cs": "Palacio de Cibeles"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "By the smaller pond in El Retiro, you can see glass walls and a three-armed iron framework beside a pond.",
+        "cs": "U menšího jezírka v Retiru je dobře vidět skleněné stěny a železná konstrukce se třemi rameny u jezírka."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Palacio_de_Cristal_del_Retiro"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Palacio_de_Cristal,_Retiro,_Madrid.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Křišťálový palác je skleněný pavilon s železným rámem a vysokými štíty u jezírka. Palác Velázquez má masivní zdi, hvězdárna a Cibeles jiné siluety."
+    }
+  ]
+}

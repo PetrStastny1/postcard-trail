@@ -19,7 +19,7 @@ Oblast převádí městské soubory `docs/game/cities/*.md` do dat hry, drží k
 
 ## R1 Import městských souborů
 
-Importér přečte všech 20 městských souborů z pořadí v BRIEF §5 a zapíše `src/content/routes/<cityId>.json` a `cities` v `src/content/catalog.json`. Texty přenáší 1:1, mění jen typografii nutnou ke zpracování (odstraní tučné značky a koncovou tečku za poslední volbou). Výstup je deterministický: JSON s odsazením 2 mezery, klíče v pořadí podle `types.ts`, koncový nový řádek.
+Importér přečte městské soubory v pořadí z tabulky vydání v BRIEF §5 (odkazy `cities/<id>.md` s pořadovým číslem) a zapíše `src/content/routes/<cityId>.json` a `cities` v `src/content/catalog.json`. Texty přenáší 1:1, mění jen typografii nutnou ke zpracování: odstraní tučné značky, koncovou tečku za poslední volbou a koncovou tečku položky u dvojic `Místo CS / EN` a `Popis scény CS / EN` (`… / On the Champ de Mars.` → `On the Champ de Mars`). `feedback` se přenáší i s tečkou. Výstup je deterministický: JSON s odsazením 2 mezery, klíče v pořadí podle `types.ts`, koncový nový řádek.
 
 Mapování:
 
@@ -28,20 +28,23 @@ Mapování:
 | název souboru | `Route.id`, `CatalogCity.id` |
 | `# <CS> / <EN>` (nebo jen `# <název>` pro oba jazyky) | `name.cs`, `name.en` |
 | `**Pohlednice** — scéna <ID>.` | `postcardQuestionId` |
-| `**Ověřeno** — D. M. RRRR.` | `verifiedOn` všech zastávek (`YYYY-MM-DD`) |
+| `**Ověřeno** — D. M. RRRR.` (za datem může pokračovat poznámka) | `verifiedOn` všech zastávek (`YYYY-MM-DD`) |
 | `## <ID> · Lehká / Těžká / Expert` | `id`, `difficulty` `easy` / `hard` / `expert` |
 | `**Místo CS / EN**` | `place` |
 | `**Popis scény CS / EN**` | `sceneAlt` |
 | `**CS**`, `**EN**` | `question` (text do posledního `?` včetně) a čtyři volby oddělené ` · ` nebo ` / `; tučná je správná |
 | `**Po odpovědi CS**`, `**After answering EN**` | `feedback` |
-| `**Stabilní**` / `**Může se změnit (<fakt>)**` | `stability` `stable` / `changeable`, u `changeable` `changeableFact` = text v závorce |
-| odkazy na řádku stálosti | `photoReferenceUrls` = odkazy s textem „fotografický podklad“, `sourceUrls` = ostatní |
+| `**Stabilní**` / `**Může se změnit (<fakt>)**` | `stability` `stable` / `changeable`, u `changeable` `changeableFact` = text v závorce. Poznámka za tučným `**Stabilní**` (OSL, „doložený galerijní výjev“) se nepřenáší. |
+| odkazy `[text](<url>)` nebo `[text](url)` na řádku stálosti a v odrážce, která obsahuje jen odkazy (LIS10) | `photoReferenceUrls` = odkazy, jejichž text začíná „fotografický podklad“, `sourceUrls` = ostatní, v pořadí zdroje |
 | `**Rozlišovací znak**` | `distinguishingFeature` |
 | `**Scéna**` | nepřenáší se, je to výrobní pokyn pro ilustraci |
 
 - Volby mají ID `a`, `b`, `c`, `d` podle pořadí ve zdroji. `correctChoiceId` je ID tučné volby. `sceneAsset` je `scenes/<id>.webp`.
 - Pohlednice v katalogu: `stopId` = `postcardQuestionId`, `sceneAsset` téže zastávky, `sentence` = její `feedback`.
-- Souřadnice bere importér z `tools/content/city-coordinates.json` (WGS84, 4 desetinná místa, u každého města zdroj). Nové město musí mít řádek v tabulce.
+- Souřadnice bere importér z `tools/content/city-coordinates.json` (`{ "<cityId>": { "lat", "lon", "source" } }`, WGS84, 4 desetinná místa, zdrojem je položka Wikidata s vlastností P625). Nové město musí mít řádek v tabulce.
+- `tools/content/import.ts` exportuje `readContent(root?)`, která vrátí `{ routes, cities }` z městských souborů v paměti bez zápisu (použije ji validátor, kontrola 10), a `importContent({ root?, effectiveDate? })`, která soubory zapíše. Příkaz bere `--root <adresář>` se stejnou strukturou jako repozitář a `--effective-date=YYYY-MM-DD`, výchozí kořen je repozitář.
+- Řádek zastávky, který není známé pole, řádek stálosti ani odrážka s odkazy, je chyba. Stejně tak chybějící řádek stálosti, pohlednice mimo zastávky trasy, neplatné datum Ověřeno a město z tabulky §5 bez souboru.
+- Chyby se sbírají za všechna města a vypíšou se najednou, každá na řádek ve tvaru `<soubor> <ID zastávky>: <chyba>` (u chyb záhlaví bez ID). Proces skončí kódem 1 bez stack trace a nezapíše nic.
 
 Scénáře:
 
@@ -57,13 +60,15 @@ Scénáře:
 - `versions` jsou seřazené vzestupně podle `effectiveUtcDate`, každá verze obsahuje všechna do té doby vydaná města v pořadí odemykání a pozdější verze jen přidává města na konec.
 - Poslední verze má `orderedCityIds` shodné s pořadím `cities`.
 - Datum první verze je `2026-12-01` (LOG, k potvrzení Petrem) a je zapsané jen v `src/content/catalog.json`, nikde v kódu.
-- Importér `versions` zachová. Když se seznam vydaných měst liší od poslední verze, vyžaduje parametr `--effective-date=YYYY-MM-DD` a přidá novou verzi. Bez něj skončí chybou a nic nezapíše.
+- Importér `versions` zachová. Když se seznam vydaných měst liší od poslední verze (nebo katalog ještě žádnou verzi nemá), vyžaduje parametr `--effective-date=YYYY-MM-DD` a přidá novou verzi na konec. Bez něj skončí chybou a nic nezapíše.
+- Importér odmítne datum, které není platné nebo není pozdější než poslední verze, nový seznam, který jen nepřidává města na konec poslední verze, a `--effective-date` při nezměněném seznamu.
 
 ## R3 Načítání tras
 
 - `src/content/catalog.ts` exportuje `catalog: Catalog` staticky.
 - `src/content/index.ts` exportuje `loadRoute(cityId: string): Promise<Route>`. Každá trasa je v buildu ve vlastním chunku a vstupní chunk texty tras neobsahuje.
 - Neznámé `cityId` vrátí odmítnutý promise s chybou, která ID uvádí.
+- Trasy se načítají přes `import.meta.glob('./routes/*.json')` bez `eager`, takže nová trasa nepotřebuje změnu kódu.
 
 ## R4 Validace obsahu
 

@@ -4,12 +4,12 @@ Požadavky jsou v [spec.md](spec.md). WP1 je první, protože ostatní stavějí
 
 ## WP1 Import (`wp/content/import`)
 
-- [ ] Tabulka `tools/content/city-coordinates.json` se zdrojem každé hodnoty (R1).
-- [ ] Parser městského souboru a importér `tools/content/import.ts` s exportovanou funkcí pro import v paměti (R1).
-- [ ] Katalog `src/content/catalog.json` s první verzí `2026-12-01` a zachováním `versions` při dalším importu (R2).
-- [ ] `src/content/catalog.ts` a `src/content/index.ts` s `loadRoute` (R3).
-- [ ] Vygenerovaná a commitnutá data 20 tras.
-- [ ] Testy importu na chybných vstupech a idempotence.
+- [x] Tabulka `tools/content/city-coordinates.json` se zdrojem každé hodnoty (R1).
+- [x] Parser městského souboru a importér `tools/content/import.ts` s exportovanou funkcí pro import v paměti (R1).
+- [x] Katalog `src/content/catalog.json` s první verzí `2026-12-01` a zachováním `versions` při dalším importu (R2).
+- [x] `src/content/catalog.ts` a `src/content/index.ts` s `loadRoute` (R3).
+- [x] Vygenerovaná a commitnutá data 20 tras.
+- [x] Testy importu na chybných vstupech a idempotence.
 
 ## WP2 Zástupné scény a velikost buildu (`wp/content/scenes`)
 

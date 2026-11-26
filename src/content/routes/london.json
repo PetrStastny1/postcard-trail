@@ -1,0 +1,616 @@
+{
+  "id": "london",
+  "name": {
+    "en": "London",
+    "cs": "Londýn"
+  },
+  "coordinates": {
+    "lat": 51.5072,
+    "lon": -0.1275
+  },
+  "postcardQuestionId": "LON10",
+  "stops": [
+    {
+      "id": "LON01",
+      "place": {
+        "en": "On Parliament Square",
+        "cs": "Na Parliament Square"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/LON01.webp",
+      "sceneAlt": {
+        "en": "An ornate rectangular clock tower at the end of a long palace",
+        "cs": "Obdélná zdobená hodinová věž na konci rozlehlého paláce"
+      },
+      "question": {
+        "en": "What is this clock tower commonly known as?",
+        "cs": "Pod jakým názvem se běžně pozná tato hodinová věž?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Little Ben",
+            "cs": "Little Ben"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Albert Memorial",
+            "cs": "Albert Memorial"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Big Ben",
+            "cs": "Big Ben"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Wellington Arch",
+            "cs": "Wellington Arch"
+          }
+        }
+      ],
+      "correctChoiceId": "c",
+      "feedback": {
+        "en": "From Parliament Square, you can see Elizabeth Tower, commonly called Big Ben after the bell inside.",
+        "cs": "Na Parliament Square je před tebou Elizabeth Tower, běžně nazývaná Big Ben podle zvonu uvnitř."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Big_Ben"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Elizabeth_Tower_and_the_north_front_of_the_Palace_of_Westminster,_London.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "LON02",
+      "place": {
+        "en": "From the public garden at the south end of the palace",
+        "cs": "Z veřejné zahrady u jižního konce paláce"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/LON02.webp",
+      "sceneAlt": {
+        "en": "A square tower with corner turrets beside an ornate wing running along the river",
+        "cs": "Hranolová věž s rohovými věžicemi u podlouhlého ozdobného nábřežního křídla"
+      },
+      "question": {
+        "en": "Which London landmark do you see along the river?",
+        "cs": "Kterou londýnskou stavbu vidíš podél řeky?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Buckingham Palace",
+            "cs": "Buckinghamský palác"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Hampton Court",
+            "cs": "Hampton Court"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Kensington Palace",
+            "cs": "Kensingtonský palác"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Palace of Westminster",
+            "cs": "Westminsterský palác"
+          }
+        }
+      ],
+      "correctChoiceId": "d",
+      "feedback": {
+        "en": "Victoria Tower marks the south end of the Palace of Westminster, home to the UK Parliament.",
+        "cs": "Victoria Tower stojí na jižním konci Westminsterského paláce, kde sídlí britský parlament."
+      },
+      "sourceUrls": [
+        "https://www.parliament.uk/about/living-heritage/building/palace/architecture/palacestructure/victoria-tower/"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Victoria_Tower_from_Victoria_Tower_Gardens_-_geograph.org.uk_-_6257638.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "LON03",
+      "place": {
+        "en": "On Westminster Bridge",
+        "cs": "Na Westminster Bridge"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/LON03.webp",
+      "sceneAlt": {
+        "en": "The river between Parliament and an observation wheel",
+        "cs": "Řeka mezi parlamentem a vyhlídkovým kolem"
+      },
+      "question": {
+        "en": "Which river is in front of you?",
+        "cs": "Kterou řeku máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Thames",
+            "cs": "Temže"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Seine",
+            "cs": "Seina"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Tiber",
+            "cs": "Tiber"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Liffey",
+            "cs": "Liffey"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On Westminster Bridge, you can see the river between Parliament and an observation wheel.",
+        "cs": "Na Westminster Bridge je dobře vidět řeka mezi parlamentem a vyhlídkovým kolem."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/River_Thames"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:London_Thames_Sunset_panorama_-_Feb_2008.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "LON04",
+      "place": {
+        "en": "On the South Bank promenade",
+        "cs": "Na promenádě South Bank"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/LON04.webp",
+      "sceneAlt": {
+        "en": "A giant wheel with capsules around the rim",
+        "cs": "Obří kolo s kapslemi podél obvodu"
+      },
+      "question": {
+        "en": "Which London landmark can you see on the waterfront?",
+        "cs": "Kterou londýnskou dominantu vidíš na protějším nábřeží?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "London Eye",
+            "cs": "London Eye"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Millennium Dome",
+            "cs": "Millennium Dome"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Tower Bridge",
+            "cs": "Tower Bridge"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "The Shard",
+            "cs": "The Shard"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On the South Bank promenade, you can see a giant wheel with capsules around the rim.",
+        "cs": "Na promenádě South Bank je dobře vidět obří kolo s kapslemi podél obvodu."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/London_Eye"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:London-Eye-2009.JPG"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "LON05",
+      "place": {
+        "en": "Outside the former power station in Bankside",
+        "cs": "Před bývalou elektrárnou v Bankside"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/LON05.webp",
+      "sceneAlt": {
+        "en": "A long brick hall with a tall square chimney",
+        "cs": "Dlouhá cihlová hala s vysokým čtvercovým komínem"
+      },
+      "question": {
+        "en": "Which building is in front of you?",
+        "cs": "Kterou stavbu máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "National Gallery",
+            "cs": "National Gallery"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "British Museum",
+            "cs": "British Museum"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Tate Modern",
+            "cs": "Tate Modern"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Royal Academy",
+            "cs": "Royal Academy"
+          }
+        }
+      ],
+      "correctChoiceId": "c",
+      "feedback": {
+        "en": "Outside the former power station in Bankside, you can see a long brick hall with a tall square chimney.",
+        "cs": "Před bývalou elektrárnou v Bankside je dobře vidět dlouhá cihlová hala s vysokým čtvercovým komínem."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Tate_Modern"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Tate_Modern_-_Bankside_Power_Station.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "LON06",
+      "place": {
+        "en": "By the circular building in Bankside",
+        "cs": "U kruhové stavby v Bankside"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/LON06.webp",
+      "sceneAlt": {
+        "en": "A low circular timber-framed theatre with a thatched roof",
+        "cs": "Nízký hrázděný divadelní kruh s došky"
+      },
+      "question": {
+        "en": "Which building is in front of you?",
+        "cs": "Kterou stavbu máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Royal Albert Hall",
+            "cs": "Royal Albert Hall"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Royal Opera House",
+            "cs": "Royal Opera House"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "London Coliseum",
+            "cs": "London Coliseum"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Shakespeare’s Globe",
+            "cs": "Shakespeare’s Globe"
+          }
+        }
+      ],
+      "correctChoiceId": "d",
+      "feedback": {
+        "en": "By the circular building in Bankside, you can see a low circular timber-framed theatre with a thatched roof.",
+        "cs": "U kruhové stavby v Bankside je dobře vidět nízký hrázděný divadelní kruh s došky."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Shakespeare%27s_Globe"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Shakespeare's_Globe-London-2.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "LON07",
+      "place": {
+        "en": "On the footbridge from Bankside",
+        "cs": "Na pěší lávce z Bankside"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/LON07.webp",
+      "sceneAlt": {
+        "en": "A narrow steel footbridge with low cables pointing towards a dome",
+        "cs": "Úzká ocelová lávka s nízkými kabely směřuje ke kupoli"
+      },
+      "question": {
+        "en": "What is the name of the bridge in view?",
+        "cs": "Jak se jmenuje most v záběru?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Millennium Bridge",
+            "cs": "Millennium Bridge"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Waterloo Bridge",
+            "cs": "Waterloo Bridge"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "London Bridge",
+            "cs": "London Bridge"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Blackfriars Bridge",
+            "cs": "Blackfriars Bridge"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On the footbridge from Bankside, you can see a narrow steel footbridge with low cables pointing towards a dome.",
+        "cs": "Na pěší lávce z Bankside je dobře vidět úzká ocelová lávka s nízkými kabely směřuje ke kupoli."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Millennium_Bridge,_London"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Millenium_bridge_2015.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "LON08",
+      "place": {
+        "en": "By the west front in the City",
+        "cs": "U západního průčelí nad City"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/LON08.webp",
+      "sceneAlt": {
+        "en": "Two west towers frame a tall dome",
+        "cs": "Dvě západní věže rámují pohled na vysokou kupoli"
+      },
+      "question": {
+        "en": "Which London church has a great dome framed by two west towers?",
+        "cs": "Který londýnský chrám poznáš podle velké kupole mezi západními věžemi?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "St Paul’s Cathedral",
+            "cs": "Katedrála sv. Pavla"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Westminster Abbey",
+            "cs": "Westminsterské opatství"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Westminster Cathedral",
+            "cs": "Westminsterská katedrála"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Southwark Cathedral",
+            "cs": "Katedrála v Southwarku"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "By the west front in the City, you can see two west towers frame a tall dome.",
+        "cs": "U západního průčelí nad City je dobře vidět dvě západní věže rámují pohled na vysokou kupoli."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/St_Paul%27s_Cathedral"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:St_Pauls_aerial_(cropped).jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "LON09",
+      "place": {
+        "en": "Beside the riverside fortress",
+        "cs": "U opevněného areálu nad řekou"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/LON09.webp",
+      "sceneAlt": {
+        "en": "A square pale keep with four corner turrets behind an outer wall",
+        "cs": "Čtvercová světlá pevnost se čtyřmi nárožními věžicemi za vnější zdí"
+      },
+      "question": {
+        "en": "Which London landmark can you see?",
+        "cs": "Která londýnská stavba je v záběru?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Tower of London",
+            "cs": "Tower of London"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Hampton Court Palace",
+            "cs": "Hampton Court Palace"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Kensington Palace",
+            "cs": "Kensingtonský palác"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Buckingham Palace",
+            "cs": "Buckinghamský palác"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Beside the riverside fortress, you can see a square pale keep with four corner turrets behind an outer wall.",
+        "cs": "U opevněného areálu nad řekou je dobře vidět čtvercová světlá pevnost se čtyřmi nárožními věžicemi za vnější zdí."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Tower_of_London"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Tower_of_London_from_the_Shard_(8515883950).jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Čtvercový White Tower se čtyřmi nárožními věžicemi za vnější hradbou těsně u vody. Ostatní možnosti jsou paláce s dlouhými obytnými průčelími."
+    },
+    {
+      "id": "LON10",
+      "place": {
+        "en": "From the promenade below the fortress",
+        "cs": "Z promenády pod pevností"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/LON10.webp",
+      "sceneAlt": {
+        "en": "Two rising road spans below a pair of towers linked by high walkways",
+        "cs": "Spodní vozovka se dvěma výklopnými díly a dvě věže propojené horními lávkami"
+      },
+      "question": {
+        "en": "Which bridge has two towers joined by high walkways?",
+        "cs": "Který most má dvě věže spojené vysoko položenými lávkami?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Tower Bridge",
+            "cs": "Tower Bridge"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Millennium Bridge",
+            "cs": "Millennium Bridge"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Westminster Bridge",
+            "cs": "Westminster Bridge"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "London Bridge",
+            "cs": "London Bridge"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "From the promenade below the fortress, you can see two rising road spans below a pair of towers linked by high walkways.",
+        "cs": "Z promenády pod pevností je dobře vidět spodní vozovka se dvěma výklopnými díly a dvě věže propojené horními lávkami."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Tower_Bridge"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Tower_Bridge_at_Dawn.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Dvojice věží se dvěma horními vodorovnými lávkami a výklopnou vozovkou. Ostatní mosty nabídek takový profil nemají."
+    }
+  ]
+}

@@ -1,0 +1,616 @@
+{
+  "id": "athens",
+  "name": {
+    "en": "Athens",
+    "cs": "Atény"
+  },
+  "coordinates": {
+    "lat": 37.9842,
+    "lon": 23.7281
+  },
+  "postcardQuestionId": "ATH08",
+  "stops": [
+    {
+      "id": "ATH01",
+      "place": {
+        "en": "On Syntagma Square",
+        "cs": "Na náměstí Syntagma"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/ATH01.webp",
+      "sceneAlt": {
+        "en": "A guard in a pleated white kilt and red shoes, beside a sentry box",
+        "cs": "Stráž v bílé skládané suknici, červené boty a strážnice"
+      },
+      "question": {
+        "en": "What is the ceremonial guard in the image called?",
+        "cs": "Jak se jmenuje čestná stráž v záběru?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Evzones",
+            "cs": "Evzoni"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Swiss Guard",
+            "cs": "Švýcarská garda"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Carabinieri",
+            "cs": "Carabinieri"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "King’s Guard",
+            "cs": "Královská garda"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On Syntagma Square, you can see red tsarouchia shoes with black pom-poms on their toes during the changing of the guard.",
+        "cs": "Na náměstí Syntagma je dobře vidět červená obuv tsarouchia s černou bambulí na špičce při výměně stráže."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Evzones"
+      ],
+      "photoReferenceUrls": [
+        "https://en.wikipedia.org/wiki/Evzones#Uniform"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "ATH02",
+      "place": {
+        "en": "On the lower terrace by the fountain in central Athens",
+        "cs": "Na spodní terase u fontány v centru"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/ATH02.webp",
+      "sceneAlt": {
+        "en": "A round fountain on a lower terrace with broad steps up to a pale parliament building behind trees",
+        "cs": "Kulatá fontána na dolní terase a široké schody ke světlému parlamentnímu paláci nad stromy"
+      },
+      "question": {
+        "en": "Which Athens square is in front of you?",
+        "cs": "Které aténské náměstí máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Monastiraki",
+            "cs": "Monastiraki"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Omonia",
+            "cs": "Omonia"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Kotzia",
+            "cs": "Kotzia"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Syntagma",
+            "cs": "Syntagma"
+          }
+        }
+      ],
+      "correctChoiceId": "d",
+      "feedback": {
+        "en": "Syntagma Square rises from the fountain towards the Greek Parliament.",
+        "cs": "Náměstí Syntagma stoupá od fontány k budově řeckého parlamentu."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Syntagma_Square"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Greek_Parliament_and_fountain.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "ATH03",
+      "place": {
+        "en": "At the stadium’s open end",
+        "cs": "Před otevřeným koncem stadionu"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/ATH03.webp",
+      "sceneAlt": {
+        "en": "A long horseshoe of pale stone seating around the end of a track",
+        "cs": "Dlouhá podkovovitá tribuna ze světlého kamene nad oválem dráhy"
+      },
+      "question": {
+        "en": "Which Greek stadium can you see?",
+        "cs": "Který řecký stadion vidíš?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Panathenaic Stadium",
+            "cs": "Panathénský stadion"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Athens Olympic Stadium",
+            "cs": "Olympijský stadion v Aténách"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Karaiskakis Stadium",
+            "cs": "Stadion Karaiskakis"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Peace and Friendship Stadium",
+            "cs": "Stadion míru a přátelství"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "In Athens, you are at the open end of the marble Panathenaic Stadium.",
+        "cs": "Uprostřed Atén stojíš na otevřeném konci mramorového Panathénského stadionu."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Panathenaic_Stadium"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Panathenaic_Stadium_-_panoramio_(1).jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "ATH04",
+      "place": {
+        "en": "At the edge of the Olympieion site",
+        "cs": "Na okraji areálu Olympieionu"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/ATH04.webp",
+      "sceneAlt": {
+        "en": "A steep pale rock topped with a long rectangular colonnade",
+        "cs": "Strmý světlý skalní vrch se sloupovým obdélníkem na vrcholu"
+      },
+      "question": {
+        "en": "Which hill rises above the roofs of Athens?",
+        "cs": "Který vrch se tyčí nad aténskými střechami?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Acropolis",
+            "cs": "Akropole"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Lycabettus",
+            "cs": "Lykavittos"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Areopagus",
+            "cs": "Areopag"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Philopappos Hill",
+            "cs": "Filopappův vrch"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "From the Olympieion, the Acropolis rises above the city with the Parthenon at its summit.",
+        "cs": "Od Olympieionu je vidět Akropole s Parthenónem na vrcholu."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Acropolis_of_Athens"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:View_of_the_Acropolis_of_Athens_from_the_archaeological_site_of_the_Temple_of_Olympian_Zeus.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "ATH05",
+      "place": {
+        "en": "From the pavement by the west corner of the Olympieion",
+        "cs": "Z chodníku u západního rohu Olympieionu"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/ATH05.webp",
+      "sceneAlt": {
+        "en": "A single arched opening with a smaller columned upper storey",
+        "cs": "Jediný obloukový průchod s menší sloupovou nástavbou nahoře"
+      },
+      "question": {
+        "en": "Which building is in front of you?",
+        "cs": "Kterou stavbu máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Roman Agora",
+            "cs": "Římská agora"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Propylaea",
+            "cs": "Propylaje"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Tower of the Winds",
+            "cs": "Věž větrů"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Arch of Hadrian",
+            "cs": "Hadriánův oblouk"
+          }
+        }
+      ],
+      "correctChoiceId": "d",
+      "feedback": {
+        "en": "From the pavement by the west corner of the Olympieion, you can see a single arched opening with a smaller columned upper storey.",
+        "cs": "Z chodníku u západního rohu Olympieionu je dobře vidět jediný obloukový průchod s menší sloupovou nástavbou nahoře."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Arch_of_Hadrian_(Athens)"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Attica_06-13_Athens_24_Arch_of_Hadrian.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "ATH06",
+      "place": {
+        "en": "On the southern slope below the Acropolis",
+        "cs": "Na jižním svahu pod Akropolí"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/ATH06.webp",
+      "sceneAlt": {
+        "en": "Semicircular seating facing a tall stone wall with several tiers of arches",
+        "cs": "Půlkruh sedadel proti vysoké kamenné stěně s arkádami"
+      },
+      "question": {
+        "en": "Which building is in front of you?",
+        "cs": "Kterou stavbu máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Odeon of Herodes Atticus",
+            "cs": "Odeon Heroda Attika"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Theatre of Dionysus",
+            "cs": "Divadlo Dionýsovo"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Panathenaic Stadium",
+            "cs": "Panathénský stadion"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Roman Agora",
+            "cs": "Římská agora"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On the southern slope below the Acropolis, you can see semicircular seating facing a tall stone wall with several tiers of arches.",
+        "cs": "Na jižním svahu pod Akropolí je dobře vidět půlkruh sedadel proti vysoké kamenné stěně s arkádami."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Odeon_of_Herodes_Atticus"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Odeon_of_Herodes_Atticus_(34580450331).jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "ATH07",
+      "place": {
+        "en": "At the top of the Acropolis",
+        "cs": "Na vrcholu Akropole"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/ATH07.webp",
+      "sceneAlt": {
+        "en": "A massive rectangle ringed by columns and partly open to the sky",
+        "cs": "Masivní obdélník se sloupy po obvodu a částečně otevřenou střechou"
+      },
+      "question": {
+        "en": "Which building is in front of you?",
+        "cs": "Kterou stavbu máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Erechtheion",
+            "cs": "Erechtheion"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Parthenon",
+            "cs": "Parthenón"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Temple of Athena Nike",
+            "cs": "Chrám Athény Niké"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Temple of Hephaestus",
+            "cs": "Héfaistův chrám"
+          }
+        }
+      ],
+      "correctChoiceId": "b",
+      "feedback": {
+        "en": "At the top of the Acropolis, you can see a massive rectangle ringed by columns and partly open to the sky.",
+        "cs": "Na vrcholu Akropole je dobře vidět masivní obdélník se sloupy po obvodu a částečně otevřenou střechou."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Parthenon"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:The_Parthenon_in_Athens.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "ATH08",
+      "place": {
+        "en": "Below the Acropolis on Dionysiou Areopagitou",
+        "cs": "Pod Akropolí na Dionysiou Areopagitou"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/ATH08.webp",
+      "sceneAlt": {
+        "en": "A rectangular glazed upper floor rotated out of alignment with the lower floors",
+        "cs": "Prosklené hranaté horní patro natočené jiným směrem než nižší část budovy"
+      },
+      "question": {
+        "en": "Which Athens museum has a rotated glazed upper gallery facing the temples on the rock?",
+        "cs": "Které athénské muzeum má prosklené horní patro pootočené tak, že míří k chrámům na skále?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Acropolis Museum",
+            "cs": "Muzeum Akropole"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "National Archaeological Museum",
+            "cs": "Národní archeologické muzeum"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Benaki Museum",
+            "cs": "Benaki Museum"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Museum of Cycladic Art",
+            "cs": "Muzeum kykladského umění"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Below the Acropolis, the Acropolis Museum has its highest gallery turned towards the rock.",
+        "cs": "Pod Akropolí stojí Muzeum Akropole s nejvyšší galerií natočenou ke skále."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Acropolis_Museum"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:New_Acropolis_Museum_5.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "ATH09",
+      "place": {
+        "en": "In the Roman Agora below the Acropolis",
+        "cs": "V římské agoře pod Akropolí"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/ATH09.webp",
+      "sceneAlt": {
+        "en": "An octagonal stone tower with relief figures high beneath the roof",
+        "cs": "Osmiboká kamenná věž s reliéfními postavami vysoko pod střechou"
+      },
+      "question": {
+        "en": "Which tower can you see in the Roman Agora?",
+        "cs": "Kterou věž vidíš v římské agoře?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Tower of the Winds",
+            "cs": "Věž větrů"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "White Tower",
+            "cs": "Bílá věž"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Nafplio Clock Tower",
+            "cs": "Hodinová věž v Nafpliu"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Arch of Hadrian",
+            "cs": "Hadriánův oblouk"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "In the Roman Agora below the Acropolis, you can see an octagonal stone tower with relief figures high beneath the roof.",
+        "cs": "V římské agoře pod Akropolí je dobře vidět osmiboká kamenná věž s reliéfními postavami vysoko pod střechou."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Tower_of_the_Winds"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:The_Clocktower_of_Andronicus_Cyrrhestes_in_Athens_on_May_6,_2021.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Nízko posazená osmiboká kamenná věž s pásem osmi reliéfů pod střechou. Bílá věž je válcová, věž z Nafplia hodinová a Hadriánův oblouk má otevřený průchod."
+    },
+    {
+      "id": "ATH10",
+      "place": {
+        "en": "In Monastiraki Square",
+        "cs": "Na ploše Monastiraki"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/ATH10.webp",
+      "sceneAlt": {
+        "en": "A single large dome on a square building with an arched porch above the square",
+        "cs": "Jedna velká kupole na čtvercové stavbě s obloukovým ochozem nad náměstím"
+      },
+      "question": {
+        "en": "Which Athens square has a domed building with an arched porch above the paving and the Acropolis behind it?",
+        "cs": "Které náměstí poznáš podle kupole a obloukového ochozu nad dlažbou s Akropolí v pozadí?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Monastiraki",
+            "cs": "Monastiraki"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Syntagma",
+            "cs": "Syntagma"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Omonia",
+            "cs": "Omonia"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Kotzia",
+            "cs": "Kotzia"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "In Monastiraki Square, you can see a single large dome on a square building with an arched porch above the square.",
+        "cs": "Na ploše Monastiraki je dobře vidět jedna velká kupole na čtvercové stavbě s obloukovým ochozem nad náměstím."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Tzistarakis_Mosque"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Tzistarakis_mosque_in_Athens.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Přízemní dlažba pod vrškem se střední kupolí, krytým obloukovým ochozem a Akropolí za ní. Jiná nabídnutá náměstí tuto osu nemají."
+    }
+  ]
+}

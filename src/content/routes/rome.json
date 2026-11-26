@@ -1,0 +1,616 @@
+{
+  "id": "rome",
+  "name": {
+    "en": "Rome",
+    "cs": "Řím"
+  },
+  "coordinates": {
+    "lat": 41.8931,
+    "lon": 12.4828
+  },
+  "postcardQuestionId": "ROM01",
+  "stops": [
+    {
+      "id": "ROM01",
+      "place": {
+        "en": "On Piazza del Colosseo",
+        "cs": "Na náměstí Colosseo"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/ROM01.webp",
+      "sceneAlt": {
+        "en": "An oval amphitheatre with tiers of stone arches and a broken outer ring",
+        "cs": "Oválný amfiteátr s vrstvami kamenných arkád a přerušeným obvodem"
+      },
+      "question": {
+        "en": "Which building is in front of you?",
+        "cs": "Kterou stavbu máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Pantheon",
+            "cs": "Pantheon"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Arena di Verona",
+            "cs": "Arena di Verona"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Circus Maximus",
+            "cs": "Circus Maximus"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Colosseum",
+            "cs": "Koloseum"
+          }
+        }
+      ],
+      "correctChoiceId": "d",
+      "feedback": {
+        "en": "On Piazza del Colosseo, you can see an oval amphitheatre with tiers of stone arches and a broken outer ring.",
+        "cs": "Na náměstí Colosseo je dobře vidět oválný amfiteátr s vrstvami kamenných arkád a přerušeným obvodem."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Colosseum"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Colosseo_2020.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "ROM02",
+      "place": {
+        "en": "On the forecourt beside the Colosseum",
+        "cs": "Na prostranství vedle Kolosea"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/ROM02.webp",
+      "sceneAlt": {
+        "en": "Three openings of different sizes with round reliefs above them and part of an oval amphitheatre behind",
+        "cs": "Tři průchody různé velikosti, kruhové reliéfy a za nimi část oválného amfiteátru"
+      },
+      "question": {
+        "en": "Which Roman arch can you see?",
+        "cs": "Který římský oblouk vidíš?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Arch of Constantine",
+            "cs": "Konstantinův oblouk"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Arch of Titus",
+            "cs": "Titův oblouk"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Arch of Septimius Severus",
+            "cs": "Oblouk Septimia Severa"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Arch of Janus",
+            "cs": "Janův oblouk"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "The Arch of Constantine stands by the Colosseum, with round reliefs above its side openings.",
+        "cs": "Konstantinův oblouk stojí u Kolosea a má nad bočními průchody kulaté reliéfy."
+      },
+      "sourceUrls": [
+        "https://www.turismoroma.it/en/node/1025"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Arch_of_Constantine_(Rome)_-_South_side,_from_Via_triumphalis.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "ROM03",
+      "place": {
+        "en": "Above the Roman Forum",
+        "cs": "Nad římským Fórem"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/ROM03.webp",
+      "sceneAlt": {
+        "en": "Groups of freestanding ancient columns among the ruins",
+        "cs": "Skupiny samostatně stojících antických sloupů mezi ruinami"
+      },
+      "question": {
+        "en": "Which Roman archaeological site can you see?",
+        "cs": "Které římské archeologické naleziště máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Roman Forum",
+            "cs": "Forum Romanum"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Trajan’s Forum",
+            "cs": "Trajánovo fórum"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Largo di Torre Argentina",
+            "cs": "Largo di Torre Argentina"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Theatre of Marcellus",
+            "cs": "Marcellovo divadlo"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Above the Roman Forum, you can see groups of freestanding ancient columns among the ruins.",
+        "cs": "Nad římským Fórem je dobře vidět skupiny samostatně stojících antických sloupů mezi ruinami."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Roman_Forum"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Foro_Romano_Musei_Capitolini_Roma.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "ROM04",
+      "place": {
+        "en": "On Piazza d’Aracoeli",
+        "cs": "Na Piazza d’Aracoeli"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/ROM04.webp",
+      "sceneAlt": {
+        "en": "Long white steps, an open colonnade and two bronze chariots at the corners",
+        "cs": "Dlouhé bílé schodiště, otevřený ochoz a dvě bronzová čtyřspřeží na nárožích"
+      },
+      "question": {
+        "en": "Which Roman landmark has a white colonnade and two bronze chariots above a broad staircase?",
+        "cs": "Která římská dominanta má nad širokým schodištěm bílý sloupový ochoz a dvě bronzová čtyřspřeží?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Vittoriano",
+            "cs": "Vittoriano"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Castel Sant’Angelo",
+            "cs": "Castel Sant’Angelo"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Pantheon",
+            "cs": "Pantheon"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Villa Borghese",
+            "cs": "Villa Borghese"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Beside Capitoline Hill rises the white Vittoriano monument.",
+        "cs": "Vedle úpatí Kapitolu se zvedá bílý památník Vittoriano."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Victor_Emmanuel_II_Monument"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Vittoriano_Altare_della_Patria_2013-09-16.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "ROM05",
+      "place": {
+        "en": "In Piazza del Campidoglio",
+        "cs": "Na Piazza del Campidoglio"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/ROM05.webp",
+      "sceneAlt": {
+        "en": "An oval paving pattern around an equestrian statue below a palace tower",
+        "cs": "Oválný vzor dlažby s jezdeckou sochou pod věží paláce"
+      },
+      "question": {
+        "en": "Which square can you see?",
+        "cs": "Které náměstí vidíš?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Piazza del Popolo",
+            "cs": "Piazza del Popolo"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Piazza di Spagna",
+            "cs": "Piazza di Spagna"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Piazza Venezia",
+            "cs": "Piazza Venezia"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Piazza del Campidoglio",
+            "cs": "Piazza del Campidoglio"
+          }
+        }
+      ],
+      "correctChoiceId": "d",
+      "feedback": {
+        "en": "In Piazza del Campidoglio, you can see an oval paving pattern around an equestrian statue below a palace tower.",
+        "cs": "Na Piazza del Campidoglio je dobře vidět oválný vzor dlažby s jezdeckou sochou pod věží paláce."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Capitoline_Hill"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Piazza_del_Campidoglio_2015.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "ROM06",
+      "place": {
+        "en": "In the narrow streets by Palazzo Poli",
+        "cs": "V úzkých ulicích u Palazzo Poli"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/ROM06.webp",
+      "sceneAlt": {
+        "en": "A large turquoise basin and figures on rocks beneath a huge palace niche",
+        "cs": "Velká tyrkysová nádrž a sochy na skalách pod obří nikou paláce"
+      },
+      "question": {
+        "en": "What is the name of this fountain?",
+        "cs": "Jak se jmenuje tato fontána?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Trevi Fountain",
+            "cs": "Fontána di Trevi"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Fountain of the Four Rivers",
+            "cs": "Fontána čtyř řek"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Fountain of the Bees",
+            "cs": "Fontána včel"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Turtle Fountain",
+            "cs": "Fontána želv"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "In the narrow streets by Palazzo Poli, you can see a large turquoise basin and figures on rocks beneath a huge palace niche.",
+        "cs": "V úzkých ulicích u Palazzo Poli je dobře vidět velká tyrkysová nádrž a sochy na skalách pod obří nikou paláce."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Trevi_Fountain"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Trevi_Fountain_-_Roma.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "ROM07",
+      "place": {
+        "en": "On Piazza della Rotonda",
+        "cs": "Na Piazza della Rotonda"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/ROM07.webp",
+      "sceneAlt": {
+        "en": "A triangular portico in front of a round building with a low dome",
+        "cs": "Průčelí s trojúhelným štítem před kruhovou stavbou s nízkou kupolí"
+      },
+      "question": {
+        "en": "Which building is in front of you?",
+        "cs": "Kterou stavbu máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Colosseum",
+            "cs": "Koloseum"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Pantheon",
+            "cs": "Pantheon"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Castel Sant’Angelo",
+            "cs": "Andělský hrad"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Capitoline Museums",
+            "cs": "Kapitolská muzea"
+          }
+        }
+      ],
+      "correctChoiceId": "b",
+      "feedback": {
+        "en": "On Piazza della Rotonda, you can see a triangular portico in front of a round building with a low dome.",
+        "cs": "Na Piazza della Rotonda je dobře vidět průčelí s trojúhelným štítem před kruhovou stavbou s nízkou kupolí."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Pantheon,_Rome"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Pantheon_(Rome)_-_Right_side_and_front.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "ROM08",
+      "place": {
+        "en": "On Piazza Navona",
+        "cs": "Na Piazza Navona"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/ROM08.webp",
+      "sceneAlt": {
+        "en": "A large rock with figures around a slender obelisk in a long square",
+        "cs": "Obří balvan s figurami kolem úpatí štíhlého obelisku uprostřed dlouhého náměstí"
+      },
+      "question": {
+        "en": "What is the name of this fountain?",
+        "cs": "Jak se jmenuje tato fontána?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Trevi Fountain",
+            "cs": "Fontána di Trevi"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Barcaccia",
+            "cs": "Barcaccia"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Fountain of the Four Rivers",
+            "cs": "Fontána čtyř řek"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Fountain of the Tritons",
+            "cs": "Fontána tritonů"
+          }
+        }
+      ],
+      "correctChoiceId": "c",
+      "feedback": {
+        "en": "On Piazza Navona, you can see a large rock with figures around a slender obelisk in a long square.",
+        "cs": "Na Piazza Navona je dobře vidět obří balvan s figurami kolem úpatí štíhlého obelisku uprostřed dlouhého náměstí."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Fontana_dei_Quattro_Fiumi"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Obelisco_Fontana_dei_Fiumi_Piazza_Navona_Roma.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "ROM09",
+      "place": {
+        "en": "From the riverside walk below the castle bridge",
+        "cs": "Z říčního chodníku pod mostem u hradu"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/ROM09.webp",
+      "sceneAlt": {
+        "en": "Stone arches below a row of angels, with a round fortress at the end",
+        "cs": "Kamenné oblouky pod řadou andělů zábradlí a kruhová pevnost na konci"
+      },
+      "question": {
+        "en": "What is the bridge in view called?",
+        "cs": "Jak se jmenuje most v záběru?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Ponte Sant’Angelo",
+            "cs": "Andělský most"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Ponte Sisto",
+            "cs": "Ponte Sisto"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Ponte Milvio",
+            "cs": "Ponte Milvio"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Ponte Fabricio",
+            "cs": "Ponte Fabricio"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "From the riverside walk below the castle bridge, you can see stone arches below a row of angels, with a round fortress at the end.",
+        "cs": "Z říčního chodníku pod mostem u hradu je dobře vidět kamenné oblouky pod řadou andělů zábradlí a kruhová pevnost na konci."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Ponte_Sant%27Angelo"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Sant'Angelo_bridge,_dusk,_Rome,_Italy.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Sochy andělů vedou přímo k válcové pevnosti. Ostatní mosty nemají tuto řadu soch a pevnost v ose."
+    },
+    {
+      "id": "ROM10",
+      "place": {
+        "en": "From the far bank of the Tiber",
+        "cs": "Z druhého břehu Tibery"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/ROM10.webp",
+      "sceneAlt": {
+        "en": "A low cylindrical fortress with an upper block and an angel on top",
+        "cs": "Nízká válcová pevnost s nástavbou a andělem na vrcholu"
+      },
+      "question": {
+        "en": "Which Roman landmark can you see across the bridge?",
+        "cs": "Kterou římskou dominantu vidíš naproti mostu?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Castel Sant’Angelo",
+            "cs": "Andělský hrad"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Palazzo Farnese",
+            "cs": "Palazzo Farnese"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Palazzo Venezia",
+            "cs": "Palazzo Venezia"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Capitoline Museums",
+            "cs": "Kapitolská muzea"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "From the far bank of the Tiber, you can see a low cylindrical fortress with an upper block and an angel on top.",
+        "cs": "Z druhého břehu Tibery je dobře vidět nízká válcová pevnost s nástavbou a andělem na vrcholu."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Castel_Sant%27Angelo"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Castel_Sant'Angelo_at_Night.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Nízký kamenný válec a anděl na vrcholu se liší od obdélnými palácovými průčelími."
+    }
+  ]
+}
