@@ -1,0 +1,81 @@
+# Specifikace oblasti app
+
+Obrazovky hry v DOM/CSS, aplikační vrstva (skutečný čas, viditelnost stránky, kontrolní body, přechody), texty `src/i18n` a napojení na obsah, logiku a platformu. Zdroj pravidel je [BRIEF.md](../../game/BRIEF.md) (§2–§4, §6–§14), plán [PLAN.md](../../plan/PLAN.md) (oblast app, K3, K5, K6, K7), rozhraní [API.md](../../plan/API.md), [spec logic](../logic/spec.md) (Rozhraní), [spec platform](../platform/spec.md) (Veřejné rozhraní pro oblast app), [spec content](../content/spec.md) (R3, R6) a rozhodnutí [LOG.md](../../decisions/LOG.md). Schválený vzhled je [docs/design/README.md](../../design/README.md).
+
+## Soubory
+
+| Cesta | Obsah |
+|---|---|
+| `index.html` | Statické načítání (logo, stav, chyba s opakováním), vstup `src/main.ts`. |
+| `src/main.ts` | Spuštění aplikace. |
+| `src/app/` | Spuštění, navigace mezi obrazovkami, řízení průchodu (monotónní hodiny, kontrolní body, viditelnost, vlastnictví mezi kartami), napojení na platformu, feedback a úložiště, texty. |
+| `src/game/render/` | Herní obrazovka: scéna, trasa, otázka, volby, řádek akcí, pauza, zvětšení, potvrzení videa, chyba načtení. |
+| `src/ui/` | Ostatní obrazovky (úvod, nastavení, potvrzení změny průchodu, mapa, souhrny, sbírka, denní výzva) a sdílené prvky (rám okna, dialog). |
+| `src/i18n/en.json`, `src/i18n/cs.json` | Texty mimo trasy. Stejné klíče v obou souborech. |
+| `src/styles/` | Styly aplikace. Barvy, písmo, mezery a pohyb jen z `tokens.css`, který se nemění. |
+| `e2e/` | Playwright testy. |
+
+Třídy herní obrazovky odpovídají prototypu (`.play[data-state]`, `.play-main`, `.panel`, `.scene-frame`, `.choices`, `.choice`, `.choice-label`, `.choice-mark`, `.action-row`, `.timer`, `.lifeline`, `.next`, `.result-verdict`, `.result-sentence`, `.icon-button`, `.zoom-button`, `.scene-error`), aby šly použít kontroly z `docs/design/check-layout.mjs`.
+
+## A. Aplikační vrstva
+
+- **A1 Spuštění.** `createPlatform()`, `loadingStarted()`, `await init()`, pak `loadingFinished()` po vykreslení úvodu. Po `init()` se předá `portalAudioMuted()` do `feedback.setPortalMuted` a zaregistruje `onPortalAudioMutedChange`. `GameStorage` dostane `adapter.store` a ID karty vytvořené jednou za načtení stránky. Feedback se vytvoří z uloženého nastavení.
+- **A2 Načítání.** Logo a stav jsou v `index.html`, takže jsou vidět před během skriptu. Když se vstupní skript nenačte nebo spuštění selže, ukáže se chybová věta a „Zkusit znovu“, které stránku načte znovu. Úvod se zobrazí po vykreslení svého rozhraní, scéna hry se načítá zvlášť.
+- **A3 Upozornění na úložiště.** Když `takeUnavailableNotice()` vrátí `true`, ukáže se jednou za relaci nepřekrývající upozornění se zavřením (hra běží v paměti, postup se nemusí uložit).
+- **A4 Odemčení zvuku.** App volá `feedback.unlock()` na začátku zpracování každého `click` a `keydown` (zachytávací posluchač na dokumentu), nikdy z `pointerdown`. Úvod je tichý.
+- **A5 Měření.** Události z §13 přes `adapter.track`: `route_started` (`resumed: false` u nového průchodu, `true` u „Pokračovat“), `question_resolved` (`index` = `stopIndex + 1`), `route_completed` (správně, hvězdy průchodu), `route_left` (`paused` při odchodu na úvod s uložením, `abandoned` při zahození), `lifeline_used`, `rewarded_ad_outcome`, `daily_completed`, `postcard_unlocked`. Ve vývojovém režimu (`import.meta.env.DEV`) je na `window.__postcardTrail.recordedEvents()` export pro Playwright; produkční build ho neobsahuje.
+- **A6 Herní signály.** `gameplayStart()` až v aktivní otázce otevřené akcí hráče (i po obnově, která je vždy v pauze). `gameplayStop()` při pauze, zvětšení scény, skrytí stránky, odchodu z herní obrazovky a v souhrnu. Během reklamy signály řídí adaptér.
+- **A7 Čas.** `elapsedMs` se měří `performance.now()` od poslední započtené akce. Odpočet se vykresluje v celých sekundách zaokrouhlených nahoru. Akce `tick` se posílá aspoň při průchodu každou celou sekundou.
+- **A8 Kontrolní body.** `saveRunCheckpoint` po každé akci hráče, při průchodu celou sekundou v odpočtu a při skrytí stránky. `notOwner` průchod v kartě zastaví (A10).
+- **A9 Viditelnost.** Skrytí stránky v otázce ihned pošle `pause` s naměřeným časem, uloží bod a zastaví hraní. Po návratu je vidět pauza a čeká se na „Pokračovat“. Změna orientace a velikosti jen přepočítá layout.
+- **A10 Vlastnictví mezi kartami.** Při události `storage` na klíči `postcard-trail:active-run`, kdy `ownsActiveRun(event.newValue, tabId)` vrátí `false`, a při návratu na stránku, kdy `isActiveRunOwner()` vrátí `false`, karta průchod zastaví: odpočet stojí, nic dalšího nezapíše a ukáže větu, že průchod pokračuje v jiné kartě, s tlačítkem „Úvod“. Karta, která právě ukazuje souhrn dokončeného průchodu, událost ignoruje.
+- **A11 Hotový průchod po obnovení** (rozhodnutí v LOG.md). Když `loadActiveRun()` při startu vrátí průchod ve fázi `summary`, app ho převezme (`resumeRun`), dokončí (`completeCityRun` / `completeDailyRun`) a ukáže úvod s už zapsanými odměnami. Souhrn se neukáže, `route_started` se nepošle. Při selhání zápisu platí A3.
+- **A12 Nastavení.** Jazyk English / Čeština (výchozí angličtina bez ohledu na prohlížeč), zvuk, vibrace, Bez animací a „Bez časového limitu“ s větou, že platí od příštího nového průchodu. Změna se uloží hned, zvuk a vibrace se předají feedbacku hned. Změna jazyka překreslí aktuální obrazovku včetně rozehrané otázky se stejným pořadím voleb a nastaví `lang` dokumentu.
+- **A13 Pohyb.** Při `prefers-reduced-motion: reduce` nebo nastavení Bez animací nahradí pohyb statický obraz nebo změna stavu do 100 ms (úvodní animace stojí).
+- **A14 Okna a navigace.** Každé okno kromě úvodu má nahoře × a „Úvod / Home“. × v modálním okně vrací do rodiče, u samostatného okna na úvod. Escape v okně funguje jako ×, na herní ploše otevírá pauzu. Dialog drží fokus a po zavření ho vrátí na otevírací prvek. Adresát akce musí být zobrazený a povolený.
+- **A15 Změna průchodu.** Výběr jiného průchodu (jiné město, opakování, denní výzva), když existuje aktivní průchod, otevře „Zahodit rozehranou trasu?“ / „Discard your current route?“ s volbami „Ponechat průchod“ a „Zahodit a začít“. Ponechat i × vrací do okna výběru, Úvod průchod zachová. Zahodit smaže jen aktivní průchod (`discardRun`), pošle `route_left` `abandoned` a začne nový. U města s aktivním průchodem nabízí výběr „Pokračovat“.
+- **A16 Začátek průchodu.** Městský průchod přes `startCityRun` s `Math.random` a novým ID, denní přes `dailyPlan` a `startDailyRun`. Nečasovaný režim se bere z nastavení při startu. Trasa se načte přes `loadRoute` až při startu nebo pokračování (lazy-load).
+
+## B. Herní obrazovka
+
+- **B1 Rozvržení** podle docs/design/README.md na výšku i na šířku. Obrazovka otázky projde kontrolami `check-layout.mjs` (překryv, lámání slov, viditelnost času, žolíků a „Další“, stejná velikost scény ve všech stavech, signál pokračování obsahu, cíle 44 px, bez vodorovného posouvání) na 320 × 568, 375 × 812, 568 × 320, 640 × 360, 844 × 390, 1440 × 900 v EN a na 320 × 568, 568 × 320, 640 × 360 v CS.
+- **B2 Obsah otázky.** Název města, pozice `n/10` (v denní `n/3`), čára trasy se značkou, obtížnost, série (vidět od 2), scéna, otázka, čtyři volby v zobrazeném pořadí z průchodu s klávesami 1–4, čas a žolíky. Text `Stop.place` se na obrazovce otázky neobjeví v textu ani v přístupných názvech (ani v denní výzvě a po obnovení).
+- **B3 Načítání scény.** Ve fázi `loading` je obraz se stavem, volby a žolíky zakázané, čas ukazuje plný limit. `sceneReady` se pošle, až je obrázek dekódovaný, volby vykreslené a stránka viditelná. Potom se přednačte právě jedna další scéna průchodu.
+- **B4 Chyba načtení.** Jen trasa, věta s číslem zastávky, „Zkusit znovu“ (stáhne stejný asset), × a „Úvod“. Čas nezačne.
+- **B5 Zástupná scéna.** U ID ze `public/scenes/placeholders.json` je pod scénou viditelný `sceneAlt` v aktuálním jazyce. Obrázek má `alt` = `sceneAlt` a viditelný popisek je pro čtečku skrytý, takže se popis nečte dvakrát. U finální scény popisek není.
+- **B6 Volba.** Kliknutí nebo klávesa uzamkne otázku (první přijatá akce platí). Výsledek: správná zeleně, zvolená chybná červeně, u timeoutu a přeskočení jen správná; verdikt slovem i symbolem, `place` a věta `feedback` zastávky, žolíky zmizí, jediné „Další“. Fokus přejde na „Další“, čtečka oznámí verdikt a větu (živá oblast), čas nečte každou sekundu. Zvuk `choice` při volbě, pak `correct` nebo `wrong`.
+- **B7 Žolíky.** 50:50 skryje dvě volby, jejich místa zůstanou prázdná čárkovaná a klávesy se vypnou. Na 2. zastávce se u 50:50 jednou na 1 500 ms ukáže popisek „Odebere dvě volby“, je i v přístupném názvu a nezastaví čas (`shownHintIds`). +10 s přičte čas, v nečasovaném režimu se čas ani +10 s neukazují. Použitý žolík je čárkovaný a přeškrtnutý.
+- **B8 Pauza.** Tlačítko pauzy a Escape. Pokračovat (i ×), Nastavení, Úvod a „Přeskočit za video“, jen když `canUseSkip(run)` a `rewardedAdsOffered()` (čte se při každém vykreslení pauzy). Při první sérii 3 se u pauzy jednou ukáže nápověda, že uvnitř je přeskočení, pokud ho adaptér nabízí.
+- **B9 Přeskočit za video.** Potvrzení s větou „Přeskočíš tuto otázku a zachováš sérii. Správná odpověď se nepřičte.“ a dvěma stejně velkými jantarovými tlačítky „Zpět k odpovědi“ a „Pustit video“ (s ikonou videa). × vrací do pauzy, Úvod uloží stav. „Pustit video“ pošle `requestSkip` s novým ID pokusu a `requestRewardedAd`; `onStart` ztlumí zvuk (`muteForAd`). Během požadavku a spotu je vstup blokovaný. Výsledek jde do `adResult`, zvuk se obnoví (`restoreAfterAd`), pošle se `rewarded_ad_outcome`. `completed` ukáže výsledek „přeskočeno“ se zachovanou sérií. `cancelled` a `unavailable` ukážou informaci a „Zpět k odpovědi“, které vrátí otázku s jejím časem a nepoužitým žolíkem. Po 90 s blokace bez výsledku (od `onStart`, jinak od požadavku) se ukáže „Zpět k odpovědi“, které pokus opustí jako pokračování z pauzy; pozdní výsledek se ignoruje (rozhodnutí v LOG.md, k potvrzení Petrem).
+- **B10 Zvětšení scény.** Tlačítko v pravém dolním rohu scény v otázce i ve výsledku. Otevře scénu do dostupné plochy, zakryje odpovědi a v otázce pozastaví čas. × nebo Escape vrátí stejnou otázku a čas pokračuje bez další pauzy.
+- **B11 Odchod a obnova.** × a „Úvod“ na herní ploše uloží bod, pošlou `route_left` `paused` a vrátí na úvod, kde je „Pokračovat“. Pokračovat obnoví stejnou zastávku, fázi, žolíky, výsledek, čas a pořadí, vždy v pauze; čas se rozběhne až po „Pokračovat“ v pauze.
+- **B12 Učení hry** (§6). Série je vidět od 2. Na 3. zastávce se zvýrazní posun značky na trase. Přechod na další scénu 250 ms opacity a značka o krok (§8).
+- **B13 Konec průchodu.** Po posledním „Další“ app dokončí průchod (`completeCityRun` / `completeDailyRun`), pošle `route_completed`, případně `postcard_unlocked` a `daily_completed`, a ukáže souhrn města nebo denní souhrn.
+
+## C. Ostatní obrazovky
+
+- **C1 Úvod.** Samostatná celoplošná obrazovka. Logo tučným námořnickým písmem ve dvou řádcích s jantarovým obloukem. Animace podle PAR03 (loď na vodě, Eiffelova věž v pozadí, odrazy u nábřeží), smyčka 8 000 ms, bez názvu řeky v UI i v alternativním textu. Primární „Hrát“ 56 px otevře první odemčené nedokončené město (`nextCityToPlay`), po dokončení všech mapu. S aktivním průchodem je místo něj „Pokračovat“. Pod ním Mapa měst, Nastavení, Sbírka a Denní výzva; denní dlaždice je před zpřístupněním vidět se stručnou podmínkou. Postup: dohraná města z vydaných, hvězdy z trojnásobku, počet pohlednic. Na šířku animace vlevo a ovládání vpravo.
+- **C2 Mapa.** Vlastní schéma Evropy s bodem za každé vydané město (souřadnice z katalogu). Blízké body tvoří skupinu s počtem, kliknutí mapu přiblíží. Pod mapou seznam měst v pořadí katalogu, ze kterého jde každé město aktivovat. Stav města: zamčené, odemčené, dokončené s hvězdami. Detail zamčeného města ukáže podmínku (dokončit předchozí město), detail vydané trasy scénu pohlednice, nejlepší hvězdy a „Hrát“, „Znovu“ nebo „Pokračovat“.
+- **C3 Souhrn města.** Skóre z 10, nejlepší série, hvězdy z 3, pohlednice (při prvním získání se vysune 550 ms, zvuk `postcard`) a nově odemčené město. Primární „Další město“, po posledním městě „Mapa“, vedlejší „Hrát znovu“. Stejný souhrn i při 0–3 hvězdách. × vede na úvod.
+- **C4 Sbírka a detail karty.** Jedna pozice za každé vydané město a počet získaných z celku. Získaná karta otevře detail s ilustrací, jménem města a větou `postcard.sentence`. Nezískaná pozice prozradí jen jméno města. × detailu vrací do sbírky.
+- **C5 Denní výzva.** Datum UTC, stav (nenabízí se před účinností katalogu, zamčená do dokončení prvního města, dostupná, rozehraná, hotová), dnešní skóre z 3 a série dnů. Start nebo Pokračovat. Hotové datum další pokus neotevře.
+- **C6 Denní souhrn.** Skóre z 3 a série dnů, cesty na denní přehled a na úvod. Hvězdy, pohlednice ani odemčení se nemění.
+
+## D. Kvalita
+
+- **D1 Rozměry.** Každá obrazovka projde na 320 × 568, 568 × 320 a na Poki 640 × 360, 836 × 470, 1031 × 580 bez vodorovného posouvání a bez posouvání rodičovské stránky (hra v rámu 16:9 vyplní náhled a dokument se neposune), s cíli aspoň 44 × 44 px a bez překryvu ovládání. Delší překlad (CS) layout nerozbije.
+- **D2 Kontrast.** Textové kombinace barev WCAG AA, fokus aspoň 3:1 proti sousední ploše.
+- **D3 Klávesnice.** Tab/Shift+Tab, Enter/Mezerník, 1–4, Escape podle §4 na všech obrazovkách.
+- **D4 Výkon.** Přenesený startovní payload (HTML, vstupní JS a CSS a vše, co úvod staticky potřebuje, gzip, bez SDK) do 700 kB, celý build do 36 MB. Trasy se načítají až při startu průchodu, přednačítá se právě jedna další scéna.
+
+## Scénáře
+
+Scénáře ke kritériím jsou v akceptačních kritériích balíčků (`tasks.md`) a ověřují je e2e testy v `e2e/`. Rozhodující jsou:
+
+- Nové načtení s prázdným úložištěm ukáže úvod v angličtině s 0/20 městy, 0/60 hvězdami a 0 pohlednicemi; „Hrát“ otevře Paříž.
+- Paříž dohraná s nulou správných odemkne Londýn, Řím zůstane zamčený, sbírka má jednu pohlednici.
+- Reload během otázky i během výsledku vrátí stejný stav v pauze se stejným časem a pořadím voleb.
+- Přepnutí jazyka v pauze nezmění pořadí voleb.
+- `?ads=none` skryje „Přeskočit za video“, `?ad=completed` přeskočí se zachovanou sérií a skóre, `?ad=cancelled` a `?ad=unavailable` vrátí otázku s nepoužitým žolíkem, `?ad=duplicate` a `?ad=late` přeskočí nejvýš jednou.
+- Vložený průchod ve fázi `summary` se po obnovení stránky dokončí bez „Pokračovat“ a druhé obnovení nic nezdvojí.
+- Stav s 20 dohranými městy ukáže 20 pohlednic, nejvýš 60 hvězd a „Hrát“ vede na mapu.
