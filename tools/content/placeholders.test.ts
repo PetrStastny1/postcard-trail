@@ -6,13 +6,12 @@ import path from 'node:path'
 import { after, describe, test } from 'node:test'
 import {
   type SceneComposition,
-  maxSceneBytes,
   planScenes,
   readPalette,
   readStopIds,
   sceneComposition,
-  sceneSize,
 } from './placeholders.ts'
+import { maxSceneBytes, sceneSize } from './scene-limits.ts'
 import { readWebpDimensions } from './webp-header.ts'
 
 const repoRoot = path.resolve(import.meta.dirname, '../..')

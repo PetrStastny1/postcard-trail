@@ -3,7 +3,7 @@ import path from 'node:path'
 import { isDeepStrictEqual, parseArgs } from 'node:util'
 import type { Catalog, Locale, Route, Stop } from '../../src/content/types.ts'
 import { ContentImportError, readContent } from './import.ts'
-import { maxSceneBytes, sceneSize } from './placeholders.ts'
+import { maxSceneBytes, sceneSize } from './scene-limits.ts'
 import { WebpHeaderError, readWebpDimensions } from './webp-header.ts'
 
 const repoRoot = path.resolve(import.meta.dirname, '../..')

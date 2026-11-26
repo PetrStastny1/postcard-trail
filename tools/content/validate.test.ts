@@ -637,14 +637,26 @@ describe('scenes', () => {
     writeFileSync(scenePath(root, 'PAR05'), riffWebp(vp8Header(1280, 1280, [0, 0, 0])))
     writeFileSync(scenePath(root, 'PAR06'), riffWebp(vp8lHeader(1280, 1280, 0)))
     writeFileSync(scenePath(root, 'PAR07'), riffWebp(riffChunk('ALPH', Buffer.alloc(10))))
+    const shortVp8 = riffWebp(vp8Header(1280, 1280))
+    shortVp8.writeUInt32LE(9, 16)
+    writeFileSync(scenePath(root, 'PAR08'), shortVp8)
+    const shortVp8x = readFileSync(scenePath(root, 'PAR09'))
+    shortVp8x.writeUInt32LE(0, 16)
+    writeFileSync(scenePath(root, 'PAR09'), shortVp8x)
+    const shortVp8l = riffWebp(vp8lHeader(1280, 1280))
+    shortVp8l.writeUInt32LE(4, 16)
+    writeFileSync(scenePath(root, 'PAR10'), shortVp8l)
     assert.deepEqual(validateContent(root), [
       'paris PAR01: scene public/scenes/PAR01.webp is not a valid WebP (no RIFF/WEBP signature, the file starts with 89 50 4e 47 0d 0a 1a 0a 00 00 00 0d)',
       'paris PAR02: scene public/scenes/PAR02.webp is not a valid WebP (truncated header, the file has only 4 bytes)',
       `paris PAR03: scene public/scenes/PAR03.webp is not a valid WebP (the RIFF header declares ${vp8x.length} bytes, the file has 1000)`,
-      'paris PAR04: scene public/scenes/PAR04.webp is not a valid WebP (truncated VP8X header)',
-      'paris PAR05: scene public/scenes/PAR05.webp is not a valid WebP (damaged VP8 header, the frame start code is missing)',
-      'paris PAR06: scene public/scenes/PAR06.webp is not a valid WebP (damaged VP8L header, the signature byte is missing)',
+      'paris PAR04: scene public/scenes/PAR04.webp is not a valid WebP (truncated VP8X header, the file has 20 bytes, at least 30 needed)',
+      'paris PAR05: scene public/scenes/PAR05.webp is not a valid WebP (damaged VP8 header, the frame start code is 00 00 00 instead of 9d 01 2a)',
+      'paris PAR06: scene public/scenes/PAR06.webp is not a valid WebP (damaged VP8L header, the signature byte is 00 instead of 2f)',
       'paris PAR07: scene public/scenes/PAR07.webp is not a valid WebP (unknown first chunk "ALPH", expected VP8, VP8L or VP8X)',
+      'paris PAR08: scene public/scenes/PAR08.webp is not a valid WebP (the VP8 chunk declares 9 bytes, at least 10 needed)',
+      'paris PAR09: scene public/scenes/PAR09.webp is not a valid WebP (the VP8X chunk declares 0 bytes, at least 10 needed)',
+      'paris PAR10: scene public/scenes/PAR10.webp is not a valid WebP (the VP8L chunk declares 4 bytes, at least 5 needed)',
     ])
   })
 
