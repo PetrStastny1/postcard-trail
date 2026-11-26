@@ -5,12 +5,12 @@ import type { PlatformAdapter, RewardedAdOutcome, RewardedAdRequest } from './ty
 export const SIMULATED_SPOT_MS = 500
 export const LATE_RESULT_DELAY_MS = 2000
 
-type SimulatedAd = 'completed' | 'cancelled' | 'unavailable' | 'interrupted' | 'duplicate' | 'late'
+const simulatedAds = ['completed', 'cancelled', 'unavailable', 'interrupted', 'duplicate', 'late'] as const
 
-const simulatedAds = new Set<string>(['completed', 'cancelled', 'unavailable', 'interrupted', 'duplicate', 'late'])
+type SimulatedAd = (typeof simulatedAds)[number]
 
 function isSimulatedAd(value: string | null): value is SimulatedAd {
-  return value !== null && simulatedAds.has(value)
+  return simulatedAds.some((simulatedAd) => simulatedAd === value)
 }
 
 export interface LocalAdapterOptions {

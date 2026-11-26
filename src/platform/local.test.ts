@@ -1,3 +1,5 @@
+// Temporary until the director changes the tsconfig setup: this directive adds Node types
+// to the whole tsconfig.json program, not just to this file.
 /// <reference types="node" />
 import assert from 'node:assert/strict'
 import { afterEach, beforeEach, mock, test } from 'node:test'
@@ -59,7 +61,10 @@ function advance(ms: number): void {
 }
 
 beforeEach(() => mock.timers.enable({ apis: ['setTimeout', 'Date'], now: 0 }))
-afterEach(() => mock.timers.reset())
+afterEach(() => {
+  mock.restoreAll()
+  mock.timers.reset()
+})
 
 test('the store keeps values in localStorage under the postcard-trail prefix', () => {
   const storage = new MemoryStorage()
@@ -77,6 +82,16 @@ test('the store lets storage errors through and opens storage only on use', () =
 
   assert.throws(() => adapter.store.read('save'), { name: 'SecurityError' })
   assert.throws(() => adapter.store.write('save', 'x'), { name: 'SecurityError' })
+})
+
+test('the store lets a failing read through', () => {
+  const storage = new MemoryStorage()
+  storage.getItem = () => {
+    throw new DOMException('The operation is insecure.', 'SecurityError')
+  }
+  const adapter = createLocalAdapter({ development: true, search: '', openStorage: () => storage })
+
+  assert.throws(() => adapter.store.read('save'), { name: 'SecurityError' })
 })
 
 test('the store lets a failing write through', () => {
@@ -204,7 +219,9 @@ test('concurrent late requests each get their own results with their own attempt
   ])
 })
 
-test('without a request the adapter never calls back, and its signals do nothing', async () => {
+test('without a request the adapter schedules nothing, and its signals do nothing', async () => {
+  const scheduledTimeouts = mock.method(globalThis, 'setTimeout')
+  const scheduledIntervals = mock.method(globalThis, 'setInterval')
   const adapter = developmentAdapter('?ad=completed')
 
   await adapter.init()
@@ -214,6 +231,8 @@ test('without a request the adapter never calls back, and its signals do nothing
   adapter.gameplayStop()
   advance(SETTLE_MS)
 
+  assert.equal(scheduledTimeouts.mock.callCount(), 0, 'a spot would need a timer to finish')
+  assert.equal(scheduledIntervals.mock.callCount(), 0)
   assert.equal(adapter.name, 'local')
   assert.deepEqual(adapter.recordedEvents(), [])
 })
