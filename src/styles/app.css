@@ -1,6 +1,4 @@
-/* Application styles derived from docs/design/prototype/question.css. Values come only from tokens.css. */
-@import './title.css';
-@import './settings.css';
+/* Shared application styles derived from docs/design/prototype/question.css. Values come only from tokens.css. */
 
 *,
 *::before,

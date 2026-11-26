@@ -20,7 +20,6 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
     titleScreen({ totals: progressTotals(session.storage.loadProgress(), catalog), onOpenSettings: openSettings })
   let renderScreen = renderTitle
   let settingsDialog: OpenDialog | null = null
-  let noticeShown = false
 
   // Capturing on window runs before any other handler, so a cue played by that handler can already sound.
   window.addEventListener('click', () => session.feedback.unlock(), { capture: true })
@@ -46,8 +45,8 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
   }
 
   function showStorageNoticeOnce(): void {
-    if (noticeShown || !session.storage.takeUnavailableNotice()) return
-    noticeShown = true
+    // `takeUnavailableNotice` answers true once per session, so the notice never comes back after it is closed.
+    if (!session.storage.takeUnavailableNotice()) return
     noticeSlot.replaceChildren(
       storageNotice(() => {
         noticeSlot.replaceChildren()
