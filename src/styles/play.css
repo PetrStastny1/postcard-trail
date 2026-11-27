@@ -4,8 +4,10 @@
   cursor: default;
 }
 
+/* Amber on the navy bar, drawn inside the button so no part of it falls on the cream below the bar or is cut off. */
 .play-bar button:focus-visible {
   outline-color: var(--color-accent);
+  outline-offset: calc(var(--focus-ring) * -1);
   box-shadow: none;
 }
 
@@ -618,11 +620,17 @@
     -webkit-line-clamp: 2;
   }
 
+  /*
+   * A scroller clips what lies outside it, so the panel reaches past its column by the width of the focus ring and its
+   * halo; the choices, lifelines and Next at its edges keep their whole ring.
+   */
   .panel {
     grid-area: panel;
     justify-content: safe center;
     min-height: 0;
     max-height: 100%;
+    margin-inline: calc(var(--focus-ring) * -2);
+    padding-inline: calc(var(--focus-ring) * 2);
     overflow-y: auto;
     scroll-padding-bottom: 6.5rem;
   }

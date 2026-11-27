@@ -109,6 +109,15 @@
   transform: translate(-50%, -50%);
 }
 
+/*
+ * Targets touch the edge of the map frame, which clips, so the ring is drawn on the target's own edge. The names are
+ * drawn after the targets; the focused target comes above them, so its ring is whole.
+ */
+.map-point:focus-visible {
+  z-index: 1;
+  outline-offset: calc(var(--focus-ring) * -1);
+}
+
 .map-dot {
   display: grid;
   place-items: center;
@@ -279,11 +288,17 @@
     max-width: 60vw;
   }
 
+  /* A row scrolled into view by Tab keeps room for its focus ring and halo at the edge of the list. */
   .map-list {
     position: relative;
     min-height: 0;
     padding: var(--space-1);
     overflow-y: auto;
+    scroll-padding-block: calc(var(--focus-ring) * 2);
+  }
+
+  .map-list.has-more {
+    scroll-padding-bottom: calc(var(--space-8) + var(--focus-ring) * 2);
   }
 }
 

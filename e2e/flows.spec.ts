@@ -41,7 +41,7 @@ async function playParisThroughTheUi(page: Page, { press, turn }: FlowOptions) {
   await expect(page.locator('.title-progress li')).toHaveText(['0/20 cities', /^0\/60 ★/, '0 postcards'])
   await pauseClock(page)
   await press(page.getByRole('button', { name: 'Play', exact: true }))
-  const [s1, s2, s3, s4, s5, s6, s7, s8, s9, s10] = paris.stops
+  const [s1, s2, s3, , s5, s6, s7, s8, s9, s10] = paris.stops
   const next = () => press(page.locator('.next'))
 
   // 1: correct.

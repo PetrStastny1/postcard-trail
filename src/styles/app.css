@@ -122,9 +122,13 @@ svg {
   }
 }
 
-/* Set by markMoreContent while a scroller's content continues below its bottom edge: the edge fades out. */
+/*
+ * Set by markMoreContent while a scroller's content continues below its bottom edge: the edge fades out. A control
+ * that Tab scrolls into view stops above the fade with room for its focus ring.
+ */
 .has-more {
   mask-image: linear-gradient(to top, transparent, var(--color-ink) var(--space-8)); /* only the alpha counts */
+  scroll-padding-bottom: calc(var(--space-8) + var(--focus-ring) * 2);
 }
 
 /* Logo: two bold lines under an amber arc that evokes a bridge. Also used by the static loading screen. */
@@ -271,8 +275,10 @@ dialog.window::backdrop {
   font-weight: var(--weight-semibold);
 }
 
+/* Amber on the navy bar, drawn inside the button so no part of it falls on the cream below the bar or is cut off. */
 .window-bar button:focus-visible {
   outline-color: var(--color-accent);
+  outline-offset: calc(var(--focus-ring) * -1);
   box-shadow: none;
 }
 
