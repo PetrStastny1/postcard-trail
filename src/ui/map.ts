@@ -48,7 +48,7 @@ export const mapTitleId = 'map-title'
 
 /** The state word of a list row and a point; a run in progress is the main state, as in the detail. */
 function stateWord({ state, inProgress }: MapCity): string {
-  return inProgress ? t('map.inProgress') : t(`city.${state}`)
+  return t(inProgress ? 'city.inProgress' : `city.${state}`)
 }
 
 function stateLabel(entry: MapCity): string {
