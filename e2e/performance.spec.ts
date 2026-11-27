@@ -12,11 +12,12 @@ import { dailyPlanOn, progressWith } from './screens.ts'
 const repoRoot = path.resolve(import.meta.dirname, '..')
 const maxStartBytes = 700_000
 const maxBuildBytes = 36_000_000
-// The preview takes the port after the dev server's, so worktrees with their own E2E_PORT never meet.
+// The preview looks for a port from the one after the dev server's, so worktrees with their own E2E_PORT never meet.
+// It is not strict: on Linux that port lies in the ephemeral range, where any open client connection may hold it.
 const previewPort = Number(process.env.E2E_PORT ?? '43301') + 1
-const origin = `http://127.0.0.1:${previewPort}`
 const base = '/postcard-trail/'
 
+let origin = ''
 let outDir = ''
 let server: PreviewServer | undefined
 /** Built file names of the route chunks, by city ID. */
@@ -34,7 +35,10 @@ test.beforeAll(async () => {
     if (!chunk) throw new Error(`No chunk holds the ${city.id} route.`)
     routeChunks.set(city.id, chunk.fileName)
   }
-  server = await preview({ root: repoRoot, logLevel: 'silent', build: { outDir }, preview: { host: '127.0.0.1', port: previewPort, strictPort: true } })
+  server = await preview({ root: repoRoot, logLevel: 'silent', build: { outDir }, preview: { host: '127.0.0.1', port: previewPort, strictPort: false } })
+  const address = server.httpServer.address()
+  if (address === null || typeof address === 'string') throw new Error('The preview server listens on no TCP port.')
+  origin = `http://127.0.0.1:${address.port}`
 })
 
 test.afterAll(async () => {
