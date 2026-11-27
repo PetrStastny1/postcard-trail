@@ -244,13 +244,18 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
     })
   }
 
+  function activeCityRunId(): string | null {
+    const active = session.storage.loadActiveRun()
+    return active?.mode === 'city' ? active.cityId : null
+  }
+
   function openMap(): void {
     showWindow(renderMap, ['window-close'])
   }
 
   function renderMap(): HTMLElement {
     return mapScreen({
-      cities: mapCities(session.storage.loadProgress(), catalog),
+      cities: mapCities(session.storage.loadProgress(), catalog, activeCityRunId()),
       locale: session.settings.locale,
       onOpenCity: openCityDetail,
       onClose: () => showTitle('title-map'),
@@ -259,15 +264,13 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
   }
 
   function openCityDetail(cityId: string, returnFocusId: string): void {
-    const entry = mapCities(session.storage.loadProgress(), catalog).find(({ city }) => city.id === cityId)
+    const entry = mapCities(session.storage.loadProgress(), catalog, activeCityRunId()).find(({ city }) => city.id === cityId)
     if (!entry) return
-    const active = session.storage.loadActiveRun()
     const dialog = openDialog({
       labelledBy: cityDetailTitleId,
       content: cityDetailWindow({
         entry,
         locale: session.settings.locale,
-        hasActiveRunHere: active?.mode === 'city' && active.cityId === cityId,
         onPlay: () => changeRun('city-play', (discard) => startCity(cityId, discard)),
         onContinue: () => {
           closeDialogs()

@@ -59,6 +59,24 @@ test.describe('route change', () => {
     expect(await recordedEvents(page)).toEqual([])
   })
 
+  test('the list row of the city with the active run says In progress', async ({ page }) => {
+    await withLondonInProgress(page)
+    await expect(cityRow(page, 'London').locator('.city-state')).toHaveText('In progress')
+    await expect(cityRow(page, 'Paris').locator('.city-state')).toHaveText(/^Completed/)
+    await expect(cityRow(page, 'Rome').locator('.city-state')).toHaveText('Locked')
+  })
+
+  test('a completed city played again says Rozehráno in its row and keeps its best stars', async ({ page }) => {
+    const czech = { locale: 'cs', soundEnabled: true, volume: 0.6, vibrationEnabled: true, reducedMotion: false, untimed: false, shownHintIds: [] }
+    await seedStorage(page, { settings: czech, progress: progressWith(1, 2), 'active-run': { ownerTabId: 'closed-tab', run: cityRunBeforeLastNext('paris', 0) } })
+    await page.goto('/')
+    await page.getByRole('button', { name: 'Mapa měst' }).click()
+    await expect(cityRow(page, 'Paříž').locator('.city-state')).toHaveText(/^Rozehráno★★☆/)
+    await expect(cityRow(page, 'Londýn').locator('.city-state')).toHaveText('Odemčené')
+    await cityRow(page, 'Paříž').click()
+    await expect(dialog(page, 'Paříž').locator('.city-status')).toHaveText('Rozehraná trasa')
+  })
+
   test('the city with the active run offers Continue without asking', async ({ page }) => {
     await withLondonInProgress(page)
     await cityRow(page, 'London').click()
@@ -252,7 +270,7 @@ test.describe('city summary', () => {
 
     await page.locator('.play-bar').getByRole('button', { name: 'Save and go to Home' }).click()
     await openMap(page)
-    await expect(cityRow(page, 'London').locator('.city-state')).toHaveText('Unlocked')
+    await expect(cityRow(page, 'London').locator('.city-state')).toHaveText('In progress')
     await cityRow(page, 'Rome').click()
     await expect(dialog(page, 'Rome')).toContainText('Finish London to unlock')
     await dialog(page, 'Rome').getByRole('button', { name: 'Home' }).click()

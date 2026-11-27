@@ -86,6 +86,7 @@
   "map.label": "Map of Europe",
   "map.list": "Cities in unlock order",
   "map.zoomOut": "Zoom out",
+  "map.inProgress": "In progress",
   "map.point": "{city}, {state}",
   "map.cluster.one": "{count} city: {cities}. Zoom in",
   "map.cluster.few": "{count} cities: {cities}. Zoom in",

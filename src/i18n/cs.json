@@ -86,6 +86,7 @@
   "map.label": "Mapa Evropy",
   "map.list": "Města v pořadí odemykání",
   "map.zoomOut": "Oddálit",
+  "map.inProgress": "Rozehráno",
   "map.point": "{city}, {state}",
   "map.cluster.one": "{count} město: {cities}. Přiblížit",
   "map.cluster.few": "{count} města: {cities}. Přiblížit",
