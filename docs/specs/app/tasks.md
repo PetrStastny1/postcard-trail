@@ -24,9 +24,9 @@ Požadavky jsou ve [spec.md](spec.md). Vývojář balíčku zaškrtává hotové
 
 ## Balíček 3: Přeskočení za video (`skip`), po balíčku 2
 
-- [ ] „Přeskočit za video“ v pauze podle `canUseSkip` a `rewardedAdsOffered()`, nápověda při první sérii 3 (B8)
-- [ ] Potvrzení, blokace během spotu, výsledky `completed`, `cancelled`, `unavailable`, visící spot po 90 s (B9)
-- [ ] E2E se všemi režimy `?ad` a `?ads=none` (UI část K5)
+- [x] „Přeskočit za video“ v pauze podle `canUseSkip` a `rewardedAdsOffered()`, nápověda při první sérii 3 (B8)
+- [x] Potvrzení, blokace během spotu, výsledky `completed`, `cancelled`, `unavailable`, visící spot po 90 s (B9)
+- [x] E2E se všemi režimy `?ad` a `?ads=none` (UI část K5)
 
 ## Balíček 4: Mapa, souhrny, sbírka a denní výzva (`screens`), po balíčku 2
 
