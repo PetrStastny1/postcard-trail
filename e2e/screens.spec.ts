@@ -77,6 +77,19 @@ test.describe('route change', () => {
     await expect(dialog(page, 'Paříž').locator('.city-status')).toHaveText('Rozehraná trasa')
   })
 
+  test('in Czech the route change window is called Změna průchodu and keeps the question and choices of the brief', async ({ page }) => {
+    const czech = { locale: 'cs', soundEnabled: true, volume: 0.6, vibrationEnabled: true, reducedMotion: false, untimed: false, shownHintIds: [] }
+    await seedStorage(page, { settings: czech, progress: parisDone, 'active-run': { ownerTabId: 'closed-tab', run: cityRunBeforeLastNext('london', 0) } })
+    await page.goto('/')
+    await page.getByRole('button', { name: 'Mapa měst' }).click()
+    await cityRow(page, 'Paříž').click()
+    await dialog(page, 'Paříž').getByRole('button', { name: 'Hrát znovu' }).click()
+    const change = dialog(page, 'Zahodit rozehranou trasu?')
+    await expect(change.locator('.window-title')).toHaveText('Změna průchodu')
+    await expect(change.locator('.route-change-title')).toHaveText('Zahodit rozehranou trasu?')
+    await expect(change.locator('.window-actions button')).toHaveText(['Ponechat průchod', 'Zahodit a začít'])
+  })
+
   test('the city with the active run offers Continue without asking', async ({ page }) => {
     await withLondonInProgress(page)
     await cityRow(page, 'London').click()

@@ -91,7 +91,7 @@
   "map.cluster.one": "{count} město: {cities}. Přiblížit",
   "map.cluster.few": "{count} města: {cities}. Přiblížit",
   "map.cluster.other": "{count} měst: {cities}. Přiblížit",
-  "change.bar": "Změna trasy",
+  "change.bar": "Změna průchodu",
   "change.title": "Zahodit rozehranou trasu?",
   "change.text": "Přijdeš jen o rozehranou trasu. Hvězdy a pohlednice zůstanou.",
   "change.keep": "Ponechat průchod",
