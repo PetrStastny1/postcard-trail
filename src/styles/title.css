@@ -3,10 +3,19 @@
  * Landscape: scene left, logo and controls right. Short landscape: logo above the scene, controls right.
  */
 .title {
+  /*
+   * The columns of the menu, shared with the note under it. Two columns while a tile is wide enough for its longest
+   * word (7.5em scales with the text size, resolved where used), else one.
+   */
+  --title-menu-columns: repeat(auto-fill, minmax(max(7.5em, calc(50% - var(--title-menu-gap) / 2)), 1fr));
+  --title-menu-gap: var(--space-2);
+  /* The gap between Play, the menu, the condition and the progress, in portrait and in the landscape panel alike. */
+  --title-gap: var(--space-3);
+
   display: flex;
   flex-direction: column;
   justify-content: safe center;
-  gap: var(--space-3);
+  gap: var(--title-gap);
   width: 100%;
   max-width: 32rem;
   min-height: 100%;
@@ -43,15 +52,12 @@
   font-size: var(--text-question);
 }
 
-/*
- * Two columns while a tile is wide enough for its longest word (7.5em scales with the text size), else one.
- * Equal rows, so a label that wraps to two lines makes every tile as tall as its own.
- */
+/* Equal rows, so a label that wraps to two lines makes every tile as tall as its own. */
 .title-menu {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(max(7.5em, calc(50% - var(--space-1))), 1fr));
+  grid-template-columns: var(--title-menu-columns);
   grid-auto-rows: 1fr;
-  gap: var(--space-2);
+  gap: var(--title-menu-gap);
 }
 
 .title-menu .secondary {
@@ -73,9 +79,9 @@
  */
 .title-daily-note {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(max(7.5em, calc(50% - var(--space-1))), 1fr));
-  column-gap: var(--space-2);
-  margin-top: calc(var(--space-1) - var(--space-3));
+  grid-template-columns: var(--title-menu-columns);
+  column-gap: var(--title-menu-gap);
+  margin-top: calc(var(--space-1) - var(--title-gap));
 }
 
 .title-daily-condition {
@@ -103,11 +109,7 @@
 /* A short portrait screen (320 × 568) keeps the progress under the two-line condition in view with tighter rows. */
 @media (orientation: portrait) and (max-height: 37.5rem) {
   .title {
-    gap: var(--space-2);
-  }
-
-  .title-daily-note {
-    margin-top: calc(var(--space-1) - var(--space-2));
+    --title-gap: var(--space-2);
   }
 }
 
@@ -149,7 +151,7 @@
     grid-area: panel;
     flex-direction: column;
     justify-content: safe center;
-    gap: var(--space-3);
+    gap: var(--title-gap);
     width: 100%;
     min-height: 0;
     max-height: 100%;
@@ -185,8 +187,8 @@
     font-size: var(--text-title);
   }
 
-  .title-panel {
-    gap: var(--space-2);
+  .title {
+    --title-gap: var(--space-2);
   }
 
   /* Labels wrap to two lines in the narrow column here; tighter tiles keep the panel whole with the storage notice. */

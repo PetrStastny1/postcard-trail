@@ -79,6 +79,7 @@ test.describe('title screen', () => {
         // In the tile's column, centred under it and no farther than the menu's own gap, so it reads as the tile's.
         expect(conditionBox.y).toBeGreaterThanOrEqual(menuBox.y + menuBox.height)
         expect(conditionBox.y - (dailyTile.top + dailyTile.height)).toBeLessThanOrEqual(8)
+        expect(conditionBox.y - (dailyTile.top + dailyTile.height)).toBeGreaterThanOrEqual(3)
         expect(conditionBox.x).toBeGreaterThanOrEqual(dailyTile.left - 0.5)
         expect(conditionBox.x + conditionBox.width).toBeLessThanOrEqual(dailyTile.right + 0.5)
         const textBox = await conditionLine.evaluate((node) => {
