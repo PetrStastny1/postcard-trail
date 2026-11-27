@@ -60,5 +60,15 @@
   "pause.settings": "Settings",
   "zoom.title": "Scene",
   "elsewhere.title": "Route paused",
-  "elsewhere.text": "This route continues in another tab."
+  "elsewhere.text": "This route continues in another tab.",
+  "play.verdict.skipped": "Skipped",
+  "play.skipHint": "Skip with a video is in the pause",
+  "pause.skip": "Skip with a video",
+  "skip.title": "Skip with a video",
+  "skip.confirm": "You’ll skip this question and keep your streak. The correct answer won’t count.",
+  "skip.back": "Back to the answer",
+  "skip.play": "Play the video",
+  "skip.loading": "Loading the video…",
+  "skip.cancelled": "The video didn’t finish, so the question wasn’t skipped.",
+  "skip.unavailable": "The video isn’t available right now."
 }

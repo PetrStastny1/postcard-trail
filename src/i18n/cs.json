@@ -60,5 +60,15 @@
   "pause.settings": "Nastavení",
   "zoom.title": "Scéna",
   "elsewhere.title": "Trasa pozastavena",
-  "elsewhere.text": "Trasa pokračuje v jiné kartě."
+  "elsewhere.text": "Trasa pokračuje v jiné kartě.",
+  "play.verdict.skipped": "Přeskočeno",
+  "play.skipHint": "V pauze najdeš přeskočení za video",
+  "pause.skip": "Přeskočit za video",
+  "skip.title": "Přeskočit za video",
+  "skip.confirm": "Přeskočíš tuto otázku a zachováš sérii. Správná odpověď se nepřičte.",
+  "skip.back": "Zpět k odpovědi",
+  "skip.play": "Pustit video",
+  "skip.loading": "Načítám video…",
+  "skip.cancelled": "Video nedoběhlo do konce, takže se otázka nepřeskočila.",
+  "skip.unavailable": "Video teď není k dispozici."
 }

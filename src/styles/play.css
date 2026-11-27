@@ -786,3 +786,75 @@ dialog.window.zoom-window[open] {
 :root[data-reduced-motion='true'] .trail[data-advance] .current {
   animation: none;
 }
+
+/*
+ * Brief §6: a one-time label next to the pause button that the skip for a video is inside. It lies over the title in the
+ * bar, so it covers no choice and no control, and lets clicks through.
+ */
+.play-bar {
+  position: relative;
+}
+
+.pause-hint {
+  --hint-inset: calc(max(var(--space-2), env(safe-area-inset-right)) + var(--hit-target) + var(--space-1));
+  position: absolute;
+  top: calc(50% + env(safe-area-inset-top) / 2);
+  right: var(--hint-inset);
+  max-width: calc(100% - 2 * var(--hint-inset));
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  font-size: var(--text-small);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-tight);
+  text-align: center;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.pause-hint[hidden] {
+  display: none;
+}
+
+/* Skip for a video: the confirmation, the blocked wait and the outcome take the place of the pause. */
+.skip-body {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-6) var(--window-side);
+}
+
+.skip-text {
+  margin: 0;
+  font-weight: var(--weight-semibold);
+}
+
+.skip-wait-text:focus {
+  outline: none;
+}
+
+/* Brief §10: both buttons have the same size and colour, side by side where they fit, else "Back to the answer" on top. */
+.skip-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: var(--space-3);
+}
+
+.skip-play,
+.pause-skip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.skip-play-icon svg {
+  display: block;
+  width: var(--space-6);
+  height: var(--space-6);
+}
+
+.skip-wait-bar {
+  grid-template-columns: minmax(0, 1fr);
+  min-height: var(--hit-target);
+}
