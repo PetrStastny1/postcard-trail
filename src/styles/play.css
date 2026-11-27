@@ -773,6 +773,7 @@ dialog.window.zoom-window[open] {
   }
 
   .scene-art,
+  .skip-wait .scene-loading-bar::before,
   .trail[data-advance] .current {
     animation: none;
   }
@@ -783,33 +784,38 @@ dialog.window.zoom-window[open] {
 }
 
 :root[data-reduced-motion='true'] .scene-art,
+:root[data-reduced-motion='true'] .skip-wait .scene-loading-bar::before,
 :root[data-reduced-motion='true'] .trail[data-advance] .current {
   animation: none;
 }
 
 /*
- * Brief §6: a one-time label next to the pause button that the skip for a video is inside. It lies over the title in the
- * bar, so it covers no choice and no control, and lets clicks through.
+ * Brief §6: a one-time label that the skip for a video is in the pause. It hangs below the bar under the pause button,
+ * over the trail row, so it covers no choice and no control, and lets clicks through. Like the 50:50 hint it is the
+ * inverse of what it sits on, here the navy bar.
  */
 .play-bar {
   position: relative;
 }
 
 .pause-hint {
-  --hint-inset: calc(max(var(--space-2), env(safe-area-inset-right)) + var(--hit-target) + var(--space-1));
+  --hint-right: max(var(--space-2), env(safe-area-inset-right));
   position: absolute;
-  top: calc(50% + env(safe-area-inset-top) / 2);
-  right: var(--hint-inset);
-  max-width: calc(100% - 2 * var(--hint-inset));
+  z-index: 1;
+  /* Level with the trail row, so the pills under it do not peek out. */
+  top: calc(100% + var(--space-2));
+  right: var(--hint-right);
+  width: max-content;
+  max-width: calc(100% - 2 * var(--hint-right));
   padding: var(--space-1) var(--space-2);
+  border: var(--border) solid var(--color-ink);
   border-radius: var(--radius-sm);
-  background: var(--color-accent);
-  color: var(--color-on-accent);
+  background: var(--color-paper);
+  color: var(--color-ink);
   font-size: var(--text-small);
   font-weight: var(--weight-semibold);
   line-height: var(--leading-tight);
   text-align: center;
-  transform: translateY(-50%);
   pointer-events: none;
 }
 
@@ -833,11 +839,71 @@ dialog.window.zoom-window[open] {
   outline: none;
 }
 
-/* Brief §10: both buttons have the same size and colour, side by side where they fit, else "Back to the answer" on top. */
+/*
+ * Brief §10: both buttons have the same size and colour, side by side where they fit, else "Back to the answer" on top.
+ * A window with only "Back to the answer" keeps the same two columns, so the button has the same width in every step.
+ */
+.skip-body {
+  container-type: inline-size;
+}
+
 .skip-actions {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-3);
+}
+
+/* Two 12rem buttons and the gap. */
+@container (width < 25.25rem) {
+  .skip-actions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/*
+ * The blocked wait looks like the scene loading state: the bar above the centred line, in the middle of a full-screen
+ * window too.
+ */
+.skip-wait {
+  min-height: 100%;
+  align-content: center;
+  justify-items: center;
+  text-align: center;
+}
+
+.skip-wait .scene-loading-bar {
+  overflow: hidden;
+  background: var(--color-separator);
+}
+
+.skip-wait .scene-loading-bar::before {
+  content: '';
+  display: block;
+  width: 35%;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-ink);
+  animation: skip-wait-bar 1400ms var(--ease-in-out) infinite alternate;
+}
+
+@keyframes skip-wait-bar {
+  to {
+    transform: translateX(186%);
+  }
+}
+
+/* The row for the later "Back to the answer" is held from the start; its button is as wide as in the other steps. */
+.skip-wait-actions {
+  justify-self: stretch;
+  justify-content: center;
+  grid-template-columns: calc((100% - var(--space-3)) / 2);
+  min-height: var(--hit-target);
+}
+
+@container (width < 25.25rem) {
+  .skip-wait-actions {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .skip-play,

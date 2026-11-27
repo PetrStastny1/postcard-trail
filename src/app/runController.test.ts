@@ -412,6 +412,30 @@ test('a hung spot given up restores the sound, runs the question from its time a
   assert.equal(controller.run.phase, 'question')
   assert.deepEqual(events, [])
   assert.equal(controller.run.usedLifelines.includes('skipVideo'), false)
+  assert.deepEqual(takeCalls(), ['gameplayStart'], 'the adapter dropped the first start while the portal had no result')
+  answer(adRequests[0], 'completed')
+  assert.deepEqual(takeCalls(), [], 'a repeated late result sends nothing')
+})
+
+test('a late result of a hung spot sends no gameplay signal when the question is not running', () => {
+  const { controller, adRequests, takeCalls, listener } = pausedAtThirdStop()
+  controller.requestSkip('attempt-1', listener)
+  adRequests[0].onStart()
+  controller.abandonSkip()
+  controller.pause()
+  takeCalls()
+  answer(adRequests[0], 'completed')
+  assert.deepEqual(takeCalls(), [])
+})
+
+test('hiding the page during a spot sends no gameplay signal', () => {
+  const { controller, adRequests, takeCalls, listener } = pausedAtThirdStop()
+  controller.requestSkip('attempt-1', listener)
+  adRequests[0].onStart()
+  takeCalls()
+  controller.pageHidden()
+  assert.deepEqual(takeCalls(), [])
+  assert.equal(controller.run.skipAttemptId, 'attempt-1')
 })
 
 test('the skip is not offered before the third stop or outside the pause', () => {

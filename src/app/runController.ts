@@ -182,6 +182,7 @@ export function createRunController({ run: initialRun, storage, adapter, feedbac
       dispatch({ type: 'requestSkip', round: run.round, attemptId })
       if (stopped || run.skipAttemptId !== attemptId) return false
       const current = () => !stopped && run.skipAttemptId === attemptId
+      let answered = false
       adapter.requestRewardedAd({
         attemptId,
         onStart() {
@@ -190,7 +191,15 @@ export function createRunController({ run: initialRun, storage, adapter, feedbac
           spot.started()
         },
         onResult(result) {
-          if (result.attemptId !== attemptId || !current()) return
+          if (result.attemptId !== attemptId) return
+          const first = !answered
+          answered = true
+          if (!current()) {
+            // The adapter drops gameplayStart until the portal has the result, so a question resumed from a hung spot
+            // starts gameplay again once it arrives.
+            if (first && !stopped && running()) adapter.gameplayStart()
+            return
+          }
           feedback.restoreAfterAd()
           adapter.track({ name: 'rewarded_ad_outcome', outcome: result.outcome })
           spot.finished(result.outcome)
@@ -227,7 +236,8 @@ export function createRunController({ run: initialRun, storage, adapter, feedbac
       if (stopped) return
       if (!run.paused && (run.phase === 'loading' || run.phase === 'question')) return pause()
       if (storage.saveRunCheckpoint(run) === 'notOwner') return loseOwnership()
-      adapter.gameplayStop()
+      // During a spot the adapter has stopped play itself and owns the signals.
+      if (run.skipAttemptId === null) adapter.gameplayStop()
     },
 
     /** × or Home: saves the run paused where it is and leaves the game screen. */

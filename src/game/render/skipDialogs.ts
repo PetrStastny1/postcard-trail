@@ -32,14 +32,25 @@ export function skipConfirmWindow({ onClose, onHome, onBack, onPlay }: SkipWindo
 }
 
 /**
- * Input is blocked while the spot is requested and plays, so the window has no × or Home. Only a spot that never
- * answers gets the quiet way back (decision in LOG.md).
+ * Input is blocked while the spot is requested and plays, so the window has no × or Home. It looks like the scene
+ * loading state. Only a spot that never answers gets the quiet way back (decision in LOG.md); its row is kept empty
+ * until then, so the window does not jump when it appears.
  */
 export function skipWaitWindow({ hung, onBack }: { hung: boolean; onBack(): void }): HTMLElement[] {
   const status = element('p', { class: 'skip-text skip-wait-text', role: 'status', tabindex: '-1', 'data-focus-id': 'skip-wait' }, t('skip.loading'))
   return [
     element('header', { class: 'window-bar skip-wait-bar' }, element('h2', { id: skipTitleId, class: 'window-title' }, t('skip.title'))),
-    element('div', { class: 'window-body' }, element('div', { class: 'skip-body' }, status, ...(hung ? [backButton('secondary', onBack)] : []))),
+    element(
+      'div',
+      { class: 'window-body' },
+      element(
+        'div',
+        { class: 'skip-body skip-wait' },
+        element('span', { class: 'scene-loading-bar', 'aria-hidden': 'true' }),
+        status,
+        element('div', { class: 'skip-actions skip-wait-actions' }, ...(hung ? [backButton('secondary', onBack)] : [])),
+      ),
+    ),
   ]
 }
 

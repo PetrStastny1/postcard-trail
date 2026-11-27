@@ -319,8 +319,21 @@ test('the daily challenge offers the skip only on its third question, where it w
   expect(await savedRun(page)).toMatchObject({ correct: 2, streak: 2 })
 })
 
+const hint = (page: Page) => page.locator('.pause-hint')
+
+/** The controls, choices, time and title the hint by the pause button lies over. */
+const coveredByHint = (page: Page) =>
+  hint(page).evaluate((label) => {
+    const box = label.getBoundingClientRect()
+    return [...document.querySelectorAll('button, .choice, .timer, .play-title')]
+      .filter((control) => {
+        const other = control.getBoundingClientRect()
+        return Math.min(box.right, other.right) - Math.max(box.left, other.left) > 0 && Math.min(box.bottom, other.bottom) - Math.max(box.top, other.top) > 0
+      })
+      .map((control) => control.getAttribute('aria-label') ?? control.textContent)
+  })
+
 test.describe('the hint by the pause button', () => {
-  const hint = (page: Page) => page.locator('.pause-hint')
 
   test('shows once when a question first runs with a streak of 3, keeps the time running and covers no control', async ({ page }) => {
     await continueRun(page, runAt(parisRun(), 3))
@@ -330,16 +343,7 @@ test.describe('the hint by the pause button', () => {
     await expect(hint(page)).toHaveText('Skip with a video is in the pause')
     await expect(page.getByRole('button', { name: 'Pause' })).toHaveAccessibleDescription('Skip with a video is in the pause')
     expect((await savedSection<{ shownHintIds: string[] }>(page, 'settings')).shownHintIds).toEqual(['skip-video'])
-    const covered = await hint(page).evaluate((label) => {
-      const box = label.getBoundingClientRect()
-      return [...document.querySelectorAll('button, .choice, .timer')]
-        .filter((control) => {
-          const other = control.getBoundingClientRect()
-          return Math.min(box.right, other.right) - Math.max(box.left, other.left) > 0 && Math.min(box.bottom, other.bottom) - Math.max(box.top, other.top) > 0
-        })
-        .map((control) => control.getAttribute('aria-label') ?? control.textContent)
-    })
-    expect(covered).toEqual([])
+    expect(await coveredByHint(page)).toEqual([])
     await page.clock.runFor(1_000)
     await expect(timer(page)).toHaveText('17 s')
     await page.clock.runFor(2_000)
@@ -415,6 +419,48 @@ for (const locale of ['en', 'cs'] as const) {
       await page.clock.runFor(600)
       await expect(skipWindow(page, locale).getByRole('button', { name: texts[locale].back })).toBeVisible()
       await expectUsableLayout(page)
+    })
+
+    test(`the window of a hung spot is usable at ${size.width} × ${size.height} in ${locale}, with Back as wide as in the confirmation`, async ({ page }) => {
+      await page.setViewportSize(size)
+      await continueRun(page, runAt(parisRun(), 2), { search: '?ad=interrupted', locale })
+      await openConfirm(page, locale)
+      const window = skipWindow(page, locale)
+      const back = window.getByRole('button', { name: texts[locale].back })
+      const confirmWidth = (await back.boundingBox())?.width
+      await window.getByRole('button', { name: texts[locale].play }).click()
+      await page.clock.runFor(100)
+      await expect(window).toContainText(texts[locale].loading)
+      await expectUsableLayout(page)
+      const waitHeight = (await window.boundingBox())?.height
+      await page.clock.runFor(90_000)
+      await expect(back).toBeVisible()
+      await expectUsableLayout(page)
+      expect((await window.boundingBox())?.height, 'the window keeps its height when Back appears').toBe(waitHeight)
+      expect((await back.boundingBox())?.width).toBe(confirmWidth)
+    })
+  }
+}
+
+test('Back to the answer is as wide in the unavailable window as in the confirmation', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await continueRun(page, runAt(parisRun(), 2), { search: '?ad=unavailable' })
+  await openConfirm(page)
+  const back = skipWindow(page).getByRole('button', { name: 'Back to the answer' })
+  const confirmWidth = (await back.boundingBox())?.width
+  await playVideo(page)
+  await expect(skipWindow(page)).toContainText('The video isn’t available right now.')
+  expect((await back.boundingBox())?.width).toBe(confirmWidth)
+})
+
+for (const locale of ['en', 'cs'] as const) {
+  for (const size of layoutSizes.slice(0, 2)) {
+    test(`the hint by the pause button covers nothing at ${size.width} × ${size.height} in ${locale}`, async ({ page }) => {
+      await page.setViewportSize(size)
+      await continueRun(page, runAt(parisRun(), 3), { locale })
+      await pauseWindow(page, locale).getByRole('button', { name: texts[locale].continue }).click()
+      await expect(hint(page)).toBeVisible()
+      expect(await coveredByHint(page)).toEqual([])
     })
   }
 }

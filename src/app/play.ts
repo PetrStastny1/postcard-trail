@@ -253,8 +253,10 @@ export function startPlay({ session, catalog, route, placeholderSceneIds, run, m
     skipWindow = openSkip({
       controller,
       createAttemptId: () => crypto.randomUUID(),
-      backToPause: () => {
+      closed: () => {
         skipWindow = null
+      },
+      backToPause: () => {
         openPause()
         topDialog()?.querySelector<HTMLElement>('[data-focus-id="pause-skip"]')?.focus()
       },

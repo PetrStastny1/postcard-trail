@@ -15,6 +15,8 @@ export interface SkipOptions {
   backToPause(): void
   /** Home: the app saves the run and shows the title. */
   goHome(): void
+  /** The window closed for any reason, before `backToPause`. */
+  closed(): void
 }
 
 export interface SkipWindow {
@@ -28,7 +30,7 @@ export interface SkipWindow {
  * Skip for a video in place of the pause: the confirmation, the blocked wait for the spot and the cancelled or
  * unavailable outcome. The question stays paused throughout; only "Back to the answer" or a completed spot ends it.
  */
-export function openSkip({ controller, createAttemptId, backToPause, goHome }: SkipOptions): SkipWindow {
+export function openSkip({ controller, createAttemptId, backToPause, goHome, closed }: SkipOptions): SkipWindow {
   const listeners = new AbortController()
   let step: SkipStep = { name: 'confirm' }
   let hungTimer: ReturnType<typeof setTimeout> | undefined
@@ -87,8 +89,10 @@ export function openSkip({ controller, createAttemptId, backToPause, goHome }: S
     clearTimeout(hungTimer)
     listeners.abort()
     const closing = dialog
+    if (!closing) return
     dialog = null
-    closing?.close()
+    closing.close()
+    closed()
   }
 
   // Until the spot has a result nothing on the keyboard acts: Escape would close the window and Tab has nowhere to go.
