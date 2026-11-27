@@ -346,8 +346,10 @@ test.describe('sound', () => {
     expect(await audioLog(page)).toMatchObject({ created: 1, resumes: 1 })
     await page.keyboard.press('Shift')
     expect((await audioLog(page)).resumes).toBe(2)
-    await page.getByRole('button', { name: 'Play' }).click()
+    // The collection opened by that click; its × leads back to the silent title.
+    await page.getByRole('button', { name: 'Close' }).click()
     expect((await audioLog(page)).resumes).toBe(3)
+    await expect(page.getByRole('button', { name: 'Play' })).toBeVisible()
     expect((await audioLog(page)).oscillators).toBe(0)
   })
 
