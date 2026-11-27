@@ -122,7 +122,7 @@ Scénáře:
 
 ## R6 Pravidla pro ostatní oblasti
 
-- `place` je text pro výsledek zastávky. Na obrazovce otázky (i v denní výzvě a po obnovení) se nezobrazuje, protože u 30 zastávek obsahuje název správné volby.
+- `place` se smí zobrazit jen po odpovědi. Na obrazovce otázky (i v denní výzvě a po obnovení) se nezobrazuje, protože u 30 zastávek obsahuje název správné volby. Herní výsledek ho nepoužívá (ukazuje verdikt, `feedback` a „Další“, rozhodnutí arbitra v LOG).
 - Pod zástupnou scénou (ID v `placeholders.json`) aplikace ukáže `sceneAlt` v aktuálním jazyce.
 
 ## R7 Velikost buildu
