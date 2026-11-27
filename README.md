@@ -33,3 +33,5 @@ Push do `main` spustí workflow `Deploy to GitHub Pages` a hra je na https://pet
 - Ověřit `effectiveUtcDate` první verze katalogu v `src/content/catalog.json` proti skutečnému dni vydání.
 - Ověřit měnící se fakta: B09 proti statickému plánu GTFS BKK, LIS03 proti trase Carris 28E. Při změně upravit městský soubor a znovu spustit `npm run content:import`.
 - Ověřit podmínky pro kresbu Atomia (BRIEF §17) a název Postcard Trail.
+- Při nahrávání na Poki a CrazyGames ověřit v jejich náhledových nástrojích, že SDK stihne inicializaci do limitu 5 s.
+- Na CrazyGames se v první verzi ukládá do `localStorage`. Cloudové ukládání (Data module) je plánované později.
