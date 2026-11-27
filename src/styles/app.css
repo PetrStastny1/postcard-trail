@@ -62,6 +62,8 @@ svg {
 }
 
 .screen {
+  /* Positioned, like every scroller, so a visually hidden label stays inside it instead of stretching the page. */
+  position: relative;
   flex: 1;
   min-height: 0;
   overflow-y: auto;
@@ -266,6 +268,7 @@ dialog.window::backdrop {
 }
 
 .window-body {
+  position: relative;
   flex: 1;
   min-height: 0;
   overflow-y: auto;

@@ -12,17 +12,18 @@ export interface TitleOptions {
   onPlay(): void
   onContinue(): void
   onOpenSettings(): void
+  onOpenMap(): void
+  onOpenCollection(): void
+  /** Called only once the daily challenge is unlocked; before that the tile does nothing. */
+  onOpenDaily(): void
 }
 
 // Same markup as the static logo in index.html, so the loading screen and the title show the same logo; keep them in sync.
 const logoMarkup = `<svg class="logo-arc" viewBox="0 0 240 60" aria-hidden="true"><path d="M12 56 Q120 -22 228 56" /></svg>
 <span class="logo-line">Postcard</span> <span class="logo-line">Trail</span>`
 
-/**
- * The title screen. The map, the collection and the daily challenge are wired by the later packages;
- * until then Play, Continue and Settings act.
- */
-export function titleScreen({ totals, dailyUnlocked, hasActiveRun, onPlay, onContinue, onOpenSettings }: TitleOptions): HTMLElement {
+/** The title screen: Play or Continue, then the map, settings, the collection and the daily challenge. */
+export function titleScreen({ totals, dailyUnlocked, hasActiveRun, onPlay, onContinue, onOpenSettings, onOpenMap, onOpenCollection, onOpenDaily }: TitleOptions): HTMLElement {
   const logo = element('h1', { class: 'logo' })
   logo.innerHTML = logoMarkup
 
@@ -30,6 +31,10 @@ export function titleScreen({ totals, dailyUnlocked, hasActiveRun, onPlay, onCon
   play.addEventListener('click', hasActiveRun ? onContinue : onPlay)
   const settings = secondaryButton('title-settings', t('title.settings'))
   settings.addEventListener('click', onOpenSettings)
+  const map = secondaryButton('title-map', t('title.map'))
+  map.addEventListener('click', onOpenMap)
+  const collection = secondaryButton('title-collection', t('title.collection'))
+  collection.addEventListener('click', onOpenCollection)
 
   // The condition sits under the menu as the button's description only; hidden from the name, so a screen reader reads it once.
   const daily = element(
@@ -39,10 +44,12 @@ export function titleScreen({ totals, dailyUnlocked, hasActiveRun, onPlay, onCon
       type: 'button',
       'data-focus-id': 'title-daily',
       'data-locked': !dailyUnlocked,
+      'aria-disabled': dailyUnlocked ? undefined : 'true',
       'aria-describedby': dailyUnlocked ? undefined : 'title-daily-condition',
     },
     t('title.daily'),
   )
+  if (dailyUnlocked) daily.addEventListener('click', onOpenDaily)
   const dailyCondition = dailyUnlocked
     ? []
     : [element('p', { id: 'title-daily-condition', class: 'title-daily-condition', 'aria-hidden': 'true' }, t('title.dailyLocked'))]
@@ -63,9 +70,9 @@ export function titleScreen({ totals, dailyUnlocked, hasActiveRun, onPlay, onCon
   const menu = element(
     'div',
     { class: 'title-menu' },
-    secondaryButton('title-map', t('title.map')),
+    map,
     settings,
-    secondaryButton('title-collection', t('title.collection')),
+    collection,
     daily,
   )
 

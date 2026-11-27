@@ -8,7 +8,7 @@ import { restoreRun, startCityRun, type RunState } from '../game/logic/run.ts'
 import { GameStorage } from '../game/storage/gameStorage.ts'
 import { storageKeys } from '../game/storage/schema.ts'
 import type { AnalyticsEvent, KeyValueStore, PlatformAdapter, RewardedAdOutcome, RewardedAdRequest } from '../platform/types.ts'
-import { createRunController, type RunListener, type SkipSpotListener } from './runController.ts'
+import { createRunController, type RunCompletion, type RunListener, type SkipSpotListener } from './runController.ts'
 import { completeFinishedRun } from './runs.ts'
 
 // The adapter, the feedback and the clock are the boundary of the app; the storage and the rules are the real ones.
@@ -61,9 +61,13 @@ function harness(run: RunState, options: { store?: KeyValueStore; tabId?: string
     setPortalMuted: () => undefined,
   }
   const listened: string[] = []
+  const completions: RunCompletion[] = []
   const listener: RunListener = {
     changed: () => listened.push('changed'),
-    finished: () => listened.push('finished'),
+    finished: (completion) => {
+      listened.push('finished')
+      completions.push(completion)
+    },
     ownerLost: () => listened.push('ownerLost'),
   }
   const controller = createRunController({ run, storage, adapter, feedback, catalog, now: () => clock, listener })
@@ -75,6 +79,7 @@ function harness(run: RunState, options: { store?: KeyValueStore; tabId?: string
     events,
     listened,
     adRequests,
+    completions,
     advance: (ms: number) => (clock += ms),
     takeCalls: () => calls.splice(0),
   }
@@ -197,7 +202,7 @@ test('a hidden choice cannot be chosen and lifelines are tracked once', () => {
 })
 
 test('a whole Paris run tracks each question once, completes with the rewards and the postcard cue, and stops play', () => {
-  const { controller, events, storage, takeCalls, listened } = harness(newParisRun())
+  const { controller, events, storage, takeCalls, listened, completions } = harness(newParisRun())
   for (let stop = 0; stop < 10; stop++) {
     controller.sceneReady()
     controller.choose(wrongChoiceId(controller.run))
@@ -214,6 +219,18 @@ test('a whole Paris run tracks each question once, completes with the rewards an
   const calls = takeCalls()
   assert.deepEqual(calls.slice(-4), ['gameplayStop', 'track route_completed', 'track postcard_unlocked', 'play postcard'])
   assert.deepEqual(listened.at(-1), 'finished')
+  assert.deepEqual(completions, [
+    {
+      mode: 'city',
+      run: controller.run,
+      summary: {
+        progress: { completedCityIds: ['paris'], bestStars: { paris: 0 }, postcardCityIds: ['paris'] },
+        stars: 0,
+        postcardEarned: true,
+        newlyUnlockedCityId: 'london',
+      },
+    },
+  ])
   assert.equal(storage.loadActiveRun(), null)
   assert.deepEqual(storage.loadProgress(), { completedCityIds: ['paris'], bestStars: { paris: 0 }, postcardCityIds: ['paris'] })
   controller.next()
@@ -224,7 +241,7 @@ test('a daily run completes with the daily events', () => {
   const plan = dailyPlan(catalog, '2026-12-05')
   assert.ok(plan)
   const route = readJson(`../content/routes/${plan.cityId}.json`) as Route
-  const { controller, events, storage } = harness(startDailyRun({ route, plan, runId: 'daily-1', untimed: false }))
+  const { controller, events, storage, calls, completions } = harness(startDailyRun({ route, plan, runId: 'daily-1', untimed: false }))
   for (let stop = 0; stop < 3; stop++) {
     controller.sceneReady()
     controller.choose(correctChoiceId(controller.run))
@@ -235,6 +252,10 @@ test('a daily run completes with the daily events', () => {
     { name: 'daily_completed', utcDate: '2026-12-05', correct: 3 },
   ])
   assert.deepEqual(storage.loadDailyResults(), { '2026-12-05': { cityId: plan.cityId, correct: 3 } })
+  assert.ok(calls.lastIndexOf('gameplayStop') > calls.lastIndexOf('gameplayStart'), 'the summary stops play')
+  assert.deepEqual(completions, [
+    { mode: 'daily', run: controller.run, utcDate: '2026-12-05', dailyResults: { '2026-12-05': { cityId: plan.cityId, correct: 3 } } },
+  ])
 })
 
 test('leaving saves the run paused and tracks route_left once', () => {

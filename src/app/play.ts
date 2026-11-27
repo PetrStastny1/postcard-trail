@@ -4,7 +4,7 @@ import { createPlayScreen, type PlayScene } from '../game/render/playScreen.ts'
 import { canUseSkip, currentStop, type RunState, type RunStop } from '../game/logic/run.ts'
 import { ownsActiveRun, storageKeys } from '../game/storage/schema.ts'
 import { openDialog, topDialog, type OpenDialog } from '../ui/dialog.ts'
-import { createRunController } from './runController.ts'
+import { createRunController, type RunCompletion } from './runController.ts'
 import { rememberHint } from './settings.ts'
 import { openSkip, type SkipWindow } from './skip.ts'
 import type { GameSession } from './start.ts'
@@ -31,6 +31,8 @@ export interface PlayOptions {
   openSettings(returnFocusId: string): void
   /** Back to the title: the app first calls `leave()` and then `dispose()`. */
   goHome(): void
+  /** The run is completed: the app disposes the game screen and shows the summary. */
+  finished(completion: RunCompletion): void
 }
 
 export interface PlaySession {
@@ -66,7 +68,7 @@ function sceneUrl(stop: Stop): string {
  * The game screen of one run: loads the scenes, turns input, time, page visibility and `storage` events into
  * controller calls, and opens the pause, zoom and "continues in another tab" windows.
  */
-export function startPlay({ session, catalog, route, placeholderSceneIds, run, mount, openSettings, goHome }: PlayOptions): PlaySession {
+export function startPlay({ session, catalog, route, placeholderSceneIds, run, mount, openSettings, goHome, finished }: PlayOptions): PlaySession {
   const listeners = new AbortController()
   let disposed = false
   let scene: PlayScene = { status: 'loading', image: null, placeholder: false }
@@ -105,7 +107,7 @@ export function startPlay({ session, catalog, route, placeholderSceneIds, run, m
         if (changedRun.round !== loadedRound) void loadScene()
         else render()
       },
-      finished: goHome,
+      finished,
       ownerLost: showElsewhere,
     },
   })

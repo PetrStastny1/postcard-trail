@@ -1,14 +1,21 @@
 import type { Catalog } from '../content/types.ts'
 import type { Feedback } from '../game/feedback/index.ts'
+import type { DailyResults } from '../game/logic/daily.ts'
+import type { CityRunSummary } from '../game/logic/progress.ts'
 import { canUseSkip, reduceRun, visibleChoiceIds, type RunAction, type RunState } from '../game/logic/run.ts'
 import type { GameStorage } from '../game/storage/gameStorage.ts'
 import type { PlatformAdapter, RewardedAdOutcome } from '../platform/types.ts'
+
+/** A finished run with what its completion saved, for the city or the daily summary. */
+export type RunCompletion =
+  | { mode: 'city'; run: RunState; summary: CityRunSummary }
+  | { mode: 'daily'; run: RunState; utcDate: string; dailyResults: DailyResults }
 
 export interface RunListener {
   /** The run changed and its checkpoint is saved. */
   changed(run: RunState): void
   /** The run is completed and its rewards are saved. */
-  finished(): void
+  finished(completion: RunCompletion): void
   /** Another tab took the run over; this tab writes nothing more. */
   ownerLost(): void
 }
@@ -95,6 +102,7 @@ export function createRunController({ run: initialRun, storage, adapter, feedbac
         adapter.track({ name: 'postcard_unlocked', cityId: run.cityId })
         feedback.play('postcard')
       }
+      listener.finished({ mode: 'city', run, summary: completion.summary })
     } else {
       if (run.daily === null) throw new Error('A daily run keeps its date.')
       const completion = storage.completeDailyRun(run)
@@ -102,8 +110,8 @@ export function createRunController({ run: initialRun, storage, adapter, feedbac
       // The daily challenge never adds stars (brief §3), so its run reports none.
       adapter.track({ name: 'route_completed', cityId: run.cityId, mode: 'daily', correct: run.correct, stars: 0 })
       adapter.track({ name: 'daily_completed', utcDate: run.daily.utcDate, correct: run.correct })
+      listener.finished({ mode: 'daily', run, utcDate: run.daily.utcDate, dailyResults: completion.dailyResults })
     }
-    listener.finished()
   }
 
   function loseOwnership(): void {

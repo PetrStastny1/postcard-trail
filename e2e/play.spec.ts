@@ -13,30 +13,13 @@ import {
   savedSection,
   seedStorage,
   startParis,
+  textOutsideChoices,
   wrongChoice,
 } from './game.ts'
 
 const timer = (page: Page) => page.locator('.timer-value')
 const verdict = (page: Page) => page.locator('.result-verdict')
 const choiceLabels = (page: Page) => page.locator('.choice-label').allTextContents()
-
-/** The page text and accessible names outside the choice buttons, where `Stop.place` must not appear before the answer. */
-async function textOutsideChoices(page: Page): Promise<string> {
-  return page.evaluate(() => {
-    const outside = (node: Element) => !node.closest('.choice')
-    const clone = document.body.cloneNode(true) as HTMLElement
-    clone.querySelectorAll('.choice, script').forEach((node) => node.remove())
-    const texts = [clone.textContent ?? '']
-    for (const node of document.querySelectorAll('[aria-label], [alt], [title]')) {
-      if (outside(node)) texts.push(...['aria-label', 'alt', 'title'].map((name) => node.getAttribute(name) ?? ''))
-    }
-    for (const node of document.querySelectorAll('[aria-describedby]')) {
-      if (!outside(node)) continue
-      for (const id of (node.getAttribute('aria-describedby') ?? '').split(/\s+/)) texts.push(document.getElementById(id)?.textContent ?? '')
-    }
-    return texts.join('\n').toLowerCase()
-  })
-}
 
 async function expectPlaceHidden(page: Page, stop: Stop) {
   const text = await textOutsideChoices(page)
@@ -628,7 +611,7 @@ test('a run in progress is played through to the end with every event once', asy
     await (index % 2 === 0 ? correctChoice(page, stop) : await wrongChoice(page, stop)).click()
     await page.locator('.next').click()
   }
-  await expect(page.getByRole('button', { name: 'Play' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Route complete' })).toBeVisible()
   const events = await recordedEvents(page)
   expect(events).toEqual([
     { name: 'route_started', cityId: 'paris', mode: 'city', resumed: false },
@@ -636,12 +619,15 @@ test('a run in progress is played through to the end with every event once', asy
     { name: 'route_completed', cityId: 'paris', mode: 'city', correct: 5, stars: 1 },
     { name: 'postcard_unlocked', cityId: 'paris' },
   ])
+  await page.getByRole('button', { name: 'Home' }).click()
   await expect(page.locator('.title-progress li')).toHaveText(['1/20 cities', /^1\/60 ★/, '1 postcard'])
 })
 
 test('Paris with no correct answer unlocks London and gives one postcard', async ({ page }) => {
   await startParis(page)
   await playStops(page, paris.stops, 'wrong')
+  await expect(page.getByRole('heading', { name: 'Route complete' })).toBeVisible()
+  await page.getByRole('button', { name: 'Home' }).click()
   await expect(page.locator('.title-progress li')).toHaveText(['1/20 cities', /^0\/60 ★/, '1 postcard'])
   expect(await savedSection(page, 'active-run')).toBeNull()
   const events = await recordedEvents(page)

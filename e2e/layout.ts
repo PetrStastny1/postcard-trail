@@ -18,8 +18,8 @@ export interface LayoutOptions {
 /**
  * Checks the screen as shown: no horizontal scrolling, controls at least 44 × 44 CSS px, no two controls overlapping,
  * every scroller whose content (a child box) continues below its bottom edge shows the `has-more` signal, and every control
- * visible and on top either at once or after scrolling it into view. With a modal dialog open, only the dialog's
- * controls count, because the screen behind it is inert.
+ * visible and on top either at once or after scrolling it into view. With a modal dialog open, only the top dialog's
+ * controls count, because the screen and the windows behind it are inert.
  */
 export async function expectUsableLayout(page: Page, { controls = 'button, a[href], input, select, textarea, [role="switch"]' }: LayoutOptions = {}) {
   // The signal follows resize observers, so it is polled before anything below scrolls.
@@ -50,7 +50,10 @@ export async function expectUsableLayout(page: Page, { controls = 'button, a[hre
       return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 1 && rect.height > 1
     }
 
-    if (document.documentElement.scrollWidth > innerWidth) found.push(`page scrolls horizontally (${document.documentElement.scrollWidth} > ${innerWidth})`)
+    // The page itself never scrolls: a wheel or a swipe past a screen's end would move the bar away with it.
+    const page = document.scrollingElement ?? document.documentElement
+    if (page.scrollWidth > innerWidth) found.push(`page scrolls horizontally (${page.scrollWidth} > ${innerWidth})`)
+    if (page.scrollHeight > innerHeight) found.push(`page scrolls vertically (${page.scrollHeight} > ${innerHeight})`)
     for (const node of document.querySelectorAll('*')) {
       const overflowX = getComputedStyle(node).overflowX
       if ((overflowX === 'auto' || overflowX === 'scroll') && node.scrollWidth > node.clientWidth + 1) {
@@ -58,7 +61,8 @@ export async function expectUsableLayout(page: Page, { controls = 'button, a[hre
       }
     }
 
-    const layer: ParentNode = document.querySelector('dialog[open]') ?? document
+    // Windows open in order, so the last open one is on top; everything below it is inert.
+    const layer: ParentNode = [...document.querySelectorAll('dialog[open]')].at(-1) ?? document
     const targets = [...layer.querySelectorAll(selector)].filter(shown)
 
     for (const control of targets) {
