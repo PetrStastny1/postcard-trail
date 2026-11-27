@@ -1,0 +1,705 @@
+/*
+ * Map, city detail, route change, summaries, collection and daily challenge. Derived from the approved game screen:
+ * the same navy bar, paper ground, ink-bordered controls and amber primary. Values come only from tokens.css.
+ */
+
+/* A window that fills the screen slot: the bar on top, the body scrolls under it. */
+.window-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.window-screen > .window-body > * {
+  width: 100%;
+  max-width: 40rem;
+  margin-inline: auto;
+}
+
+.window-actions {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.window-actions .primary {
+  min-height: var(--primary-height);
+  font-size: var(--text-question);
+}
+
+.section-title {
+  margin: 0;
+  font-size: var(--text-control);
+  font-weight: var(--weight-bold);
+}
+
+.star-rating {
+  color: var(--color-ink);
+  font-size: var(--text-question);
+  letter-spacing: var(--space-1);
+  line-height: var(--leading-tight);
+}
+
+.star-count {
+  margin-inline-start: var(--space-2);
+  font-size: var(--text-control);
+  font-weight: var(--weight-bold);
+  letter-spacing: normal;
+  font-variant-numeric: tabular-nums;
+}
+
+.postcard-art {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border: var(--border) solid var(--color-ink);
+  border-radius: var(--radius-md);
+  background: var(--color-paper-deep);
+}
+
+/* Map: the schematic Europe above the list in portrait, beside it in landscape. */
+.window-screen.map-screen > .window-body > * {
+  max-width: var(--play-max-width);
+}
+
+.map-layout {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--window-side) max(var(--space-4), env(safe-area-inset-bottom));
+}
+
+.map-frame {
+  position: relative;
+  justify-self: center;
+  width: min(100%, 32rem);
+  aspect-ratio: 367 / 370;
+  overflow: hidden;
+  border: var(--border) solid var(--color-ink);
+  border-radius: var(--radius-md);
+  background: var(--color-on-ink);
+}
+
+.map-art,
+.map-art svg,
+.map-points {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.map-land {
+  fill: var(--color-paper-deep);
+  stroke: var(--color-ink-soft);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.map-point {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: var(--hit-target);
+  height: var(--hit-target);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: transparent;
+  transform: translate(-50%, -50%);
+}
+
+/*
+ * Targets touch the edge of the map frame, which clips, so the ring is drawn inside the target, without the cream halo
+ * that would cover the names beside it. It is twice as wide, so where a coastline runs under it, it still covers the
+ * map beyond the line. The names are drawn after the targets and start at their edge; the focused target comes above
+ * them, so its ring is whole.
+ */
+.map-point:focus-visible {
+  z-index: 1;
+  outline-width: calc(var(--focus-ring) * 2);
+  outline-offset: calc(var(--focus-ring) * -2);
+  box-shadow: none;
+}
+
+.map-dot {
+  display: grid;
+  place-items: center;
+  width: var(--space-6);
+  height: var(--space-6);
+  border: var(--border) solid var(--color-ink);
+  border-radius: var(--radius-full);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+.map-dot svg {
+  width: var(--space-4);
+  height: var(--space-4);
+  stroke-width: 3;
+}
+
+.map-point[data-state='completed'] .map-dot {
+  background: var(--color-ink);
+  color: var(--color-on-ink);
+}
+
+.map-point[data-state='locked'] .map-dot {
+  width: var(--space-4);
+  height: var(--space-4);
+  border-style: dashed;
+  border-color: var(--color-ink-soft);
+  background: var(--color-on-ink);
+}
+
+.map-label {
+  position: absolute;
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-sm);
+  background: var(--color-on-ink);
+  color: var(--color-ink);
+  font-size: var(--text-small);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-tight);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.map-cluster .map-dot {
+  width: var(--space-8);
+  height: var(--space-8);
+  background: var(--color-ink);
+  color: var(--color-on-ink);
+  font-size: var(--text-small);
+  font-weight: var(--weight-bold);
+}
+
+.map-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.map-tools:empty {
+  display: none;
+}
+
+.map-zoom-out {
+  width: 100%;
+}
+
+.city-list {
+  container: city-list / inline-size;
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* A row too narrow for the name and the state moves the state to its own line, so text never overlaps. */
+.city-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 var(--space-3);
+  width: 100%;
+  min-height: var(--hit-target);
+  padding: var(--space-1) var(--space-3);
+  border: var(--border) solid var(--color-ink);
+  border-radius: var(--radius-md);
+  background: var(--color-on-ink);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-tight);
+  text-align: left;
+}
+
+.city-row[data-state='locked'] {
+  border-style: dashed;
+  border-color: var(--color-ink-soft);
+  background: transparent;
+  color: var(--color-ink-soft);
+}
+
+.city-number {
+  flex: none;
+  width: 2ch;
+  color: var(--color-ink-soft);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.city-name {
+  flex: 1 0 auto;
+}
+
+.city-state {
+  margin-inline-start: auto;
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0 var(--space-2);
+  font-size: var(--text-small);
+  font-weight: var(--weight-regular);
+}
+
+/*
+ * The widest row (a long name, "Completed" and three stars) needs about 19.3rem. Below 20rem every state goes to its
+ * own line, so all rows share one height instead of only the long names wrapping.
+ */
+@container city-list (width < 20rem) {
+  /* As tall as the line with stars, so a row with only a state word is as tall as a completed one. */
+  .city-state {
+    flex-basis: 100%;
+    min-height: calc(var(--text-control) * var(--leading-tight));
+  }
+}
+
+.city-state .star-rating {
+  font-size: var(--text-control);
+}
+
+.city-state-icon svg {
+  display: block;
+  width: var(--space-4);
+  height: var(--space-4);
+}
+
+@media (hover: hover) {
+  .city-row:not([data-state='locked']):hover,
+  .postcard-card:hover {
+    background: var(--color-paper-deep);
+  }
+}
+
+/* Landscape: the map takes the height on the left, the list scrolls on its own on the right. */
+@media (orientation: landscape) {
+  .map-screen > .window-body {
+    overflow: hidden;
+  }
+
+  .map-layout {
+    grid-template-columns: auto minmax(14rem, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    height: 100%;
+    padding-block: var(--space-3) max(var(--space-3), env(safe-area-inset-bottom));
+  }
+
+  .map-frame {
+    width: auto;
+    height: 100%;
+    max-width: 60vw;
+  }
+
+  /* A row scrolled into view by Tab keeps room for its focus ring and halo at the edge of the list. */
+  .map-list {
+    position: relative;
+    min-height: 0;
+    padding: var(--space-1);
+    overflow-y: auto;
+    scroll-padding-block: calc(var(--focus-ring) * 2);
+  }
+
+  .map-list.has-more {
+    scroll-padding-bottom: calc(var(--space-8) + var(--focus-ring) * 2);
+  }
+}
+
+/* City detail and the card detail: the scene with the facts and the action; side by side on short landscape. */
+.city-detail,
+.postcard-detail,
+.route-change {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+  padding: var(--space-4) var(--window-side) max(var(--space-4), env(safe-area-inset-bottom));
+}
+
+.city-detail .postcard-art,
+.city-detail-blank,
+.postcard-detail .postcard-art {
+  justify-self: center;
+  width: min(100%, 20rem);
+}
+
+/* A locked city keeps the place of its postcard, dashed like a missing card in the collection. */
+.city-detail-blank {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  border: var(--border) dashed var(--color-ink-soft);
+  border-radius: var(--radius-md);
+  color: var(--color-ink-soft);
+}
+
+.city-detail-info {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.city-status {
+  margin: 0;
+  font-weight: var(--weight-semibold);
+  text-align: center;
+}
+
+.city-best {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-weight: var(--weight-semibold);
+}
+
+.city-play {
+  min-height: var(--primary-height);
+  font-size: var(--text-question);
+}
+
+.city-detail-lock svg {
+  display: block;
+  width: var(--space-8);
+  height: var(--space-8);
+}
+
+.city-condition,
+.route-change-text {
+  margin: 0;
+  font-weight: var(--weight-semibold);
+}
+
+.city-condition {
+  text-align: center;
+}
+
+.route-change-title {
+  margin: 0;
+  font-size: var(--text-title);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+}
+
+/* Under the centred card the sentence is centred on the card's width too. */
+.postcard-sentence {
+  justify-self: center;
+  max-width: 20rem;
+  margin: 0;
+  text-align: center;
+}
+
+/* Over the city detail the route change is a smaller sheet, and only the scrim right under it dims the screen. */
+@media (min-width: 48rem) and (min-height: 28rem) {
+  dialog.window.window-narrow {
+    max-width: 28rem;
+  }
+}
+
+dialog.window:has(~ dialog.window-narrow[open])::backdrop {
+  background: transparent;
+}
+
+/* Summaries: the postcard and the result; side by side in landscape. */
+.summary {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--window-side) max(var(--space-4), env(safe-area-inset-bottom));
+}
+
+.summary-postcard {
+  display: grid;
+  justify-self: center;
+  gap: var(--space-2);
+  /* Small enough on a short phone for the primary action to show without scrolling. */
+  width: min(100%, 16rem, 30dvh);
+  margin: 0;
+  font-size: var(--text-small);
+  font-weight: var(--weight-semibold);
+  text-align: center;
+}
+
+/* Brief §8: a new postcard slides in over 550 ms. */
+.summary-postcard[data-new] {
+  animation: postcard-in var(--duration-postcard) var(--ease-out) both;
+}
+
+@keyframes postcard-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--space-8));
+  }
+}
+
+.summary-info {
+  display: grid;
+  align-content: center;
+  gap: var(--space-3);
+}
+
+.summary-city {
+  margin: 0;
+  font-size: var(--text-display);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+  text-align: center;
+}
+
+.summary-stats {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+}
+
+.summary-stats div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-block: var(--space-1);
+  border-bottom: 1px solid var(--color-separator);
+}
+
+.summary-stats dt {
+  font-weight: var(--weight-semibold);
+}
+
+.summary-stats dd {
+  margin: 0;
+  font-weight: var(--weight-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+ * A line of news under the result, not a control: no fill or rounded edge that would read as a button, and no line of
+ * its own, since the last stat row already ends with one; only space sets it apart.
+ */
+.summary-unlocked {
+  margin: 0;
+  padding-top: var(--space-2);
+  font-weight: var(--weight-semibold);
+  text-align: center;
+}
+
+/*
+ * Landscape follows the game screen: the postcard on the left sized by the height like the game's scene (the same
+ * `--landscape-reserve`, 184 px on 568 × 320), so its caption stays in view; the result on the right centred vertically.
+ */
+@media (orientation: landscape) {
+  .window-screen.summary-screen > .window-body > * {
+    max-width: var(--play-max-width);
+  }
+
+  .summary {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    column-gap: var(--space-8);
+    min-height: 100%;
+  }
+
+  .summary-postcard {
+    width: min(45vw, 100dvh - var(--landscape-reserve) - env(safe-area-inset-top));
+  }
+
+  .summary-info {
+    justify-self: center;
+    width: min(100%, 28rem);
+  }
+}
+
+@media (orientation: landscape) and (max-height: 30rem) {
+  .city-detail,
+  .postcard-detail {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+  }
+
+  .city-detail .postcard-art,
+  .city-detail-blank,
+  .postcard-detail .postcard-art {
+    width: min(14rem, calc(100dvh - var(--hit-target) - 2 * var(--space-4)));
+  }
+
+  .postcard-sentence {
+    justify-self: stretch;
+    max-width: none;
+    text-align: start;
+  }
+
+  .summary,
+  .route-change {
+    padding-block: var(--space-3);
+  }
+
+  .summary-info {
+    gap: var(--space-2);
+  }
+
+  .summary-city {
+    font-size: var(--text-title);
+  }
+
+  /* Side by side, both actions fit under the result on the smallest landscape screen. */
+  .summary .window-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Collection: one place per released city. */
+.collection {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--window-side) max(var(--space-4), env(safe-area-inset-bottom));
+}
+
+.collection-count {
+  margin: 0;
+  font-weight: var(--weight-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The sentence on how to earn a postcard belongs to the count, so it sits closer to it than the grid does. */
+.collection-head {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.collection-empty {
+  margin: 0;
+  color: var(--color-ink-soft);
+}
+
+.postcard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.postcard-slot {
+  display: grid;
+}
+
+.postcard-card,
+.postcard-slot.is-missing {
+  display: grid;
+  align-content: start;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  border: var(--border) solid var(--color-ink);
+  border-radius: var(--radius-md);
+  background: var(--color-on-ink);
+  text-align: center;
+}
+
+.postcard-card .postcard-art {
+  border-width: 0;
+  border-radius: var(--radius-sm);
+}
+
+.postcard-slot.is-missing {
+  border-style: dashed;
+  border-color: var(--color-ink-soft);
+  background: transparent;
+  color: var(--color-ink-soft);
+}
+
+.postcard-blank {
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  background: var(--color-paper-deep);
+}
+
+.postcard-name {
+  font-size: var(--text-small);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-tight);
+  overflow-wrap: anywhere;
+}
+
+/*
+ * Wide screens: the collection takes the game's width with larger cards instead of a narrow column. The least card
+ * width follows the height too, so a short wide window shows more of the collection at once.
+ */
+@media (min-width: 48rem) {
+  .window-screen.collection-screen > .window-body > * {
+    max-width: var(--play-max-width);
+  }
+
+  .postcard-grid {
+    grid-template-columns: repeat(auto-fill, minmax(clamp(6.5rem, 22dvh, 10rem), 1fr));
+  }
+
+  .postcard-name {
+    font-size: var(--text-control);
+  }
+}
+
+/* Daily challenge overview and summary. */
+.daily {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--window-side) max(var(--space-4), env(safe-area-inset-bottom));
+}
+
+.daily-head {
+  display: grid;
+  gap: var(--space-1);
+}
+
+/* Centred like the city summary, so both ends of a run read the same. */
+.daily-head,
+.daily-city,
+.daily-state {
+  text-align: center;
+}
+
+.daily-date {
+  margin: 0;
+  color: var(--color-ink-soft);
+  font-size: var(--text-small);
+  font-weight: var(--weight-semibold);
+}
+
+.daily-city {
+  margin: 0;
+  font-size: var(--text-display);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+}
+
+.daily-state {
+  margin: 0;
+  font-weight: var(--weight-semibold);
+}
+
+/* Landscape: as wide as the city summary's result and centred vertically, never a strip under the bar. */
+@media (orientation: landscape) {
+  .window-screen.daily-screen > .window-body > * {
+    max-width: calc(28rem + 2 * var(--window-side));
+  }
+
+  .daily {
+    align-content: center;
+    min-height: 100%;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 30rem) {
+  .daily {
+    gap: var(--space-3);
+    padding-block: var(--space-3);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .summary-postcard[data-new] {
+    animation: none;
+  }
+}
+
+:root[data-reduced-motion='true'] .summary-postcard[data-new] {
+  animation: none;
+}
