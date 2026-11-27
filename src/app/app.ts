@@ -71,6 +71,8 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
   function showScreen(render: () => HTMLElement): void {
     renderScreen = render
     shownScreens++
+    // A route still loading for the screen the player has left is no longer awaited.
+    root.removeAttribute('aria-busy')
     screenSlot.replaceChildren(render())
   }
 
@@ -408,11 +410,15 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
     })
   }
 
-  /** `aria-busy` tells assistive technology, and tests, when every started route load has been handled. */
+  /**
+   * `aria-busy` tells assistive technology that the screen waits for a route; leaving the screen ends that. Tests see
+   * from `data-route-loading` when every started load, cancelled ones included, has been handled.
+   */
   function setRouteLoading(change: 1 | -1): void {
     loadingRoutes += change
-    if (loadingRoutes > 0) root.setAttribute('aria-busy', 'true')
-    else root.removeAttribute('aria-busy')
+    root.toggleAttribute('data-route-loading', loadingRoutes > 0)
+    if (change === 1) root.setAttribute('aria-busy', 'true')
+    else if (loadingRoutes === 0) root.removeAttribute('aria-busy')
   }
 
   completeFinishedRun(session.storage, catalog)

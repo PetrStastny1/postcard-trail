@@ -317,10 +317,13 @@ test.describe('city summary', () => {
       if (leave === 'Escape') await page.keyboard.press('Escape')
       else await page.getByRole('button', { name: leave === '×' ? 'Close' : 'Home' }).click()
       await expect(page.getByRole('button', { name: 'Play' })).toBeFocused()
+      // Nobody waits for the cancelled load, so the title is not busy, while the load itself is still open.
+      await expect(page.locator('#app')).not.toHaveAttribute('aria-busy')
+      await expect(page.locator('#app')).toHaveAttribute('data-route-loading')
 
       releaseRoute()
-      // The app is busy until it has handled the load, so once it is not, the cancelled start has been decided.
-      await expect(page.locator('#app')).not.toHaveAttribute('aria-busy')
+      // The app marks the load until it has handled it, so once it does not, the cancelled start has been decided.
+      await expect(page.locator('#app')).not.toHaveAttribute('data-route-loading')
       await expect(page.locator('.play')).toHaveCount(0)
       await expect(page.getByRole('alert')).toHaveCount(0)
       await expect(page.getByRole('button', { name: 'Play' })).toBeVisible()
