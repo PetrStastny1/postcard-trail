@@ -138,20 +138,25 @@ export function clusterCities(
 
 /** The deepest a single click on a group zooms in; a group still too close for its own targets takes another click. */
 export const maxZoomStep = 3
+/**
+ * The least a click on a group zooms in. The targets of `clusterCities` are kept inside the frame, so two cities far
+ * apart at the frame edge can share one; measured unmoved they would need no zoom and the click would do nothing.
+ */
+export const minZoomStep = 1.5
 /** The view around a group is this much wider than the group, so its outer cities keep some map around them. */
 const zoomMargin = 1.6
 
 /**
  * The view a click on a group zooms to: centred on the group and showing all of it, zoomed in only as far as the
- * group's two closest cities need to stand `frame.spacing` px apart in a frame `frame.width` px wide, and at most
- * `maxZoomStep` times. Distances count on the nearer axis, like the targets in `clusterCities`.
+ * group's two closest cities need to stand `frame.spacing` px apart in a frame `frame.width` px wide, and at least
+ * `minZoomStep` and at most `maxZoomStep` times. Distances count on the nearer axis, like the targets in `clusterCities`.
  */
 export function zoomView(members: MapPoint[], view: MapView, frame: { width: number; spacing: number }): MapView {
   let closest = Infinity
   for (const [index, first] of members.entries()) {
     for (const second of members.slice(index + 1)) closest = Math.min(closest, Math.max(Math.abs(first.x - second.x), Math.abs(first.y - second.y)))
   }
-  const step = Math.min(maxZoomStep, frame.spacing / ((closest * frame.width) / view.width))
+  const step = Math.min(maxZoomStep, Math.max(minZoomStep, frame.spacing / ((closest * frame.width) / view.width)))
   const xs = members.map((city) => city.x)
   const ys = members.map((city) => city.y)
   const aspect = fullMapView.width / fullMapView.height

@@ -47,7 +47,8 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
   let settingsDialog: OpenDialog | null = null
   let storageNoticeOpen = false
   let activePlay: PlaySession | null = null
-  let openingRoute = false
+  // Counts the screens shown, so a route that finishes loading after the player has left does not start its run.
+  let shownScreens = 0
   markMoreContent(screenSlot)
 
   // Capturing on window runs before any other handler, so a cue played by that handler can already sound.
@@ -67,6 +68,7 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
 
   function showScreen(render: () => HTMLElement): void {
     renderScreen = render
+    shownScreens++
     screenSlot.replaceChildren(render())
   }
 
@@ -365,23 +367,26 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
     })
   }
 
-  /** Routes load only when a run starts or continues, so the title never downloads one. */
+  /**
+   * Routes load only when a run starts or continues, so the title never downloads one. Leaving the screen while the
+   * route loads (×, Escape, Home) cancels the start. Of two starts made while loading, the first to load shows its screen
+   * and so cancels the other, so only one run begins.
+   */
   async function openRoute(cityId: string, begin: (route: Route) => RunState | null): Promise<void> {
-    if (openingRoute) return
-    openingRoute = true
     // The game or the error screen replaces the screen below, so no window may stay open over it.
     closeDialogs()
+    const shownBefore = shownScreens
     let route: Route
     let placeholderSceneIds: ReadonlySet<string>
     try {
       ;[route, placeholderSceneIds] = await Promise.all([loadRoute(cityId), loadPlaceholderSceneIds()])
     } catch {
+      if (shownScreens !== shownBefore) return
       // The player sees the failure and can try again; the run, if any, stays saved as it was.
       showScreen(() => routeErrorScreen({ onRetry: () => void openRoute(cityId, begin), onHome: goHome }))
       return
-    } finally {
-      openingRoute = false
     }
+    if (shownScreens !== shownBefore) return
     const run = begin(route)
     showStorageNoticeOnce()
     if (run === null) return showTitle()

@@ -267,6 +267,7 @@
   }
 
   .map-list {
+    position: relative;
     min-height: 0;
     padding: var(--space-1);
     overflow-y: auto;

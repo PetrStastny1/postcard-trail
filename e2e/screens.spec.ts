@@ -295,6 +295,41 @@ test.describe('city summary', () => {
     await expect(page.locator('.title-progress li')).toHaveText(['20/20 cities', /^38\/60 ★/, '20 postcards'])
   })
 
+  for (const [leave, loaded] of [
+    ['Escape', 'loads'],
+    ['×', 'loads'],
+    ['Home', 'fails'],
+  ] as const) {
+    test(`${leave} while Next city loads its route stays on the title and starts no run when the route ${loaded}`, async ({ page }) => {
+      let releaseRoute = () => undefined as void
+      const routeRequested = new Promise<void>((requested) => {
+        void page.route('**/src/content/routes/london.json*', (route) => {
+          requested()
+          releaseRoute = () => void (loaded === 'loads' ? route.continue() : route.abort())
+        })
+      })
+      await seedStorage(page, { progress: parisDone, 'active-run': { ownerTabId: 'closed-tab', run: cityRunBeforeLastNext('paris', 4) } })
+      await page.goto('/')
+      await continueToSummary(page)
+      await page.getByRole('button', { name: 'Next city' }).click()
+      await routeRequested
+      if (leave === 'Escape') await page.keyboard.press('Escape')
+      else await page.getByRole('button', { name: leave === '×' ? 'Close' : 'Home' }).click()
+      await expect(page.getByRole('button', { name: 'Play' })).toBeFocused()
+
+      const settled = page.waitForEvent(loaded === 'loads' ? 'requestfinished' : 'requestfailed', (request) => request.url().includes('/routes/london.json'))
+      releaseRoute()
+      await settled
+      // The load resolves in the page's own tasks after the network event; two frames later it has been handled.
+      await page.evaluate(() => new Promise((frame) => requestAnimationFrame(() => requestAnimationFrame(frame))))
+      await expect(page.locator('.play')).toHaveCount(0)
+      await expect(page.getByRole('alert')).toHaveCount(0)
+      await expect(page.getByRole('button', { name: 'Play' })).toBeVisible()
+      expect(await savedSection(page, 'active-run')).toBeNull()
+      expect((await recordedEvents(page)).filter((event) => event.name === 'route_started' && event.cityId === 'london')).toEqual([])
+    })
+  }
+
   test('× on the summary goes to the title, which no longer offers Continue', async ({ page }) => {
     await seedStorage(page, { 'active-run': { ownerTabId: 'closed-tab', run: cityRunBeforeLastNext('paris', 4) } })
     await page.goto('/')

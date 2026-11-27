@@ -50,7 +50,10 @@ export async function expectUsableLayout(page: Page, { controls = 'button, a[hre
       return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 1 && rect.height > 1
     }
 
-    if (document.documentElement.scrollWidth > innerWidth) found.push(`page scrolls horizontally (${document.documentElement.scrollWidth} > ${innerWidth})`)
+    // The page itself never scrolls: a wheel or a swipe past a screen's end would move the bar away with it.
+    const page = document.scrollingElement ?? document.documentElement
+    if (page.scrollWidth > innerWidth) found.push(`page scrolls horizontally (${page.scrollWidth} > ${innerWidth})`)
+    if (page.scrollHeight > innerHeight) found.push(`page scrolls vertically (${page.scrollHeight} > ${innerHeight})`)
     for (const node of document.querySelectorAll('*')) {
       const overflowX = getComputedStyle(node).overflowX
       if ((overflowX === 'auto' || overflowX === 'scroll') && node.scrollWidth > node.clientWidth + 1) {

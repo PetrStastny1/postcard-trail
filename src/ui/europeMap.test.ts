@@ -93,3 +93,18 @@ test('Vienna and Bratislava get their own targets after a few clicks on their gr
   const vienna = clusterCities(placed, view, frame).find((cluster) => cluster.cityIds.includes('vienna'))
   assert.deepEqual(vienna?.cityIds, ['vienna'])
 })
+
+test('every click on a group zooms in, also after earlier clicks and on groups pushed in from the frame edge', () => {
+  for (let width = 280; width <= 520; width += 2) {
+    const frame = frameFor(width)
+    const explore = (view: MapView, depth: number) => {
+      for (const cluster of clusterCities(placed, view, frame).filter((candidate) => candidate.cityIds.length > 1)) {
+        const members = placed.filter((city) => cluster.cityIds.includes(city.cityId))
+        const zoomed = zoomView(members, view, { width, spacing })
+        assert.ok(zoomed.width < view.width - 1e-9, `${cluster.cityIds} at ${width} px after ${3 - depth} clicks zooms in`)
+        if (depth > 0) explore(zoomed, depth - 1)
+      }
+    }
+    explore(fullMapView, 3)
+  }
+})
