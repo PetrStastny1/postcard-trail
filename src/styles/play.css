@@ -845,10 +845,7 @@ dialog.window.zoom-window[open] {
   outline: none;
 }
 
-/*
- * Brief §10: both buttons have the same size and colour, side by side where they fit, else "Back to the answer" on top.
- * A window with only "Back to the answer" keeps the same two columns, so the button has the same width in every step.
- */
+/* Brief §10: both buttons have the same size and colour, side by side where they fit, else "Back to the answer" on top. */
 .skip-body {
   container-type: inline-size;
 }
@@ -904,18 +901,24 @@ dialog.window.zoom-window[open] {
   }
 }
 
-/* The row for the later "Back to the answer" is held from the start; its button is as wide as in the other steps. */
-.skip-wait-actions {
-  justify-self: stretch;
+/*
+ * A window with only "Back to the answer" centres it at the width it has in the confirmation. The row for the later
+ * button of a hung spot is held from the start.
+ */
+.skip-single-action {
   justify-content: center;
   grid-template-columns: calc((100% - var(--space-3)) / 2);
-  min-height: var(--hit-target);
 }
 
 @container (width < 25.25rem) {
-  .skip-wait-actions {
+  .skip-single-action {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+
+.skip-wait-actions {
+  justify-self: stretch;
+  min-height: var(--hit-target);
 }
 
 .skip-play,

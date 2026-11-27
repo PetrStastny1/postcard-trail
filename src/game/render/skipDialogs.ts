@@ -48,7 +48,7 @@ export function skipWaitWindow({ hung, onBack }: { hung: boolean; onBack(): void
         { class: 'skip-body skip-wait' },
         element('span', { class: 'scene-loading-bar', 'aria-hidden': 'true' }),
         status,
-        element('div', { class: 'skip-actions skip-wait-actions' }, ...(hung ? [backButton('secondary', onBack)] : [])),
+        element('div', { class: 'skip-actions skip-single-action skip-wait-actions' }, ...(hung ? [backButton('secondary', onBack)] : [])),
       ),
     ),
   ]
@@ -61,7 +61,7 @@ export function skipOutcomeWindow({ outcome, onClose, onHome, onBack }: SkipWind
     element(
       'div',
       { class: 'window-body' },
-      element('div', { class: 'skip-body' }, element('p', { class: 'skip-text', role: 'status' }, t(`skip.${outcome}`)), element('div', { class: 'skip-actions' }, backButton('primary', onBack))),
+      element('div', { class: 'skip-body' }, element('p', { class: 'skip-text', role: 'status' }, t(`skip.${outcome}`)), element('div', { class: 'skip-actions skip-single-action' }, backButton('primary', onBack))),
     ),
   ]
 }
