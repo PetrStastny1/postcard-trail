@@ -67,7 +67,19 @@
   color: var(--color-ink-soft);
 }
 
+/*
+ * The condition stands right under the locked daily tile: the note repeats the columns of the menu and the condition
+ * takes the last one, which is the tile's column in two columns and the whole width in one.
+ */
+.title-daily-note {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(max(7.5em, calc(50% - var(--space-1))), 1fr));
+  column-gap: var(--space-2);
+  margin-top: calc(var(--space-1) - var(--space-3));
+}
+
 .title-daily-condition {
+  grid-column: -2 / -1;
   margin: 0;
   color: var(--color-ink-soft);
   font-size: var(--text-small);
@@ -86,6 +98,17 @@
   list-style: none;
   font-weight: var(--weight-semibold);
   font-variant-numeric: tabular-nums;
+}
+
+/* A short portrait screen (320 × 568) keeps the progress under the two-line condition in view with tighter rows. */
+@media (orientation: portrait) and (max-height: 37.5rem) {
+  .title {
+    gap: var(--space-2);
+  }
+
+  .title-daily-note {
+    margin-top: calc(var(--space-1) - var(--space-2));
+  }
 }
 
 /*
