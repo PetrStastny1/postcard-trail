@@ -3,6 +3,8 @@ import { test } from 'node:test'
 import type { Feedback, FeedbackSettings } from '../game/feedback/index.ts'
 import { createRun } from '../game/logic/run.ts'
 import { ownsActiveRun, storageKeys } from '../game/storage/schema.ts'
+import { createCrazyGamesAdapter, type CrazyGamesSdk } from '../platform/crazygames.ts'
+import { createPokiAdapter, type PokiSdk } from '../platform/poki.ts'
 import type { KeyValueStore, PlatformAdapter } from '../platform/types.ts'
 import { changeSettings } from './settings.ts'
 import { startGame, type GameSession, type StartOptions } from './start.ts'
@@ -170,4 +172,79 @@ test('a settings change is saved at once and only changed sound or vibration rea
     untimed: true,
   })
   assert.equal(JSON.parse(store.values.get(storageKeys.settings) ?? '{}').data.untimed, true)
+})
+
+/** The `Storage` the portal adapters open; only what their store uses. */
+function memoryStorage(): Storage {
+  const entries = new Map<string, string>()
+  return {
+    get length() {
+      return entries.size
+    },
+    clear: () => entries.clear(),
+    getItem: (key) => entries.get(key) ?? null,
+    key: (index) => [...entries.keys()][index] ?? null,
+    removeItem: (key) => void entries.delete(key),
+    setItem: (key, value) => void entries.set(key, value),
+  }
+}
+
+/** Stands in for the CrazyGames SDK v3 script; records each call in the same list as the app. */
+function fakeCrazyGamesSdk(calls: string[], environment: CrazyGamesSdk['environment'] = 'crazygames'): CrazyGamesSdk {
+  const call = (name: string) => () => {
+    if (environment === 'disabled') throw new Error(`CrazyGames SDK is disabled: ${name}`)
+    calls.push(name)
+  }
+  return {
+    init: () => Promise.resolve(),
+    environment,
+    game: {
+      loadingStart: call('loadingStart'),
+      loadingStop: call('loadingStop'),
+      gameplayStart: call('gameplayStart'),
+      gameplayStop: call('gameplayStop'),
+      settings: { muteAudio: false, disableChat: false },
+      addSettingsChangeListener: () => undefined,
+    },
+    ad: { requestAd: call('requestAd') },
+  }
+}
+
+const crazyGamesStart = (calls: string[], loadSdk: () => Promise<CrazyGamesSdk>) =>
+  startOptions(calls, createCrazyGamesAdapter({ development: false, openStorage: memoryStorage, loadSdk }))
+
+test('on CrazyGames the start sends loadingStart once after the SDK connects and loadingStop once after the title', async () => {
+  const calls: string[] = []
+  await startGame(crazyGamesStart(calls, () => Promise.resolve(fakeCrazyGamesSdk(calls))))
+  assert.deepEqual(
+    calls.filter((call) => call !== 'createFeedback' && !call.startsWith('setPortalMuted')),
+    ['loadingStart', 'showTitle', 'loadingStop'],
+  )
+})
+
+for (const [name, loadSdk] of [
+  ['a blocked SDK script', () => Promise.reject(new Error('blocked'))],
+  ['a disabled SDK', () => Promise.resolve(fakeCrazyGamesSdk([], 'disabled'))],
+  ['an SDK whose init fails', () => Promise.resolve({ ...fakeCrazyGamesSdk([]), init: () => Promise.reject(new Error('init failed')) })],
+] satisfies [string, () => Promise<CrazyGamesSdk>][]) {
+  test(`on CrazyGames with ${name} the start sends no loading signal and shows the title`, async () => {
+    const calls: string[] = []
+    await startGame(crazyGamesStart(calls, loadSdk))
+    assert.deepEqual(calls.filter((call) => call.startsWith('loading') || call === 'showTitle'), ['showTitle'])
+  })
+}
+
+test('on Poki the start sends only gameLoadingFinished, once, after the title', async () => {
+  const calls: string[] = []
+  const sdk: PokiSdk = {
+    init: () => Promise.resolve(),
+    gameLoadingFinished: () => calls.push('gameLoadingFinished'),
+    gameplayStart: () => calls.push('gameplayStart'),
+    gameplayStop: () => calls.push('gameplayStop'),
+    rewardedBreak: () => Promise.resolve(false),
+    measure: () => calls.push('measure'),
+  }
+  const adapter = createPokiAdapter({ development: false, openStorage: memoryStorage, loadSdk: () => Promise.resolve(sdk) })
+  await startGame(startOptions(calls, adapter))
+  assert.deepEqual(calls.filter((call) => call !== 'createFeedback' && !call.startsWith('setPortalMuted')), ['showTitle', 'gameLoadingFinished'])
 })

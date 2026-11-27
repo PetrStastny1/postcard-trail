@@ -65,8 +65,19 @@ export function createCrazyGamesAdapter({ development, openStorage, loadSdk }: C
   const session = createPortalSession<CrazyGamesSdk>()
   let adsOffered = false
   let loadingSignal: 'start' | 'stop' | null = null
+  // The game reports the start of loading before `init()` (A1), while the SDK is not connected yet; it is sent on connect.
+  let loadingStartPending = false
   let portalAudioMuted = false
   const portalAudioMutedListeners: ((muted: boolean) => void)[] = []
+
+  function sendLoadingStart(): void {
+    if (loadingSignal === 'start') return
+    session.whenIdle((sdk) => {
+      sdk.game.loadingStart()
+      loadingSignal = 'start'
+      loadingStartPending = false
+    })
+  }
 
   return {
     name: 'crazygames',
@@ -86,6 +97,7 @@ export function createCrazyGamesAdapter({ development, openStorage, loadSdk }: C
       if (!sdk || sdk.environment === 'disabled') return
       adsOffered = true
       session.connect(sdk, sdk.game)
+      if (loadingStartPending) sendLoadingStart()
       // Read before subscribing: an SDK that calls the listener on registration must not report the start value as a change.
       // Not routed through the session: the SDK calls the game here, so a running spot does not block it.
       try {
@@ -101,13 +113,12 @@ export function createCrazyGamesAdapter({ development, openStorage, loadSdk }: C
       }
     },
     loadingStarted() {
-      if (loadingSignal === 'start') return
-      session.whenIdle((sdk) => {
-        sdk.game.loadingStart()
-        loadingSignal = 'start'
-      })
+      loadingStartPending = true
+      sendLoadingStart()
     },
     loadingFinished() {
+      // Loading that ends before the SDK is connected has nothing left to report.
+      loadingStartPending = false
       if (loadingSignal === 'stop') return
       session.whenIdle((sdk) => {
         sdk.game.loadingStop()

@@ -212,8 +212,10 @@ export function startPlay({ session, catalog, route, placeholderSceneIds, run, m
     controller.sceneReady()
     const nextRunStop = controller.run.stops[controller.run.stopIndex + 1]
     if (nextRunStop) new Image().src = sceneUrl(routeStop(nextRunStop))
+    // A pause opened while the scene loaded offered no skip, since only a question can be skipped; now it can.
+    if (pauseDialog) redrawPause()
     // A restored run comes back paused and waits in the pause window.
-    if (controller.run.paused) openPause()
+    else if (controller.run.paused) openPause()
   }
 
   // A window's `close` event arrives a task after `close()`, so the game acts at once and the event only covers Escape.
@@ -241,6 +243,13 @@ export function startPlay({ session, catalog, route, placeholderSceneIds, run, m
     const dialog = pauseDialog
     pauseDialog = null
     dialog?.close()
+  }
+
+  /** Draws the pause again and keeps the focus on the same control when it was inside. */
+  function redrawPause(): void {
+    const focused = document.activeElement instanceof HTMLElement && topDialog()?.contains(document.activeElement) ? document.activeElement.dataset.focusId : undefined
+    pauseDialog?.replaceContent(pauseContent())
+    if (focused) topDialog()?.querySelector<HTMLElement>(`[data-focus-id="${focused}"]`)?.focus()
   }
 
   function pauseContent(): HTMLElement[] {
