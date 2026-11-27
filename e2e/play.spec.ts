@@ -628,7 +628,7 @@ test('a run in progress is played through to the end with every event once', asy
     await (index % 2 === 0 ? correctChoice(page, stop) : await wrongChoice(page, stop)).click()
     await page.locator('.next').click()
   }
-  await expect(page.getByRole('button', { name: 'Play' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Route complete' })).toBeVisible()
   const events = await recordedEvents(page)
   expect(events).toEqual([
     { name: 'route_started', cityId: 'paris', mode: 'city', resumed: false },
@@ -636,12 +636,15 @@ test('a run in progress is played through to the end with every event once', asy
     { name: 'route_completed', cityId: 'paris', mode: 'city', correct: 5, stars: 1 },
     { name: 'postcard_unlocked', cityId: 'paris' },
   ])
+  await page.getByRole('button', { name: 'Home' }).click()
   await expect(page.locator('.title-progress li')).toHaveText(['1/20 cities', /^1\/60 ★/, '1 postcard'])
 })
 
 test('Paris with no correct answer unlocks London and gives one postcard', async ({ page }) => {
   await startParis(page)
   await playStops(page, paris.stops, 'wrong')
+  await expect(page.getByRole('heading', { name: 'Route complete' })).toBeVisible()
+  await page.getByRole('button', { name: 'Home' }).click()
   await expect(page.locator('.title-progress li')).toHaveText(['1/20 cities', /^0\/60 ★/, '1 postcard'])
   expect(await savedSection(page, 'active-run')).toBeNull()
   const events = await recordedEvents(page)

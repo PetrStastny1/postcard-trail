@@ -64,7 +64,7 @@ test('a run saved in its summary phase completes at start without Continue, and 
   expect(await recordedEvents(page)).toEqual([])
 })
 
-test('a saved daily run keeps the place hidden, completes after the third Next and returns to the title', async ({ page }) => {
+test('a saved daily run keeps the place hidden and completes after the third Next on the daily summary', async ({ page }) => {
   const { route, run, stops } = savedDailyRun()
   await seedStorage(page, { 'active-run': { ownerTabId: 'other-tab', run } })
   await page.goto('/')
@@ -87,7 +87,7 @@ test('a saved daily run keeps the place hidden, completes after the third Next a
     await expect(page.locator('.result-sentence')).toHaveText(stop.feedback.en)
     await page.locator('.next').click()
   }
-  await expect(page.getByRole('button', { name: 'Play' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Daily challenge done' })).toBeVisible()
   const events = await recordedEvents(page)
   expect(events[0]).toEqual({ name: 'route_started', cityId: route.id, mode: 'daily', resumed: true })
   expect(events.filter((event) => event.name === 'question_resolved').map((event) => event.name === 'question_resolved' && [event.index, event.mode])).toEqual([
@@ -100,6 +100,7 @@ test('a saved daily run keeps the place hidden, completes after the third Next a
     { name: 'daily_completed', utcDate: '2026-12-05', correct: 3 },
   ])
   expect(await savedSection(page, 'daily-results')).toEqual({ '2026-12-05': { cityId: route.id, correct: 3 } })
+  await page.locator('.window-bar').getByRole('button', { name: 'Home' }).click()
   await expect(page.locator('.title-progress li')).toHaveText(['0/20 cities', /^0\/60 ★/, '0 postcards'])
 })
 
@@ -170,7 +171,7 @@ for (const viewport of [
   test.describe(`touch phone ${viewport.width} × ${viewport.height}`, () => {
     test.use({ viewport, hasTouch: true, isMobile: true })
 
-    test('a whole Paris run by tap ends on the title with London unlocked', async ({ page }) => {
+    test('a whole Paris run by tap ends on the summary, and Home shows London unlocked', async ({ page }) => {
       await page.goto('/')
       await page.getByRole('button', { name: 'Play' }).tap()
       for (const stop of paris.stops) {
@@ -179,6 +180,8 @@ for (const viewport of [
         await expectState(page, 'result')
         await page.locator('.next').tap()
       }
+      await expect(page.getByRole('heading', { name: 'Route complete' })).toBeVisible()
+      await page.getByRole('button', { name: 'Home' }).tap()
       await expect(page.locator('.title-progress li')).toHaveText(['1/20 cities', /^3\/60 ★/, '1 postcard'])
       await page.getByRole('button', { name: 'Play' }).tap()
       await expect(page.locator('.play-title')).toHaveText('London · 1/10')

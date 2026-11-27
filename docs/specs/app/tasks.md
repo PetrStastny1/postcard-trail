@@ -30,12 +30,12 @@ Požadavky jsou ve [spec.md](spec.md). Vývojář balíčku zaškrtává hotové
 
 ## Balíček 4: Mapa, souhrny, sbírka a denní výzva (`screens`), po balíčku 2
 
-- [ ] Potvrzení změny průchodu (A15)
-- [ ] Mapa se schématem Evropy, skupinami, seznamem a detailem města (C2)
-- [ ] Souhrn města a napojení konce městského průchodu (C3, B13)
-- [ ] Sbírka a detail karty (C4)
-- [ ] Denní výzva a denní souhrn, napojení z úvodu (C5, C6)
-- [ ] E2E testy balíčku včetně `Stop.place` v denní výzvě
+- [x] Potvrzení změny průchodu (A15)
+- [x] Mapa se schématem Evropy, skupinami, seznamem a detailem města (C2)
+- [x] Souhrn města a napojení konce městského průchodu (C3, B13)
+- [x] Sbírka a detail karty (C4)
+- [x] Denní výzva a denní souhrn, napojení z úvodu (C5, C6)
+- [x] E2E testy balíčku včetně `Stop.place` v denní výzvě
 
 ## Balíček 5: Celé toky, přístupnost a výkon (`quality`), po balíčcích 3 a 4
 
