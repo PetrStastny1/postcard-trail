@@ -11,7 +11,7 @@ import { markMoreContent } from '../ui/moreContent.ts'
 import { settingsTitleId, settingsWindow } from '../ui/settings.ts'
 import { storageNotice } from '../ui/storageNotice.ts'
 import { titleScreen } from '../ui/title.ts'
-import { startPlay, type PlaySession } from './play.ts'
+import { loadPlaceholderSceneIds, startPlay, type PlaySession } from './play.ts'
 import { completeFinishedRun } from './runs.ts'
 import { changeSettings, type SettingsChange } from './settings.ts'
 import type { GameSession } from './start.ts'
@@ -156,8 +156,9 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
     if (openingRoute) return
     openingRoute = true
     let route: Route
+    let placeholderSceneIds: ReadonlySet<string>
     try {
-      route = await loadRoute(cityId)
+      ;[route, placeholderSceneIds] = await Promise.all([loadRoute(cityId), loadPlaceholderSceneIds()])
     } catch {
       // The player sees the failure and can try again; the run, if any, stays saved as it was.
       showScreen(() => routeErrorScreen({ onRetry: () => void openRoute(cityId, begin), onHome: goHome }))
@@ -172,6 +173,7 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
       session,
       catalog,
       route,
+      placeholderSceneIds,
       run,
       mount: (screen) => showScreen(() => screen),
       openSettings,

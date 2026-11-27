@@ -259,6 +259,21 @@ test('when another tab resumes the run, the next action writes nothing and repor
   assert.equal(first.store.read(storageKeys.activeRun), takenOver)
 })
 
+test('a choice in a tab that lost the run tracks and plays no verdict, and the time stops', () => {
+  const first = harness(newParisRun())
+  first.controller.sceneReady()
+  first.advance(2_000)
+  new GameStorage(first.store, 'tab-2').resumeRun()
+  first.takeCalls()
+  first.controller.choose(correctChoiceId(first.controller.run))
+  assert.equal(first.events.some((event) => event.name === 'question_resolved'), false)
+  assert.deepEqual(first.takeCalls(), ['play choice', 'gameplayStop'])
+  assert.equal(first.listened.at(-1), 'ownerLost')
+  const left = first.controller.remainingMs()
+  first.advance(5_000)
+  assert.equal(first.controller.remainingMs(), left)
+})
+
 test('the ownership check from a storage event stops the tab', () => {
   const { controller, listened, takeCalls } = harness(newParisRun())
   controller.sceneReady()

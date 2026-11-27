@@ -89,7 +89,7 @@ test('the question screen has the bar, route line, difficulty, scene, question, 
   expect(zoomBox.y + zoomBox.height).toBeGreaterThan(frameBox.y + frameBox.height / 2)
 })
 
-test('the place of a stop is never on the question screen, in a run and after a reload, and shows in the result', async ({ page }) => {
+test('the place of a stop is never on the question screen, in a run and after a reload; the result shows the feedback sentence', async ({ page }) => {
   await startParis(page)
   for (const stop of paris.stops) {
     await expectState(page, 'question')
@@ -102,7 +102,7 @@ test('the place of a stop is never on the question screen, in a run and after a 
     await expectState(page, 'question')
     await expectPlaceHidden(page, stop)
     await correctChoice(page, stop).click()
-    await expect(page.locator('.result-place')).toHaveText(stop.place.en)
+    await expect(page.locator('.result-sentence')).toHaveText(stop.feedback.en)
     await page.locator('.next').click()
   }
   await expect(page.getByRole('button', { name: 'Play' })).toBeVisible()
@@ -115,7 +115,7 @@ test('the place stays hidden in Czech too', async ({ page }) => {
     await expectState(page, 'question')
     await expectPlaceHidden(page, stop)
     await correctChoice(page, stop, 'cs').click()
-    await expect(page.locator('.result-place')).toHaveText(stop.place.cs)
+    await expect(page.locator('.result-sentence')).toHaveText(stop.feedback.cs)
     await page.locator('.next').click()
   }
 })
@@ -137,10 +137,15 @@ test('while the scene loads the choices and lifelines are off and the time stand
   for (const choice of await page.locator('.choice').all()) await expect(choice).toBeDisabled()
   for (const lifeline of await page.locator('.lifeline').all()) await expect(lifeline).toBeDisabled()
   await expect(timer(page)).toHaveText('25 s')
+  // The caption band is there while the scene loads, so the question does not move when it is ready.
+  await expect(page.locator('.scene-caption')).toHaveText(paris.stops[0].sceneAlt.en)
+  const questionTop = async () => (await page.locator('.question').boundingBox())?.y
+  const loadingTop = await questionTop()
   await page.clock.runFor(10_000)
   await expect(timer(page)).toHaveText('25 s')
   release()
   await expectState(page, 'question')
+  expect(await questionTop()).toBe(loadingTop)
   await expect(timer(page)).toHaveText('25 s')
   await page.clock.runFor(1_000)
   await expect(timer(page)).toHaveText('24 s')
@@ -209,7 +214,7 @@ test('a final scene, not listed in placeholders.json, has no description under i
   await expect(page.locator('.scene-caption')).toHaveCount(0)
 })
 
-test('a choice locks the question and the result shows the verdict, place, sentence and only Next', async ({ page }) => {
+test('a choice locks the question and the result shows the verdict, the sentence and only Next', async ({ page }) => {
   await startParis(page)
   const stop = paris.stops[0]
   const wrong = await wrongChoice(page, stop)
@@ -226,8 +231,8 @@ test('a choice locks the question and the result shows the verdict, place, sente
   await expect(verdict(page)).toHaveText('Not quite')
   await expect(verdict(page).locator('svg')).toBeVisible()
   const status = page.getByRole('status').filter({ hasText: 'Not quite' })
-  await expect(status).toContainText(stop.place.en)
   await expect(status).toContainText(stop.feedback.en)
+  await expect(page.locator('.result-place')).toHaveCount(0)
   await expect(page.locator('.lifelines')).toBeHidden()
   await expect(page.locator('.timer')).toBeHidden()
   await expect(page.locator('.timer')).not.toHaveAttribute('aria-live')
@@ -239,6 +244,8 @@ test('a choice locks the question and the result shows the verdict, place, sente
   await page.keyboard.press('Enter')
   await expectState(page, 'question')
   await expect(page.locator('.play-title')).toHaveText('Paris · 2/10')
+  // Next goes away with the result, so the keyboard continues from the new question.
+  await expect(page.locator('.question')).toBeFocused()
 
   const second = paris.stops[1]
   const index = (await choiceLabels(page)).indexOf(correctLabel(second))
@@ -250,6 +257,8 @@ test('a choice locks the question and the result shows the verdict, place, sente
   await expect(page.getByRole('button', { name: 'Next' })).toBeFocused()
   await page.keyboard.press('Space')
   await expect(page.locator('.play-title')).toHaveText('Paris · 3/10')
+  await expectState(page, 'question')
+  await expect(page.locator('.question')).toBeFocused()
 })
 
 test('the countdown shows whole seconds rounded up, a choice just before zero counts and zero is "Time’s up"', async ({ page }) => {
@@ -366,6 +375,24 @@ test('learning the game: the 50:50 hint on stop 2, the streak from 2 and the mar
   await expect(page.locator('.scene-art')).toHaveCSS('opacity', '1')
   await (await wrongChoice(page, paris.stops[2])).click()
   await expect(page.locator('.streak')).toBeHidden()
+})
+
+test('an answer within the 1 500 ms of the 50:50 hint takes the hint away, also from the next stop', async ({ page }) => {
+  await startParis(page, { pausedClock: true })
+  await correctChoice(page, paris.stops[0]).click()
+  await page.locator('.next').click()
+  await expectState(page, 'question')
+  const hint = page.locator('.lifeline-hint')
+  await expect(hint).toBeVisible()
+  await page.clock.runFor(300)
+  await correctChoice(page, paris.stops[1]).click()
+  await expectState(page, 'result')
+  await expect(hint).toBeHidden()
+  await page.locator('.next').click()
+  await expectState(page, 'question')
+  await expect(hint).toBeHidden()
+  await page.clock.runFor(1_500)
+  await expect(hint).toBeHidden()
 })
 
 test('the 50:50 hint is not shown again once seen', async ({ page }) => {

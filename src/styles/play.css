@@ -186,7 +186,7 @@
 .zoom-button {
   position: absolute;
   right: var(--space-2);
-  bottom: calc(2.5rem + var(--space-2));
+  bottom: var(--space-2);
   border: var(--border) solid var(--color-ink);
   background: var(--color-paper);
   color: var(--color-ink);
@@ -295,15 +295,19 @@
   font-size: var(--text-small);
 }
 
-/* Result symbol as a badge on the corner, so it never takes width from the name. */
+/*
+ * The result symbol takes the place of the key circle, whose shortcut is off after the answer. It never covers the
+ * name and needs no width of its own, so the names keep the lines they had in the question.
+ */
 .choice-mark:empty {
   display: none;
 }
 
 .choice-mark {
   position: absolute;
-  top: -7px;
-  right: -7px;
+  top: 50%;
+  inset-inline-start: var(--space-2);
+  transform: translateY(-50%);
   display: grid;
   place-items: center;
   width: 24px;
@@ -429,18 +433,25 @@
   gap: var(--space-2);
 }
 
-/* Brief §6: a one-time label above 50:50 on the second stop. It floats, so nothing moves when it goes. */
+/*
+ * Brief §6: a one-time label next to 50:50 on the second stop. It floats over the time bar inside the action row, so it
+ * covers no choice and nothing moves when it goes; the screen sets --hint-room so the seconds stay in view.
+ */
 .lifeline-hint {
   position: absolute;
-  bottom: calc(100% + var(--space-2));
-  left: 0;
-  padding: var(--space-1) var(--space-2);
+  top: 50%;
+  right: calc(100% + var(--space-2));
+  width: max-content;
+  max-width: var(--hint-room, 12rem);
+  padding: var(--space-1);
   border-radius: var(--radius-sm);
   background: var(--color-ink);
   color: var(--color-on-ink);
   font-size: var(--text-small);
   font-weight: var(--weight-semibold);
-  white-space: nowrap;
+  line-height: var(--leading-tight);
+  text-align: end;
+  transform: translateY(-50%);
   pointer-events: none;
 }
 
@@ -507,10 +518,6 @@
   line-height: var(--leading-tight);
 }
 
-.result-place {
-  font-weight: var(--weight-bold);
-}
-
 .next {
   grid-column: 2;
   grid-row: 1 / span 2;
@@ -542,10 +549,6 @@
 
 [data-state='error'] .scene-caption {
   display: none;
-}
-
-.scene-box:not(:has(.scene-caption)) .zoom-button {
-  bottom: var(--space-2);
 }
 
 [data-state='error'] .scene-frame {
@@ -594,6 +597,21 @@
     width: min(100%, 100dvh - var(--landscape-reserve));
   }
 
+  /*
+   * The scene column does not scroll, so the caption keeps the two lines the reserve above counts with. The whole
+   * description is in the image's alt text and under the enlarged scene.
+   */
+  .scene-box .scene-caption {
+    height: calc(var(--text-small) * var(--leading-tight) * 2 + var(--space-1) * 2);
+  }
+
+  .scene-box .scene-caption-text {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
   .panel {
     grid-area: panel;
     justify-content: safe center;
@@ -609,9 +627,27 @@
     border-top: 0;
   }
 
-  /* Room for the result badge, which the scrolling panel would otherwise clip. */
-  .choices {
-    padding-right: var(--space-2);
+  /* The narrow panel gives the sentence its full width, so a long one stays clear of the choices above it. */
+  .result {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-1) var(--space-3);
+  }
+
+  .result-sentence {
+    grid-column: 1 / -1;
+  }
+
+  .next {
+    grid-row: 1;
+  }
+
+  /*
+   * The panel's gap already separates the result from the choices. The result scrolls with them instead of staying
+   * pinned, so a long sentence under tall choices never covers one; the screen scrolls the panel to the result.
+   */
+  [data-state='result'] .action-row {
+    position: static;
+    padding-top: 0;
   }
 }
 
@@ -624,6 +660,10 @@
   .choice {
     gap: 6px;
     padding-inline: 6px;
+  }
+
+  .choice-mark {
+    inset-inline-start: 6px;
   }
 }
 
@@ -645,7 +685,8 @@
 
 /* The page's own scrollers signal more content with the shadow above the action row, not with a fade. */
 .play-main.has-more,
-.panel.has-more {
+.panel.has-more,
+.action-row.has-more {
   mask-image: none;
 }
 
@@ -672,9 +713,14 @@
   padding: var(--space-6) var(--window-side);
 }
 
+.elsewhere-body {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-6) var(--window-side);
+}
+
 .elsewhere-text {
   margin: 0;
-  padding: var(--space-6) var(--window-side);
   font-weight: var(--weight-semibold);
 }
 

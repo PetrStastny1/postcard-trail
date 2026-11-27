@@ -1,5 +1,5 @@
 import { expect, test, type Browser, type Page } from '@playwright/test'
-import { correctChoice, expectState, inspectPlayLayout, installClock, paris, pauseClock, seedStorage, wrongChoice } from './game.ts'
+import { correctChoice, expectState, inspectPlayLayout, installClock, paris, pauseClock, seedStorage, startParis, wrongChoice } from './game.ts'
 
 // The states and sizes of docs/design/check-layout.mjs, checked on the real game screen at the first Paris stop.
 
@@ -19,15 +19,7 @@ const runs: { lang: 'en' | 'cs'; size: Size; states: PlayLayoutState[] }[] = [
   ...sizes.map((size) => ({
     lang: 'en' as const,
     size,
-    states: [
-      'question',
-      'result',
-      'loading',
-      'error',
-      'fifty',
-      'untimed',
-      ...([375, 568, 1440].includes(size.width) ? (['result-correct', 'result-timeout'] as const) : []),
-    ] satisfies PlayLayoutState[],
+    states: ['question', 'result', 'result-correct', 'result-timeout', 'loading', 'error', 'fifty', 'untimed'] satisfies PlayLayoutState[],
   })),
   ...sizes
     .filter((size) => [320, 568, 640].includes(size.width))
@@ -74,4 +66,36 @@ for (const { lang, size, states } of runs) {
     }
     expect([...sceneSizes], 'the scene keeps its size in every state').toHaveLength(1)
   })
+}
+
+// Every Paris stop, so the longest scene caption, the longest result sentence and the 50:50 hint on stop 2 are all checked.
+for (const lang of ['en', 'cs'] as const) {
+  for (const size of [{ width: 320, height: 568 }, { width: 568, height: 320 }]) {
+    test(`every Paris stop keeps the layout at ${size.width} × ${size.height} in ${lang}`, async ({ page }) => {
+      await page.setViewportSize(size)
+      await seedStorage(page, { settings: { locale: lang } })
+      // The paused clock keeps the 50:50 hint on screen while it is checked.
+      await startParis(page, { playName: lang === 'en' ? 'Play' : 'Hrát', pausedClock: true })
+      const sceneSizes = new Set<number>()
+      for (const [index, stop] of paris.stops.entries()) {
+        await expectState(page, 'question')
+        if (index === 1) await expect(page.locator('.lifeline-hint')).toBeVisible()
+        const question = await inspectPlayLayout(page)
+        expect(question.problems, `${stop.id} question`).toEqual([])
+        if (index === 1) {
+          await page.clock.runFor(1_500)
+          await expect(page.locator('.lifeline-hint')).toBeHidden()
+          expect((await inspectPlayLayout(page)).actionRowHeight, 'the hint leaves the action row height alone').toBe(question.actionRowHeight)
+        }
+        sceneSizes.add(question.scene)
+        await (index % 2 ? correctChoice(page, stop, lang) : await wrongChoice(page, stop, lang)).click()
+        await expectState(page, 'result')
+        const result = await inspectPlayLayout(page)
+        expect(result.problems, `${stop.id} result`).toEqual([])
+        sceneSizes.add(result.scene)
+        await page.locator('.next').click()
+      }
+      expect([...sceneSizes], 'the scene keeps its size on every stop').toHaveLength(1)
+    })
+  }
 }

@@ -42,7 +42,11 @@ const elsewhere = (page: Page) => page.getByRole('dialog', { name: 'Route paused
 async function expectStoppedForOtherTab(page: Page) {
   await expect(elsewhere(page)).toBeVisible()
   await expect(elsewhere(page)).toContainText('This route continues in another tab.')
+  await expect(elsewhereHome(page)).toBeFocused()
 }
+
+/** The primary Home under the sentence; the window bar has its own Home too. */
+const elsewhereHome = (page: Page) => elsewhere(page).locator('.window-body').getByRole('button', { name: 'Home' })
 
 test('a run saved in its summary phase completes at start without Continue, and a second reload adds nothing', async ({ page }) => {
   await seedStorage(page, { 'active-run': { ownerTabId: 'closed-tab', run: finishedParisRun() } })
@@ -80,7 +84,7 @@ test('a saved daily run keeps the place hidden, completes after the third Next a
     })
     for (const place of [stop.place.en, stop.place.cs]) expect(text).not.toContain(place.toLowerCase())
     await correctChoice(page, stop).click()
-    await expect(page.locator('.result-place')).toHaveText(stop.place.en)
+    await expect(page.locator('.result-sentence')).toHaveText(stop.feedback.en)
     await page.locator('.next').click()
   }
   await expect(page.getByRole('button', { name: 'Play' })).toBeVisible()
@@ -114,7 +118,8 @@ test.describe('two tabs', () => {
     await first.waitForTimeout(1_200)
     expect(await first.evaluate((key) => localStorage.getItem(key), storageKey('active-run'))).toBe(stored)
 
-    await elsewhere(first).getByRole('button', { name: 'Home' }).click()
+    await expect(elsewhereHome(first)).toHaveClass(/primary/)
+    await elsewhereHome(first).click()
     await expect(first.getByRole('button', { name: 'Continue' })).toBeVisible()
     expect(await first.evaluate((key) => localStorage.getItem(key), storageKey('active-run'))).toBe(stored)
     expect((await recordedEvents(first)).filter((event) => event.name === 'route_left')).toEqual([])

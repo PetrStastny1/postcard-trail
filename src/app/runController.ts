@@ -51,9 +51,13 @@ export function createRunController({ run: initialRun, storage, adapter, feedbac
     const after = reduceRun(before, action)
     if (after === before) return
     run = after
-    trackChange(before, after)
-    if (after.phase === 'summary') return finish()
+    if (after.phase === 'summary') {
+      trackChange(before, after)
+      return finish()
+    }
+    // A tab that lost the run reports and plays nothing for it.
     if (storage.saveRunCheckpoint(after) === 'notOwner') return loseOwnership()
+    trackChange(before, after)
     const wasRunning = before.phase === 'question' && !before.paused
     if (!wasRunning && running()) adapter.gameplayStart()
     if (!before.paused && after.paused) adapter.gameplayStop()
@@ -122,7 +126,7 @@ export function createRunController({ run: initialRun, storage, adapter, feedbac
 
     /** Time left as the player sees it, including the part not yet counted by an action. */
     remainingMs(): number {
-      if (!running() || run.untimed) return run.remainingMs
+      if (stopped || !running() || run.untimed) return run.remainingMs
       return Math.max(0, run.remainingMs - (now() - countedAt))
     },
 

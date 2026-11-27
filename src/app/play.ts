@@ -1,7 +1,7 @@
 import type { Catalog, Route, Stop } from '../content/types.ts'
 import { elsewhereTitleId, elsewhereWindow, pauseTitleId, pauseWindow, zoomTitleId, zoomWindow } from '../game/render/playDialogs.ts'
 import { createPlayScreen, type PlayScene } from '../game/render/playScreen.ts'
-import { currentStop, type RunState } from '../game/logic/run.ts'
+import { currentStop, type RunState, type RunStop } from '../game/logic/run.ts'
 import { ownsActiveRun, storageKeys } from '../game/storage/schema.ts'
 import { openDialog, topDialog, type OpenDialog } from '../ui/dialog.ts'
 import { createRunController } from './runController.ts'
@@ -18,6 +18,8 @@ export interface PlayOptions {
   session: GameSession
   catalog: Catalog
   route: Route
+  /** Stop IDs from `public/scenes/placeholders.json`, loaded with the route so the caption band is there from the start. */
+  placeholderSceneIds: ReadonlySet<string>
   /** A new run, or a restored one, which is always paused. */
   run: RunState
   /** Puts the game screen into the app's screen slot. */
@@ -37,16 +39,14 @@ export interface PlaySession {
 }
 
 let placeholderIds: Promise<ReadonlySet<string>> | undefined
-let knownPlaceholderIds: ReadonlySet<string> | undefined
 
-/** Fetched once per page; a failed fetch is tried again with the next scene. */
-function placeholderSceneIds(): Promise<ReadonlySet<string>> {
+/** Fetched once per page; a failed fetch is tried again with the next route. */
+export function loadPlaceholderSceneIds(): Promise<ReadonlySet<string>> {
   if (placeholderIds) return placeholderIds
   const loading = fetch(`${import.meta.env.BASE_URL}scenes/placeholders.json`).then(async (response) => {
     if (!response.ok) throw new Error(`placeholders.json answered ${response.status}`)
     const list: { stopIds: string[] } = await response.json()
-    knownPlaceholderIds = new Set(list.stopIds)
-    return knownPlaceholderIds
+    return new Set(list.stopIds)
   })
   placeholderIds = loading
   loading.catch(() => {
@@ -63,7 +63,7 @@ function sceneUrl(stop: Stop): string {
  * The game screen of one run: loads the scenes, turns input, time, page visibility and `storage` events into
  * controller calls, and opens the pause, zoom and "continues in another tab" windows.
  */
-export function startPlay({ session, catalog, route, run, mount, openSettings, goHome }: PlayOptions): PlaySession {
+export function startPlay({ session, catalog, route, placeholderSceneIds, run, mount, openSettings, goHome }: PlayOptions): PlaySession {
   const listeners = new AbortController()
   let disposed = false
   let scene: PlayScene = { status: 'loading', image: null, placeholder: false }
@@ -77,11 +77,7 @@ export function startPlay({ session, catalog, route, run, mount, openSettings, g
   let elsewhereDialog: OpenDialog | null = null
   let leaving = false
 
-  const routeStop = (stopId: string): Stop => {
-    const stop = route.stops.find((candidate) => candidate.id === stopId)
-    if (!stop) throw new Error(`Stop ${stopId} is not in route ${route.id}.`)
-    return stop
-  }
+  const routeStop = (runStop: RunStop): Stop => route.stops[runStop.routeStopNumber - 1]
 
   const controller = createRunController({
     run,
@@ -92,6 +88,8 @@ export function startPlay({ session, catalog, route, run, mount, openSettings, g
     now: () => performance.now(),
     listener: {
       changed(changedRun) {
+        // The label belongs to the open question: an answer, 50:50 or the next stop takes it away at once.
+        if (changedRun.phase !== 'question' || changedRun.usedLifelines.includes('fiftyFifty')) hideFiftyFiftyHint()
         showFiftyFiftyHintOnce(changedRun)
         // A new stop starts with its own scene loading, so the previous image is never shown with the new question.
         if (changedRun.round !== loadedRound) void loadScene()
@@ -119,6 +117,7 @@ export function startPlay({ session, catalog, route, run, mount, openSettings, g
       locale: session.settings.locale,
       route,
       run: controller.run,
+      stop: routeStop(currentStop(controller.run)),
       scene,
       remainingMs: controller.remainingMs(),
       fiftyFiftyHint: hintVisible,
@@ -148,17 +147,21 @@ export function startPlay({ session, catalog, route, run, mount, openSettings, g
     }, hintMs)
   }
 
+  function hideFiftyFiftyHint(): void {
+    clearTimeout(hintTimer)
+    hintVisible = false
+  }
+
   async function loadScene(): Promise<void> {
     const loadingRun = controller.run
-    const stop = routeStop(currentStop(loadingRun).stopId)
+    const stop = routeStop(currentStop(loadingRun))
     loadedRound = loadingRun.round
-    scene = { status: 'loading', image: null, placeholder: knownPlaceholderIds?.has(stop.id) ?? false }
+    scene = { status: 'loading', image: null, placeholder: placeholderSceneIds.has(stop.id) }
     render()
     const image = new Image()
     image.src = sceneUrl(stop)
-    let placeholders: ReadonlySet<string>
     try {
-      ;[placeholders] = await Promise.all([placeholderSceneIds(), image.decode()])
+      await image.decode()
     } catch {
       // A failed scene stops nothing else: the error state offers "Try again" for the same asset.
       if (disposed || controller.run.round !== loadingRun.round) return
@@ -167,7 +170,7 @@ export function startPlay({ session, catalog, route, run, mount, openSettings, g
       return
     }
     if (disposed || controller.run.round !== loadingRun.round) return
-    scene = { status: 'ready', image, placeholder: placeholders.has(stop.id) }
+    scene = { ...scene, status: 'ready', image }
     render()
     if (document.visibilityState === 'hidden') sceneWaitsForVisiblePage = true
     else sceneShown()
@@ -178,7 +181,7 @@ export function startPlay({ session, catalog, route, run, mount, openSettings, g
     sceneWaitsForVisiblePage = false
     controller.sceneReady()
     const nextRunStop = controller.run.stops[controller.run.stopIndex + 1]
-    if (nextRunStop) new Image().src = sceneUrl(routeStop(nextRunStop.stopId))
+    if (nextRunStop) new Image().src = sceneUrl(routeStop(nextRunStop))
     // A restored run comes back paused and waits in the pause window.
     if (controller.run.paused) openPause()
   }
@@ -238,7 +241,7 @@ export function startPlay({ session, catalog, route, run, mount, openSettings, g
   }
 
   function zoomContent(image: HTMLImageElement): HTMLElement[] {
-    const stop = routeStop(currentStop(controller.run).stopId)
+    const stop = routeStop(currentStop(controller.run))
     const caption = scene.placeholder ? stop.sceneAlt[session.settings.locale] : null
     return zoomWindow({ image, caption, onClose: () => closeZoom(true) })
   }

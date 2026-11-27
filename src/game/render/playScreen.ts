@@ -18,6 +18,8 @@ export interface PlayView {
   locale: Locale
   route: Route
   run: RunState
+  /** The route stop of the run's current stop. */
+  stop: Stop
   scene: PlayScene
   remainingMs: number
   /** The one-time "Removes two choices" label next to 50:50 (brief §6). */
@@ -70,14 +72,16 @@ export function createPlayScreen(handlers: PlayHandlers): PlayScreen {
   const errorHome = element('button', { class: 'secondary', type: 'button', 'data-focus-id': 'scene-home' })
   errorHome.addEventListener('click', handlers.onLeave)
   const sceneError = element('div', { class: 'scene-error', role: 'alert' }, errorText, element('div', { class: 'scene-error-actions' }, retry, errorHome))
-  const frame = element('figure', { class: 'scene-frame' }, loading, sceneError)
   const zoom = element('button', { class: 'zoom-button', type: 'button', 'data-focus-id': 'play-zoom' })
   zoom.innerHTML = icons.enlarge
   zoom.addEventListener('click', handlers.onZoom)
-  const sceneBox = element('div', { class: 'scene-box' }, frame, zoom)
+  // The zoom button sits in the scene's corner, so a caption of any length below the scene stays clear.
+  const frame = element('figure', { class: 'scene-frame' }, loading, sceneError, zoom)
+  const sceneBox = element('div', { class: 'scene-box' }, frame)
   const scene = element('section', { class: 'scene' }, sceneBox)
 
-  const question = element('h1', { id: 'question', class: 'question' })
+  // Focused when a new stop is drawn, so keyboard and screen reader users start at the new question.
+  const question = element('h1', { id: 'question', class: 'question', tabindex: '-1' })
   const choices = element('ol', { class: 'choices' })
   const timerValue = element('span', { class: 'timer-value' })
   const timerFill = element('span', { class: 'timer-fill' })
@@ -103,7 +107,7 @@ export function createPlayScreen(handlers: PlayHandlers): PlayScreen {
   const root = element('div', { class: 'play', 'data-state': 'loading' }, bar, main)
 
   let builtKey = ''
-  let choiceButtons: { choiceId: string; button: HTMLButtonElement }[] = []
+  let choiceButtons: { choiceId: string; button: HTMLButtonElement; mark: HTMLElement }[] = []
   let caption: HTMLElement | null = null
 
   /** A choice name never breaks inside a word: when one does not fit two columns, the grid stacks. */
@@ -128,8 +132,10 @@ export function createPlayScreen(handlers: PlayHandlers): PlayScreen {
     scroller.addEventListener('scroll', markActionRow, { passive: true })
   }
 
-  function build(view: PlayView, stop: Stop): void {
-    const { run, locale, route } = view
+  function build(view: PlayView): void {
+    const { run, locale, route, stop } = view
+    // The previous stop's Next goes away with its result, so focus would otherwise fall back to the page.
+    const focusWasOnScreen = document.activeElement === document.body || root.contains(document.activeElement)
     const stopNumber = run.stopIndex + 1
     const total = run.stops.length
     leave.setAttribute('aria-label', t('play.leave'))
@@ -155,22 +161,25 @@ export function createPlayScreen(handlers: PlayHandlers): PlayScreen {
     zoom.setAttribute('aria-label', t('play.zoom'))
     caption?.remove()
     // Shown visually only: the image's alt text carries the same description for screen readers.
-    caption = view.scene.placeholder ? element('p', { class: 'scene-caption', 'aria-hidden': 'true' }, stop.sceneAlt[locale]) : null
+    caption = view.scene.placeholder
+      ? element('p', { class: 'scene-caption', 'aria-hidden': 'true' }, element('span', { class: 'scene-caption-text' }, stop.sceneAlt[locale]))
+      : null
     if (caption) frame.after(caption)
 
     question.textContent = stop.question[locale]
-    const currentRunStop = currentStop(run)
-    choiceButtons = currentRunStop.choiceIds.map((choiceId, index) => {
-      const choice = stop.choices.find((candidate) => candidate.id === choiceId)
+    const shownOrder = currentStop(run).choiceIds
+    const shownChoices = stop.choices.toSorted((a, b) => shownOrder.indexOf(a.id) - shownOrder.indexOf(b.id))
+    choiceButtons = shownChoices.map((choice, index) => {
+      const mark = element('span', { class: 'choice-mark' })
       const button = element(
         'button',
         { class: 'choice', type: 'button', 'data-focus-id': `choice-${index + 1}` },
         element('span', { class: 'choice-key', 'aria-hidden': 'true' }, String(index + 1)),
-        element('span', { class: 'choice-label' }, choice ? choice.label[locale] : ''),
-        element('span', { class: 'choice-mark' }),
+        element('span', { class: 'choice-label' }, choice.label[locale]),
+        mark,
       )
-      button.addEventListener('click', () => handlers.onChoose(choiceId))
-      return { choiceId, button }
+      button.addEventListener('click', () => handlers.onChoose(choice.id))
+      return { choiceId: choice.id, button, mark }
     })
     choices.replaceChildren(...choiceButtons.map(({ button }) => element('li', {}, button)))
 
@@ -182,10 +191,11 @@ export function createPlayScreen(handlers: PlayHandlers): PlayScreen {
     result.replaceChildren()
     main.scrollTo(0, 0)
     panel.scrollTo(0, 0)
+    if (focusWasOnScreen) question.focus({ preventScroll: true })
   }
 
-  function showResult(view: PlayView, stop: Stop): void {
-    const { run, locale } = view
+  function showResult(view: PlayView): void {
+    const { run, locale, stop } = view
     const stopResult = run.results[run.stopIndex]
     const verdictIcon = stopResult.outcome === 'correct' ? 'check' : stopResult.outcome === 'timeout' ? 'clock' : 'close'
     const verdictKey = stopResult.outcome === 'correct' ? 'play.verdict.correct' : stopResult.outcome === 'timeout' ? 'play.verdict.timeout' : 'play.verdict.wrong'
@@ -194,8 +204,7 @@ export function createPlayScreen(handlers: PlayHandlers): PlayScreen {
     next.addEventListener('click', handlers.onNext)
     result.replaceChildren(
       element('p', { class: 'result-verdict' }, icon(verdictIcon, { class: 'result-icon' }), element('span', { class: 'result-word' }, t(verdictKey))),
-      // The place leads the sentence instead of taking its own line, so short landscape screens keep the sentence in view.
-      element('p', { class: 'result-sentence' }, element('strong', { class: 'result-place' }, stop.place[locale]), ' · ', stop.feedback[locale]),
+      element('p', { class: 'result-sentence' }, stop.feedback[locale]),
       next,
     )
   }
@@ -204,7 +213,7 @@ export function createPlayScreen(handlers: PlayHandlers): PlayScreen {
     const { run } = view
     const runStop = currentStop(run)
     const stopResult = state === 'result' ? run.results[run.stopIndex] : undefined
-    choiceButtons.forEach(({ choiceId, button }, index) => {
+    choiceButtons.forEach(({ choiceId, button, mark }, index) => {
       const removed = run.hiddenChoiceIds.includes(choiceId)
       const correct = stopResult !== undefined && choiceId === runStop.correctChoiceId
       const wrong = stopResult !== undefined && choiceId === stopResult.chosenChoiceId && !correct
@@ -219,8 +228,6 @@ export function createPlayScreen(handlers: PlayHandlers): PlayScreen {
         button.removeAttribute('aria-hidden')
         button.setAttribute('aria-keyshortcuts', String(index + 1))
       }
-      const mark = button.querySelector('.choice-mark')
-      if (!mark) return
       if (!correct && !wrong) {
         mark.replaceChildren()
         return
@@ -232,13 +239,11 @@ export function createPlayScreen(handlers: PlayHandlers): PlayScreen {
   }
 
   function show(view: PlayView): void {
-    const { run, scene: sceneState } = view
-    const stop = view.route.stops.find((candidate) => candidate.id === currentStop(run).stopId)
-    if (!stop) throw new Error(`Stop ${currentStop(run).stopId} is not in route ${view.route.id}.`)
+    const { run, stop, scene: sceneState } = view
     const key = `${run.runId}:${run.round}:${view.locale}:${sceneState.placeholder}`
     const rebuilt = key !== builtKey
     if (rebuilt) {
-      build(view, stop)
+      build(view)
       builtKey = key
     }
 
@@ -274,13 +279,18 @@ export function createPlayScreen(handlers: PlayHandlers): PlayScreen {
     extraTime.disabled = state !== 'question' || extraUsed
     extraTime.classList.toggle('is-used', extraUsed)
     fiftyFiftyHint.hidden = !view.fiftyFiftyHint
+    if (view.fiftyFiftyHint) {
+      // The label may cover the time bar but not the seconds; without the time it has the row up to its start.
+      const rowStyle = getComputedStyle(actionRow)
+      const start = run.untimed ? actionRow.getBoundingClientRect().left + parseFloat(rowStyle.paddingLeft) : timerValue.getBoundingClientRect().right
+      lifelines.style.setProperty('--hint-room', `${lifelines.getBoundingClientRect().left - start - 1.5 * parseFloat(rowStyle.columnGap)}px`)
+    }
 
     if (state !== 'result') result.replaceChildren()
     if (enteringResult) {
-      showResult(view, stop)
-      // The choices and the result come into view together, so the result never covers a choice.
-      if (matchMedia('(orientation: landscape)').matches) choices.scrollIntoView({ block: 'start' })
-      else actionRow.scrollIntoView({ block: 'end' })
+      showResult(view)
+      // The scrollers end with the result, so it comes into view whole and right under the choices.
+      for (const scroller of [main, panel]) scroller.scrollTo(0, scroller.scrollHeight)
       result.querySelector<HTMLElement>('.next')?.focus({ preventScroll: true })
     }
     fitChoices()

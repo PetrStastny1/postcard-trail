@@ -37,8 +37,10 @@ export function zoomWindow({ image, caption, onClose }: { image: HTMLImageElemen
 
 /** Another tab resumed the run: this tab stops and only offers the way home. */
 export function elsewhereWindow({ onHome }: { onHome(): void }): HTMLElement[] {
+  const home = element('button', { class: 'primary', type: 'button', autofocus: true, 'data-focus-id': 'elsewhere-home' }, t('window.home'))
+  home.addEventListener('click', onHome)
   return [
     windowBar({ titleId: elsewhereTitleId, title: t('elsewhere.title'), onClose: onHome, onHome }),
-    element('div', { class: 'window-body' }, element('p', { class: 'elsewhere-text' }, t('elsewhere.text'))),
+    element('div', { class: 'window-body' }, element('div', { class: 'elsewhere-body' }, element('p', { class: 'elsewhere-text' }, t('elsewhere.text')), home)),
   ]
 }

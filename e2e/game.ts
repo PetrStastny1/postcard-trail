@@ -89,7 +89,9 @@ export async function playStops(page: Page, stops: Stop[], outcome: 'correct' | 
  * The checks of docs/design/check-layout.mjs over the real game screen: every target reachable and on top, the time,
  * lifelines, Next, verdict and zoom button in view without scrolling, no word broken inside a choice name, the
  * `has-more` signal when choices are cut, 44 px targets and no horizontal scrolling. The prototype's `markMore()` is
- * the game's scroll listener here.
+ * the game's scroll listener here. On top of those: the scene caption is reachable, uncovered and not cut; the result's
+ * verdict and sentence are in view, never faded by a mask, and the result covers no choice; the 50:50 hint covers no
+ * choice, control or the seconds.
  */
 export async function inspectPlayLayout(page: Page) {
   return page.evaluate(() => {
@@ -110,7 +112,7 @@ export async function inspectPlayLayout(page: Page) {
       })
     }
     const className = (el: Element) => (typeof el.className === 'string' ? el.className : el.getAttribute('class') ?? '')
-    const targets = [...document.querySelectorAll('.choice, .lifeline, .timer, .next, .scene-error button, .icon-button, .zoom-button, .question, .result-verdict, .result-sentence')].filter(shown)
+    const targets = [...document.querySelectorAll('.choice, .lifeline, .timer, .next, .scene-error button, .icon-button, .zoom-button, .question, .result-verdict, .result-sentence, .scene-caption')].filter(shown)
     const scrollers = [...document.querySelectorAll<HTMLElement>('.play-main, .panel')]
     const reachable = (el: Element) => {
       if (!covered(el)) return true
@@ -124,16 +126,32 @@ export async function inspectPlayLayout(page: Page) {
       }
       return false
     }
+    // The rest is checked where the screen itself put the scrollers: at the top for a question, on the result after an answer.
+    const shownAt = scrollers.map((el) => el.scrollTop)
     const hidden = targets.filter((el) => !reachable(el)).map(className)
-    scrollers.forEach((el) => el.scrollTo(0, 0))
+    scrollers.forEach((el, index) => el.scrollTo(0, shownAt[index]))
     const play = document.querySelector<HTMLElement>('.play')
-    if (play?.dataset.state === 'result') {
-      if (matchMedia('(orientation: landscape)').matches) document.querySelector('.choices')?.scrollIntoView({ block: 'start' })
-      else document.querySelector('.action-row')?.scrollIntoView({ block: 'end' })
-    }
     scrollers.forEach((el) => el.dispatchEvent(new Event('scroll')))
-    const mustSee = [...document.querySelectorAll('.timer, .lifeline, .next, .result-verdict, .zoom-button')].filter(shown)
+    const mustSee = [...document.querySelectorAll('.timer, .lifeline, .next, .result-verdict, .result-sentence, .zoom-button')].filter(shown)
     const notInView = mustSee.filter(covered).map(className)
+    const overlapping = (a: Element, b: Element) => {
+      const r = a.getBoundingClientRect()
+      const q = b.getBoundingClientRect()
+      return Math.min(r.right, q.right) - Math.max(r.left, q.left) > 1 && Math.min(r.bottom, q.bottom) - Math.max(r.top, q.top) > 1
+    }
+    const masked = [...document.querySelectorAll('.result-verdict, .result-sentence, .scene-caption')].filter(shown).filter((el) => {
+      for (let node: Element | null = el; node; node = node.parentElement) if (getComputedStyle(node).maskImage !== 'none') return true
+      return false
+    })
+    const result = document.querySelector('.result')
+    const resultOverChoices =
+      play?.dataset.state === 'result' && result && [...document.querySelectorAll('.choice')].some((choice) => overlapping(choice, result))
+    const captionCut = [...document.querySelectorAll<HTMLElement>('.scene-caption')].filter(shown).filter((el) => el.scrollHeight > el.clientHeight + 1)
+    const hint = document.querySelector('.lifeline-hint')
+    const hintOver =
+      hint && shown(hint)
+        ? [...document.querySelectorAll('.choice, button, .timer-value, .question')].filter(shown).filter((el) => overlapping(hint, el)).map(className)
+        : []
     const brokenWords: string[] = []
     for (const label of document.querySelectorAll('.choice-label')) {
       if (!shown(label)) continue
@@ -161,6 +179,7 @@ export async function inspectPlayLayout(page: Page) {
       .map(className)
     return {
       scene: Math.round(document.querySelector('.scene-frame')?.getBoundingClientRect().width ?? 0),
+      actionRowHeight: Math.round(document.querySelector('.action-row')?.getBoundingClientRect().height ?? 0),
       problems: [
         ...hidden.map((name) => `hidden ${name}`),
         ...notInView.map((name) => `not in view ${name}`),
@@ -168,6 +187,10 @@ export async function inspectPlayLayout(page: Page) {
         ...small.map((name) => `small ${name}`),
         ...(document.documentElement.scrollWidth > innerWidth ? ['scrolls horizontally'] : []),
         ...(unsignalled ? ['hidden choices without the has-more signal'] : []),
+        ...masked.map((el) => `masked ${className(el)}`),
+        ...(resultOverChoices ? ['the result covers a choice'] : []),
+        ...captionCut.map(() => 'the scene caption is cut'),
+        ...hintOver.map((name) => `the 50:50 hint covers ${name}`),
       ],
     }
   })
