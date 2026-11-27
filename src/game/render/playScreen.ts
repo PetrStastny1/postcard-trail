@@ -331,7 +331,7 @@ export function routeErrorScreen({ onRetry, onHome }: { onRetry(): void; onHome(
   home.addEventListener('click', onHome)
   return element(
     'div',
-    { class: 'play', 'data-state': 'error' },
+    { class: 'play route-error-screen', 'data-state': 'error' },
     element('header', { class: 'play-bar' }, close, element('p', { class: 'play-title' }, 'Postcard Trail')),
     element('main', { class: 'route-error', role: 'alert' }, element('p', {}, t('play.routeError')), element('div', { class: 'scene-error-actions' }, retry, home)),
   )

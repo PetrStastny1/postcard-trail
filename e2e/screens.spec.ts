@@ -59,10 +59,41 @@ test.describe('route change', () => {
     expect(await recordedEvents(page)).toEqual([])
   })
 
+  test('the list row of the city with the active run says In progress', async ({ page }) => {
+    await withLondonInProgress(page)
+    await expect(cityRow(page, 'London').locator('.city-state')).toHaveText('In progress')
+    await expect(cityRow(page, 'Paris').locator('.city-state')).toHaveText(/^Completed/)
+    await expect(cityRow(page, 'Rome').locator('.city-state')).toHaveText('Locked')
+  })
+
+  test('a completed city played again says Rozehráno in its row and its detail and keeps its best stars', async ({ page }) => {
+    const czech = { locale: 'cs', soundEnabled: true, volume: 0.6, vibrationEnabled: true, reducedMotion: false, untimed: false, shownHintIds: [] }
+    await seedStorage(page, { settings: czech, progress: progressWith(1, 2), 'active-run': { ownerTabId: 'closed-tab', run: cityRunBeforeLastNext('paris', 0) } })
+    await page.goto('/')
+    await page.getByRole('button', { name: 'Mapa měst' }).click()
+    await expect(cityRow(page, 'Paříž').locator('.city-state')).toHaveText(/^Rozehráno★★☆/)
+    await expect(cityRow(page, 'Londýn').locator('.city-state')).toHaveText('Odemčené')
+    await cityRow(page, 'Paříž').click()
+    await expect(dialog(page, 'Paříž').locator('.city-status')).toHaveText('Rozehráno')
+  })
+
+  test('in Czech the route change window is called Změna průchodu and keeps the question and choices of the brief', async ({ page }) => {
+    const czech = { locale: 'cs', soundEnabled: true, volume: 0.6, vibrationEnabled: true, reducedMotion: false, untimed: false, shownHintIds: [] }
+    await seedStorage(page, { settings: czech, progress: parisDone, 'active-run': { ownerTabId: 'closed-tab', run: cityRunBeforeLastNext('london', 0) } })
+    await page.goto('/')
+    await page.getByRole('button', { name: 'Mapa měst' }).click()
+    await cityRow(page, 'Paříž').click()
+    await dialog(page, 'Paříž').getByRole('button', { name: 'Hrát znovu' }).click()
+    const change = dialog(page, 'Zahodit rozehranou trasu?')
+    await expect(change.locator('.window-title')).toHaveText('Změna průchodu')
+    await expect(change.locator('.route-change-title')).toHaveText('Zahodit rozehranou trasu?')
+    await expect(change.locator('.window-actions button')).toHaveText(['Ponechat průchod', 'Zahodit a začít'])
+  })
+
   test('the city with the active run offers Continue without asking', async ({ page }) => {
     await withLondonInProgress(page)
     await cityRow(page, 'London').click()
-    await expect(dialog(page, 'London').locator('.city-status')).toHaveText('Route in progress')
+    await expect(dialog(page, 'London').locator('.city-status')).toHaveText('In progress')
     await expect(dialog(page, 'London')).not.toContainText('Not played yet')
     await dialog(page, 'London').getByRole('button', { name: 'Continue' }).click()
     await expect(routeChange(page)).toHaveCount(0)
@@ -238,6 +269,17 @@ test.describe('city summary', () => {
     await expect(postcard).toHaveCSS('animation-name', 'postcard-in')
     await expect(postcard.getByRole('img', { name: 'Paris', exact: true })).toBeVisible()
     await expect(summary.locator('.summary-unlocked')).toHaveText('London is unlocked')
+    // News, not a control: no fill, no rounded edge and no border; the last stat row's line is the only one above it,
+    // set apart by space.
+    const unlockedLook = await summary.locator('.summary-unlocked').evaluate((node) => {
+      const style = getComputedStyle(node)
+      const lastStat = document.querySelector('.summary-stats > div:last-child') as HTMLElement
+      const gap = node.getBoundingClientRect().top - lastStat.getBoundingClientRect().bottom + parseFloat(style.paddingTop)
+      const borders = [style.borderTopStyle, style.borderLeftStyle, style.borderRightStyle, style.borderBottomStyle]
+      return { look: [style.backgroundColor, style.borderRadius, ...borders, node.tagName], gap }
+    })
+    expect(unlockedLook.look).toEqual(['rgba(0, 0, 0, 0)', '0px', 'none', 'none', 'none', 'none', 'P'])
+    expect(unlockedLook.gap).toBeGreaterThanOrEqual(16)
     await expect(page.getByRole('button', { name: 'Next city' })).toBeFocused()
     await expect(page.getByRole('button', { name: 'Play again' })).toBeVisible()
 
@@ -252,7 +294,7 @@ test.describe('city summary', () => {
 
     await page.locator('.play-bar').getByRole('button', { name: 'Save and go to Home' }).click()
     await openMap(page)
-    await expect(cityRow(page, 'London').locator('.city-state')).toHaveText('Unlocked')
+    await expect(cityRow(page, 'London').locator('.city-state')).toHaveText('In progress')
     await cityRow(page, 'Rome').click()
     await expect(dialog(page, 'Rome')).toContainText('Finish London to unlock')
     await dialog(page, 'Rome').getByRole('button', { name: 'Home' }).click()
@@ -406,6 +448,32 @@ test.describe('collection', () => {
     await dialog(page, 'Paříž').getByRole('button', { name: 'Úvod' }).click()
     await expect(page.getByRole('button', { name: 'Hrát' })).toBeFocused()
   })
+})
+
+for (const [locale, title, count, sentence] of [
+  ['en', 'Collection', '0/20 postcards', 'Finish a city route to earn its postcard.'],
+  ['cs', 'Sbírka', '0/20 pohlednic', 'Dokonči trasu města a získáš jeho pohlednici.'],
+] as const) {
+  test(`an empty collection says under the count how to earn a postcard in ${locale}`, async ({ page }) => {
+    await seedStorage(page, { settings: { locale, soundEnabled: true, volume: 0.6, vibrationEnabled: true, reducedMotion: false, untimed: false, shownHintIds: [] } })
+    await page.goto('/')
+    await page.getByRole('button', { name: title }).click()
+    await expect(page.locator('.collection-count')).toHaveText(count)
+    await expect(page.locator('.collection-count + .collection-empty')).toHaveText(sentence)
+    // The sentence belongs to the count: closer to it than to the grid below.
+    const [countBox, emptyBox, gridBox] = await Promise.all(['.collection-count', '.collection-empty', '.postcard-grid'].map((selector) => page.locator(selector).boundingBox()))
+    const toCount = emptyBox!.y - (countBox!.y + countBox!.height)
+    const toGrid = gridBox!.y - (emptyBox!.y + emptyBox!.height)
+    expect(toCount).toBeLessThan(toGrid)
+  })
+}
+
+test('a collection with a postcard has no sentence on how to earn one', async ({ page }) => {
+  await seedStorage(page, { progress: progressWith(1, 0) })
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Collection' }).click()
+  await expect(page.locator('.collection-count')).toHaveText('1/20 postcards')
+  await expect(page.locator('.collection-empty')).toHaveCount(0)
 })
 
 test('with all 20 cities done the collection has 20 postcards, the title 20/20 and 60 stars at most, and Play opens the map', async ({ page }) => {

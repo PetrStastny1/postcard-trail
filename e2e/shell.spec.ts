@@ -47,7 +47,7 @@ test.describe('title screen', () => {
     ['en', 'Play', 'Unlocks after your first city'],
     ['cs', 'Hrát', 'Odemkne se po prvním městě'],
   ] as const) {
-    test(`the locked daily tile keeps its place in the 2 × 2 menu and its condition is one line under the menu in ${locale}`, async ({ page }) => {
+    test(`the locked daily tile keeps its place in the 2 × 2 menu and its condition stands right under the tile in ${locale}`, async ({ page }) => {
       await seedStorage(page, { settings: { locale } })
       for (const size of [
         { width: 375, height: 812 },
@@ -76,9 +76,20 @@ test.describe('title screen', () => {
         await expect(conditionLine).toHaveCSS('color', 'rgb(58, 67, 102)')
         const conditionBox = (await conditionLine.boundingBox())!
         const menuBox = (await page.locator('.title-menu').boundingBox())!
+        // In the tile's column, centred under it and no farther than the menu's own gap, so it reads as the tile's.
         expect(conditionBox.y).toBeGreaterThanOrEqual(menuBox.y + menuBox.height)
+        expect(conditionBox.y - (dailyTile.top + dailyTile.height)).toBeLessThanOrEqual(8)
+        expect(conditionBox.y - (dailyTile.top + dailyTile.height)).toBeGreaterThanOrEqual(3)
+        expect(conditionBox.x).toBeGreaterThanOrEqual(dailyTile.left - 0.5)
+        expect(conditionBox.x + conditionBox.width).toBeLessThanOrEqual(dailyTile.right + 0.5)
+        const textBox = await conditionLine.evaluate((node) => {
+          const range = document.createRange()
+          range.selectNodeContents(node)
+          return range.getBoundingClientRect().toJSON() as DOMRect
+        })
+        expect(Math.abs(textBox.left + textBox.width / 2 - (dailyTile.left + dailyTile.width / 2))).toBeLessThanOrEqual(1)
         const lineHeight = await conditionLine.evaluate((node) => parseFloat(getComputedStyle(node).lineHeight))
-        expect(conditionBox.height).toBeLessThan(lineHeight * 1.5)
+        expect(conditionBox.height).toBeLessThan(lineHeight * 2.5)
       }
     })
   }

@@ -15,6 +15,7 @@ import {
   startParis,
   storageKey,
 } from './game.ts'
+import { cityRunBeforeLastNext } from './screens.ts'
 
 /** A Paris run answered wrongly at every stop up to its summary phase, as the rules build it. */
 function finishedParisRun(): RunState {
@@ -61,6 +62,47 @@ test('a run saved in its summary phase completes at start without Continue, and 
   await page.reload()
   await expect(page.locator('.title-progress li')).toHaveText(['1/20 cities', /^0\/60 ★/, '1 postcard'])
   expect(await savedSection(page, 'progress')).toEqual(progress)
+  expect(await recordedEvents(page)).toEqual([])
+})
+
+test('rewards that fail to save at the last Next complete after a reload and cannot be discarded by a route change', async ({ page }) => {
+  await seedStorage(page, { 'active-run': { ownerTabId: 'closed-tab', run: cityRunBeforeLastNext('paris', 0) } })
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Continue' }).click()
+  await page.getByRole('dialog', { name: 'Paused' }).locator('.window-body .primary').click()
+  await expectState(page, 'result')
+  // Only this page, so the reload below has a working store again.
+  await page.evaluate((progressKey) => {
+    const setItem = Storage.prototype.setItem
+    Storage.prototype.setItem = function (key: string, value: string) {
+      if (key === progressKey) throw new DOMException('The quota has been exceeded.', 'QuotaExceededError')
+      setItem.call(this, key, value)
+    }
+  }, storageKey('progress'))
+  await page.locator('.next').click()
+
+  await expect(page.getByRole('heading', { name: 'Route complete' })).toBeVisible()
+  await expect(page.getByRole('status').filter({ hasText: 'This browser is not saving the game.' })).toBeVisible()
+  expect((await savedSection<{ run: RunState }>(page, 'active-run')).run.phase).toBe('summary')
+  expect(await savedSection(page, 'progress')).toBeUndefined()
+  expect((await recordedEvents(page)).filter((event) => event.name === 'route_completed')).toHaveLength(1)
+
+  // The finished run is no active run any more: the next city starts without asking to discard it.
+  await page.getByRole('button', { name: 'Next city' }).click()
+  await expectState(page, 'question')
+  await expect(page.getByRole('dialog', { name: 'Discard your current route?' })).toHaveCount(0)
+  await expect(page.locator('.play')).toContainText('London')
+
+  await page.reload()
+  await expect(page.getByRole('button', { name: 'Play', exact: true })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Continue' })).toHaveCount(0)
+  await expect(page.locator('.title-progress li')).toHaveText(['1/20 cities', /^0\/60 ★/, '1 postcard'])
+  expect(await savedSection(page, 'active-run')).toBeNull()
+  expect(await savedSection(page, 'progress')).toEqual({ completedCityIds: ['paris'], bestStars: { paris: 0 }, postcardCityIds: ['paris'] })
+  expect(await recordedEvents(page)).toEqual([])
+
+  await page.reload()
+  await expect(page.locator('.title-progress li')).toHaveText(['1/20 cities', /^0\/60 ★/, '1 postcard'])
   expect(await recordedEvents(page)).toEqual([])
 })
 
@@ -212,6 +254,89 @@ test('a run restored after the route changed its order shows its own stop, found
   await expect(page.locator('.question')).toHaveText(firstStop.question.en)
   await correctChoice(page, firstStop).click()
   await expect(page.locator('.result-sentence')).toHaveText(firstStop.feedback.en)
+})
+
+for (const reducedMotion of ['no-preference', 'reduce'] as const) {
+  test(`while the route loads after Play a bar across the top shows the game is working (${reducedMotion} motion)`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion })
+    let releaseRoute = () => undefined as void
+    const routeRequested = new Promise<void>((requested) => {
+      void page.route('**/src/content/routes/paris.json*', (route) => {
+        requested()
+        releaseRoute = () => void route.continue()
+      })
+    })
+    await page.goto('/')
+    await page.getByRole('button', { name: 'Play' }).click()
+    await routeRequested
+    await expect(page.locator('#app')).toHaveAttribute('aria-busy', 'true')
+    const bar = await page.evaluate(() => {
+      const app = document.querySelector('#app') as HTMLElement
+      const track = getComputedStyle(app, '::before')
+      const segment = getComputedStyle(app, '::after')
+      return {
+        cursor: getComputedStyle(app).cursor,
+        track: [track.position, track.top, track.height, track.width, track.backgroundColor],
+        segment: [segment.height, segment.backgroundColor, segment.animationName],
+        viewport: `${innerWidth}px`,
+      }
+    })
+    expect(bar.cursor).toBe('progress')
+    expect(bar.track).toEqual(['fixed', '0px', '4px', bar.viewport, 'rgb(21, 31, 68)'])
+    expect(bar.segment).toEqual(['4px', 'rgb(255, 191, 54)', reducedMotion === 'reduce' ? 'none' : 'route-loading-bar'])
+
+    releaseRoute()
+    await expectState(page, 'question')
+    await expect(page.locator('#app')).not.toHaveAttribute('aria-busy')
+    expect(await page.evaluate(() => getComputedStyle(document.querySelector('#app') as HTMLElement, '::before').content)).toBe('none')
+  })
+}
+
+for (const start of ['city', 'daily'] as const) {
+  test(`a ${start} start without a discard keeps a run another tab started while the route loaded`, async ({ page }) => {
+    const otherRun = cityRunBeforeLastNext('rome', 2)
+    const plan = dailyPlan(catalog, '2026-12-05')
+    const cityId = start === 'city' ? 'paris' : (plan?.cityId ?? '')
+    let releaseRoute = () => undefined as void
+    const routeRequested = new Promise<void>((requested) => {
+      void page.route(`**/src/content/routes/${cityId}.json*`, (route) => {
+        requested()
+        releaseRoute = () => void route.continue()
+      })
+    })
+    if (start === 'daily') {
+      await seedStorage(page, { progress: { completedCityIds: ['paris'], bestStars: { paris: 1 }, postcardCityIds: ['paris'] } })
+      await page.clock.install({ time: new Date('2026-12-05T08:00:00Z') })
+    }
+    await page.goto('/')
+    if (start === 'city') await page.getByRole('button', { name: 'Play' }).click()
+    else {
+      await page.getByRole('button', { name: 'Daily challenge' }).click()
+      await page.getByRole('button', { name: 'Start' }).click()
+    }
+    await routeRequested
+    const otherSave = JSON.stringify({ version: 1, data: { ownerTabId: 'other-tab', run: otherRun } })
+    await page.evaluate(([key, value]) => localStorage.setItem(key, value), [storageKey('active-run'), otherSave])
+    releaseRoute()
+
+    await expect(page.locator('#app')).not.toHaveAttribute('data-route-loading')
+    await expect(page.locator('.play')).toHaveCount(0)
+    await expect(page.getByRole('button', { name: 'Continue', exact: true })).toBeFocused()
+    expect(await page.evaluate((key) => localStorage.getItem(key), storageKey('active-run'))).toBe(otherSave)
+    expect((await recordedEvents(page)).filter((event) => event.name === 'route_started' || event.name === 'route_left')).toEqual([])
+  })
+}
+
+test('a route load error takes the focus on Try again, and Escape works like × back to the title', async ({ page }) => {
+  await page.route('**/src/content/routes/paris.json*', (route) => route.abort())
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Play' }).click()
+  await expect(page.getByRole('alert')).toHaveText(/The route could not load\./)
+  await expect(page.getByRole('button', { name: 'Try again' })).toBeFocused()
+  await page.keyboard.press('Escape')
+  await expect(page.getByRole('alert')).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'Play', exact: true })).toBeFocused()
+  expect(await savedSection(page, 'active-run')).toBeUndefined()
 })
 
 test('a failed placeholders.json is a route load failure, and Try again starts the run with the scene caption', async ({ page }) => {

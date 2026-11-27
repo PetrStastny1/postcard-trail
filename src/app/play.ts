@@ -10,7 +10,7 @@ import { openSkip, type SkipWindow } from './skip.ts'
 import type { GameSession } from './start.ts'
 
 /** The adapter's key for the active run, as `storage` events name it. */
-const activeRunStorageKey = `postcard-trail:${storageKeys.activeRun}`
+export const activeRunStorageKey = `postcard-trail:${storageKeys.activeRun}`
 const fiftyFiftyHintId = 'fifty-fifty'
 const hintMs = 1500
 const skipHintId = 'skip-video'
@@ -292,7 +292,7 @@ export function startPlay({ session, catalog, route, placeholderSceneIds, run, m
   function zoomContent(image: HTMLImageElement): HTMLElement[] {
     const stop = routeStop(currentStop(controller.run))
     const caption = scene.placeholder ? stop.sceneAlt[session.settings.locale] : null
-    return zoomWindow({ image, caption, onClose: () => closeZoom(true) })
+    return zoomWindow({ image, caption, onClose: () => closeZoom(true), onHome: goHome })
   }
 
   /** Closes the game windows and settings without resuming the question. */

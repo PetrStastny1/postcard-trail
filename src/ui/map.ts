@@ -15,10 +15,15 @@ export interface MapCity {
   stars: Stars
   /** The city whose completion unlocks this one; `null` for the first city. */
   previous: CatalogCity | null
+  /** The active run is a city run of this city. */
+  inProgress: boolean
 }
 
-/** Every released city in catalog order with its state for the map, the list and the detail. */
-export function mapCities(progress: Progress, catalog: Catalog): MapCity[] {
+/**
+ * Every released city in catalog order with its state for the map, the list and the detail. `activeCityId` is the city
+ * of the active city run, `null` without one.
+ */
+export function mapCities(progress: Progress, catalog: Catalog, activeCityId: string | null): MapCity[] {
   const unlocked = new Set(unlockedCityIds(progress, catalog))
   const completed = new Set(progress.completedCityIds)
   return catalog.cities.map((city, index) => ({
@@ -26,6 +31,7 @@ export function mapCities(progress: Progress, catalog: Catalog): MapCity[] {
     state: completed.has(city.id) ? 'completed' : unlocked.has(city.id) ? 'unlocked' : 'locked',
     stars: progress.bestStars[city.id] ?? 0,
     previous: index === 0 ? null : catalog.cities[index - 1],
+    inProgress: city.id === activeCityId,
   }))
 }
 
@@ -40,9 +46,14 @@ export interface MapOptions {
 
 export const mapTitleId = 'map-title'
 
-function stateLabel({ state, stars }: MapCity): string {
-  if (state === 'completed') return `${t('city.completed')}, ${t('stars.spoken', { stars })}`
-  return t(state === 'locked' ? 'city.locked' : 'city.unlocked')
+/** The state word of a list row and a point; a run in progress is the main state, as in the detail. */
+function stateWord({ state, inProgress }: MapCity): string {
+  return t(inProgress ? 'city.inProgress' : `city.${state}`)
+}
+
+function stateLabel(entry: MapCity): string {
+  if (entry.state === 'completed') return `${stateWord(entry)}, ${t('stars.spoken', { stars: entry.stars })}`
+  return stateWord(entry)
 }
 
 /**
@@ -182,7 +193,7 @@ export function mapScreen({ cities, locale, onOpenCity, onClose, onHome }: MapOp
         'span',
         { class: 'city-state' },
         ...(entry.state === 'locked' ? [icon('lock', { class: 'city-state-icon' })] : []),
-        element('span', {}, t(`city.${entry.state}`)),
+        element('span', {}, stateWord(entry)),
         ...(entry.state === 'completed' ? [starRating(entry.stars)] : []),
       ),
     )
@@ -210,10 +221,9 @@ export function mapScreen({ cities, locale, onOpenCity, onClose, onHome }: MapOp
 }
 
 export interface CityDetailOptions {
+  /** With a run in progress here the detail offers "Continue" instead. */
   entry: MapCity
   locale: Locale
-  /** The active run is a city run of this city: the detail offers "Continue" instead. */
-  hasActiveRunHere: boolean
   onPlay(): void
   onContinue(): void
   onClose(): void
@@ -226,8 +236,8 @@ export const cityDetailTitleId = 'city-detail-title'
  * The modal detail of a city: the postcard scene (a dashed place with a lock while locked), the main state and the
  * play action, or the unlock condition without any action while locked.
  */
-export function cityDetailWindow({ entry, locale, hasActiveRunHere, onPlay, onContinue, onClose, onHome }: CityDetailOptions): HTMLElement[] {
-  const { city, state, stars, previous } = entry
+export function cityDetailWindow({ entry, locale, onPlay, onContinue, onClose, onHome }: CityDetailOptions): HTMLElement[] {
+  const { city, state, stars, previous, inProgress: hasActiveRunHere } = entry
   const bar = windowBar({ titleId: cityDetailTitleId, title: city.name[locale], onClose, onHome })
   let art: HTMLElement
   let info: HTMLElement[]

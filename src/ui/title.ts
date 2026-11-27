@@ -36,7 +36,7 @@ export function titleScreen({ totals, dailyUnlocked, hasActiveRun, onPlay, onCon
   const collection = secondaryButton('title-collection', t('title.collection'))
   collection.addEventListener('click', onOpenCollection)
 
-  // The condition sits under the menu as the button's description only; hidden from the name, so a screen reader reads it once.
+  // The condition sits under the tile as the button's description only; hidden from the name, so a screen reader reads it once.
   const daily = element(
     'button',
     {
@@ -52,7 +52,13 @@ export function titleScreen({ totals, dailyUnlocked, hasActiveRun, onPlay, onCon
   if (dailyUnlocked) daily.addEventListener('click', onOpenDaily)
   const dailyCondition = dailyUnlocked
     ? []
-    : [element('p', { id: 'title-daily-condition', class: 'title-daily-condition', 'aria-hidden': 'true' }, t('title.dailyLocked'))]
+    : [
+        element(
+          'div',
+          { class: 'title-daily-note', 'aria-hidden': 'true' },
+          element('p', { id: 'title-daily-condition', class: 'title-daily-condition' }, t('title.dailyLocked')),
+        ),
+      ]
 
   const progress = element(
     'ul',

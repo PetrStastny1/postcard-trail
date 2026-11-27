@@ -470,11 +470,13 @@ dialog.window:has(~ dialog.window-narrow[open])::backdrop {
   font-variant-numeric: tabular-nums;
 }
 
+/*
+ * A line of news under the result, not a control: no fill or rounded edge that would read as a button, and no line of
+ * its own, since the last stat row already ends with one; only space sets it apart.
+ */
 .summary-unlocked {
   margin: 0;
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-md);
-  background: var(--color-paper-deep);
+  padding-top: var(--space-2);
   font-weight: var(--weight-semibold);
   text-align: center;
 }
@@ -554,6 +556,17 @@ dialog.window:has(~ dialog.window-narrow[open])::backdrop {
   margin: 0;
   font-weight: var(--weight-bold);
   font-variant-numeric: tabular-nums;
+}
+
+/* The sentence on how to earn a postcard belongs to the count, so it sits closer to it than the grid does. */
+.collection-head {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.collection-empty {
+  margin: 0;
+  color: var(--color-ink-soft);
 }
 
 .postcard-grid {

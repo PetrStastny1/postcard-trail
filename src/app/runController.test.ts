@@ -334,6 +334,32 @@ test('a run saved in its summary phase is completed at start once', () => {
   assert.deepEqual(reloaded.loadProgress(), { completedCityIds: ['paris'], bestStars: { paris: 0 }, postcardCityIds: ['paris'] })
 })
 
+test('rewards that fail to reach the store leave the run saved in its summary phase, and a reload completes it', () => {
+  const store = memoryStore()
+  const failingStore: KeyValueStore = {
+    read: store.read,
+    write: (key, value) => {
+      if (key === storageKeys.progress) throw new Error('QuotaExceededError')
+      store.write(key, value)
+    },
+  }
+  const { controller, events, completions, storage } = harness(newParisRun(), { store: failingStore })
+  for (let stop = 0; stop < 10; stop++) {
+    controller.sceneReady()
+    controller.choose(wrongChoiceId(controller.run))
+    controller.next()
+  }
+  assert.equal(completions.length, 1, 'the summary still shows')
+  assert.equal(storage.takeUnavailableNotice(), true)
+  assert.equal(savedRun(store).phase, 'summary')
+  assert.equal(events.filter((event) => event.name === 'route_completed').length, 1)
+
+  completeFinishedRun(new GameStorage(store, 'tab-after-reload'), catalog)
+  const reloaded = new GameStorage(store, 'tab-after-reload')
+  assert.equal(reloaded.loadActiveRun(), null)
+  assert.deepEqual(reloaded.loadProgress(), { completedCityIds: ['paris'], bestStars: { paris: 0 }, postcardCityIds: ['paris'] })
+})
+
 /** A Paris run paused in the question of the third stop after two correct answers, so the skip is on offer. */
 function pausedAtThirdStop() {
   const setup = harness(newParisRun())

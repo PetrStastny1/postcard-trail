@@ -499,6 +499,34 @@ test('Back to the answer is as wide in the unavailable window as in the confirma
   expect((await back.boundingBox())?.width).toBe(confirmWidth)
 })
 
+for (const outcome of ['cancelled', 'unavailable'] as const) {
+  for (const size of [{ width: 1440, height: 900 }, { width: 320, height: 568 }]) {
+    test(`the sentence and the only Back to the answer of the ${outcome} window are centred, the button as wide as in the confirmation at ${size.width} × ${size.height}`, async ({ page }) => {
+      await page.setViewportSize(size)
+      await continueRun(page, runAt(parisRun(), 2), { search: `?ad=${outcome}` })
+      await openConfirm(page)
+      const back = skipWindow(page).getByRole('button', { name: 'Back to the answer' })
+      const confirmWidth = (await back.boundingBox())?.width
+      await playVideo(page)
+      await expect(skipWindow(page).locator('.skip-text')).toHaveText(outcome === 'cancelled' ? 'The video didn’t finish, so the question wasn’t skipped.' : 'The video isn’t available right now.')
+      const button = (await back.boundingBox())!
+      const row = (await skipWindow(page).locator('.skip-actions').boundingBox())!
+      expect(button.width).toBe(confirmWidth)
+      expect(Math.abs(button.x + button.width / 2 - (row.x + row.width / 2))).toBeLessThanOrEqual(1)
+      // The sentence above is centred too: every line of it sits in the middle of the row.
+      const lineOffsets = await skipWindow(page)
+        .locator('.skip-text')
+        .evaluate((node) => {
+          const range = document.createRange()
+          range.selectNodeContents(node)
+          const box = node.getBoundingClientRect()
+          return [...range.getClientRects()].map((line) => line.left + line.width / 2 - (box.left + box.width / 2))
+        })
+      for (const offset of lineOffsets) expect(Math.abs(offset)).toBeLessThanOrEqual(1)
+    })
+  }
+}
+
 for (const locale of ['en', 'cs'] as const) {
   for (const size of layoutSizes.slice(0, 2)) {
     test(`the hint by the pause button covers nothing at ${size.width} × ${size.height} in ${locale}`, async ({ page }) => {

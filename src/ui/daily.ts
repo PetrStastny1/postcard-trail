@@ -68,10 +68,8 @@ export function dailyScreen({ utcDate, state, streak, locale, onStart, onContinu
   if (state.status === 'notOffered') {
     content.push(element('p', { class: 'daily-state' }, t('daily.notOffered', { date: formatUtcDate(state.firstUtcDate, locale) })))
   } else {
-    const message =
-      state.status === 'available'
-        ? t('daily.available', { city: state.city.name[locale] })
-        : t(state.status === 'inProgress' ? 'daily.inProgress' : 'daily.done')
+    // The heading already names the city, so the sentence does not repeat it.
+    const message = t(state.status === 'available' ? 'daily.available' : state.status === 'inProgress' ? 'daily.inProgress' : 'daily.done')
     const correct = state.status === 'done' ? state.correct : state.status === 'inProgress' ? 'inProgress' : null
     content.push(element('p', { class: 'daily-state' }, message), dailyStats(correct, streak))
     if (state.status === 'available' || state.status === 'inProgress') {
@@ -105,7 +103,7 @@ export const dailySummaryTitleId = 'daily-summary-title'
 
 /** After the third Next: the city, the score and the day streak; the daily challenge changes no stars, postcards or unlocks. */
 export function dailySummaryScreen({ city, locale, correct, streak, onOverview, onClose, onHome }: DailySummaryOptions): HTMLElement {
-  const overview = element('button', { class: 'primary', type: 'button', 'data-focus-id': 'daily-summary-overview' }, t('daily.title'))
+  const overview = element('button', { class: 'primary', type: 'button', 'data-focus-id': 'daily-summary-overview' }, t('dailySummary.overview'))
   overview.addEventListener('click', onOverview)
   const home = element('button', { class: 'secondary', type: 'button', 'data-focus-id': 'daily-summary-home' }, t('window.home'))
   home.addEventListener('click', onHome)
