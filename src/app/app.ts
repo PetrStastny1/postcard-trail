@@ -492,6 +492,8 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
     try {
       ;[route, placeholderSceneIds] = await Promise.all([loadRoute(cityId), loadPlaceholderSceneIds()])
     } catch {
+      // The error screen, like the game, waits for settings opened while the route loaded, so no window stays over it.
+      if (settingsDialog) await settingsClosed()
       setRouteLoading(-1)
       if (shownScreens !== shownBefore) return
       // The player sees the failure and can try again; the run, if any, stays saved as it was.

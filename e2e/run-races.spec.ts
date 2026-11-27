@@ -136,6 +136,46 @@ test.describe('settings opened while the route loads', () => {
   })
 })
 
+async function failRouteUnderSettings(page: Page) {
+  let failRoute = () => undefined as void
+  const routeRequested = new Promise<void>((requested) => {
+    void page.route('**/src/content/routes/paris.json*', (request) => {
+      requested()
+      failRoute = () => void request.abort()
+    })
+  })
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Play', exact: true }).click()
+  await routeRequested
+  await page.getByRole('button', { name: 'Settings' }).click()
+  const settings = page.getByRole('dialog', { name: 'Settings' })
+  await expect(settings).toBeVisible()
+  failRoute()
+  // The load has failed; its error must not be drawn under the open window.
+  await page.waitForTimeout(1_000)
+  await expect(page.locator('.route-error-screen')).toHaveCount(0)
+  await expect(page.locator('#app')).toHaveAttribute('data-route-loading')
+  return settings
+}
+
+test('a route that fails to load under open settings shows its error once settings close, with the focus on Try again', async ({ page }) => {
+  const settings = await failRouteUnderSettings(page)
+  await settings.getByRole('button', { name: 'Close' }).click()
+  await expect(page.locator('.route-error-screen')).toBeVisible()
+  await expect(page.locator('#app')).not.toHaveAttribute('data-route-loading')
+  await expect(page.locator('dialog[open]')).toHaveCount(0)
+  await expect(page.locator('[data-focus-id="route-retry"]')).toBeFocused()
+  expect(await savedRun(page)).toBeNull()
+})
+
+test('Home in settings opened while the route fails to load shows the title, not the error', async ({ page }) => {
+  const settings = await failRouteUnderSettings(page)
+  await settings.getByRole('button', { name: 'Home' }).click()
+  await expect(page.locator('#app')).not.toHaveAttribute('data-route-loading')
+  await expect(page.getByRole('button', { name: 'Play', exact: true })).toBeVisible()
+  await expect(page.locator('.route-error-screen')).toHaveCount(0)
+})
+
 const mismatches: { name: string; change(run: RunState): RunState }[] = [
   { name: 'a stop ID', change: (run) => ({ ...run, stops: run.stops.map((stop, index) => (index === 4 ? { ...stop, stopId: 'PAR99' } : stop)) }) },
   {
