@@ -14,9 +14,9 @@ export interface CitySummaryOptions {
   /** The city after this one in the catalog, `null` after the last city, when the map comes next. */
   nextCity: CatalogCity | null
   locale: Locale
-  onNextCity(): void
+  /** Next city and Play again; `returnFocusId` is the button, where the route change window returns. */
+  onPlayCity(cityId: string, returnFocusId: string): void
   onMap(): void
-  onPlayAgain(): void
   onClose(): void
   onHome(): void
 }
@@ -31,9 +31,9 @@ export function citySummaryScreen(options: CitySummaryOptions): HTMLElement {
     { class: 'primary', type: 'button', 'data-focus-id': 'summary-next' },
     t(nextCity ? 'summary.nextCity' : 'summary.map'),
   )
-  next.addEventListener('click', nextCity ? options.onNextCity : options.onMap)
+  next.addEventListener('click', () => (nextCity ? options.onPlayCity(nextCity.id, 'summary-next') : options.onMap()))
   const again = element('button', { class: 'secondary', type: 'button', 'data-focus-id': 'summary-again' }, t('city.playAgain'))
-  again.addEventListener('click', options.onPlayAgain)
+  again.addEventListener('click', () => options.onPlayCity(city.id, 'summary-again'))
 
   const stats = element(
     'dl',

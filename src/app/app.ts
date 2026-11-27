@@ -319,17 +319,15 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
 
   function renderCitySummary({ run, summary }: Extract<RunCompletion, { mode: 'city' }>): HTMLElement {
     const index = catalog.cities.findIndex((city) => city.id === run.cityId)
-    const nextCity = catalog.cities[index + 1] ?? null
     return citySummaryScreen({
       city: catalog.cities[index],
       run,
       summary,
       unlockedCity: catalog.cities.find((city) => city.id === summary.newlyUnlockedCityId) ?? null,
-      nextCity,
+      nextCity: catalog.cities.at(index + 1) ?? null,
       locale: session.settings.locale,
-      onNextCity: () => changeRun('summary-next', (discard) => startCity(nextCity.id, discard)),
+      onPlayCity: (cityId, returnFocusId) => changeRun(returnFocusId, (discard) => startCity(cityId, discard)),
       onMap: openMap,
-      onPlayAgain: () => changeRun('summary-again', (discard) => startCity(run.cityId, discard)),
       onClose: () => showTitle('title-play'),
       onHome: goHome,
     })

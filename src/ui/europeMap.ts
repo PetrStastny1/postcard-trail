@@ -98,9 +98,9 @@ function outlinePath(points: [number, number][]): string {
 export const landPaths: string[] = [mainland, ...islands].map(outlinePath)
 
 /**
- * Groups cities whose targets would touch at this size. `pixelsPerUnit` turns map units into CSS px; a target is a
- * square of `target` px kept inside a frame of `frameWidth` × `frameHeight` px. Two targets touch when they are
- * closer than `target` on both axes, so no two drawn targets ever overlap. Positions are in px within the frame.
+ * Groups the cities inside `view` whose targets would touch when the view fills a frame of `width` × `height` CSS px.
+ * A target is a square of `target` px kept whole inside the frame. Two targets touch when they are closer than
+ * `target` on both axes, so no two drawn targets ever overlap. Positions are in px within the frame.
  */
 export function clusterCities(
   cities: PlacedCity[],
