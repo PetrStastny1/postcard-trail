@@ -1,5 +1,6 @@
 import { t } from '../i18n/index.ts'
 import { element, iconButton } from './element.ts'
+import { markMoreContent } from './moreContent.ts'
 
 export interface WindowBarOptions {
   titleId: string
@@ -15,4 +16,17 @@ export function windowBar({ titleId, title, onClose, onHome }: WindowBarOptions)
   const home = element('button', { class: 'window-home', type: 'button', 'data-focus-id': 'window-home' }, t('window.home'))
   home.addEventListener('click', onHome)
   return element('header', { class: 'window-bar' }, close, element('h2', { id: titleId, class: 'window-title' }, title), home)
+}
+
+export interface WindowScreenOptions extends WindowBarOptions {
+  /** Extra class on the screen, e.g. for its own layout. */
+  className: string
+  content: HTMLElement[]
+}
+
+/** A window that fills the screen slot: the bar stays at the top and the body scrolls under it. */
+export function windowScreen({ className, content, ...bar }: WindowScreenOptions): HTMLElement {
+  const body = element('div', { class: 'window-body' }, ...content)
+  markMoreContent(body)
+  return element('div', { class: `window-screen ${className}` }, windowBar(bar), body)
 }
