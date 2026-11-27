@@ -630,6 +630,33 @@ test('crazygames: loading signals are merged', async () => {
   assert.deepEqual(crazyGames.calls, ['loadingStart', 'loadingStop', 'loadingStart'])
 })
 
+test('crazygames: a loadingStarted before init() is sent once the SDK is connected, and loadingStop follows once', async () => {
+  const crazyGames = fakeCrazyGames()
+  const adapter = createCrazyGamesAdapter({ development: true, openStorage: () => new MemoryStorage(), loadSdk: () => Promise.resolve(crazyGames.sdk) })
+
+  adapter.loadingStarted()
+  assert.deepEqual(crazyGames.calls, [])
+  await adapter.init()
+  assert.deepEqual(crazyGames.calls, ['loadingStart'])
+  adapter.loadingStarted()
+  adapter.loadingFinished()
+  adapter.loadingFinished()
+
+  assert.deepEqual(crazyGames.calls, ['loadingStart', 'loadingStop'])
+})
+
+test('crazygames: loading that finished before init() resolves sends nothing on connect', async () => {
+  const crazyGames = fakeCrazyGames()
+  const adapter = createCrazyGamesAdapter({ development: true, openStorage: () => new MemoryStorage(), loadSdk: () => Promise.resolve(crazyGames.sdk) })
+
+  adapter.loadingStarted()
+  const initialised = adapter.init()
+  adapter.loadingFinished()
+  await initialised
+
+  assert.deepEqual(crazyGames.calls, [])
+})
+
 const crazyGamesOutcomes: { name: string; play(callbacks: RequestAdCallbacks): void; callbacks: Callback[] }[] = [
   {
     name: 'adStarted then adFinished is completed',
