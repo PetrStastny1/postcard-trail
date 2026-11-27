@@ -56,10 +56,13 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
   // Capturing on window runs before any other handler, so a cue played by that handler can already sound.
   window.addEventListener('click', () => session.feedback.unlock(), { capture: true })
   window.addEventListener('keydown', () => session.feedback.unlock(), { capture: true })
-  // Escape works like × on a window screen as well; a dialog closes itself on Escape and the game has its own keys.
+  // Escape works like × on a window screen and on the route load error as well; a dialog closes itself on Escape and
+  // the game has its own keys.
   document.addEventListener('keydown', (event) => {
     if (event.key !== 'Escape' || activePlay || topDialog()) return
-    screenSlot.querySelector<HTMLElement>('.window-screen > .window-bar [data-focus-id="window-close"]')?.click()
+    screenSlot
+      .querySelector<HTMLElement>('.window-screen > .window-bar [data-focus-id="window-close"], .route-error-screen > .play-bar [data-focus-id="play-leave"]')
+      ?.click()
   })
 
   function applySettings(): void {
@@ -392,6 +395,7 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
       if (shownScreens !== shownBefore) return
       // The player sees the failure and can try again; the run, if any, stays saved as it was.
       showScreen(() => routeErrorScreen({ onRetry: () => void openRoute(cityId, begin), onHome: goHome }))
+      screenSlot.querySelector<HTMLElement>('[data-focus-id="route-retry"]')?.focus()
       return
     }
     setRouteLoading(-1)

@@ -256,6 +256,18 @@ test('a run restored after the route changed its order shows its own stop, found
   await expect(page.locator('.result-sentence')).toHaveText(firstStop.feedback.en)
 })
 
+test('a route load error takes the focus on Try again, and Escape works like × back to the title', async ({ page }) => {
+  await page.route('**/src/content/routes/paris.json*', (route) => route.abort())
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Play' }).click()
+  await expect(page.getByRole('alert')).toHaveText(/The route could not load\./)
+  await expect(page.getByRole('button', { name: 'Try again' })).toBeFocused()
+  await page.keyboard.press('Escape')
+  await expect(page.getByRole('alert')).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'Play', exact: true })).toBeFocused()
+  expect(await savedSection(page, 'active-run')).toBeUndefined()
+})
+
 test('a failed placeholders.json is a route load failure, and Try again starts the run with the scene caption', async ({ page }) => {
   let failing = true
   await page.route('**/scenes/placeholders.json', (route) => (failing ? route.abort() : route.fulfill({ json: { stopIds: [paris.stops[0].id] } })))
