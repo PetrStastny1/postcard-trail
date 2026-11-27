@@ -508,13 +508,12 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
     const start = begin(route)
     showStorageNoticeOnce()
     if (typeof start === 'function') return start()
-    const run = start
     activePlay = startPlay({
       session,
       catalog,
       route,
       placeholderSceneIds,
-      run,
+      run: start,
       mount: (screen) => showScreen(() => screen),
       openSettings,
       goHome,
