@@ -74,6 +74,52 @@ svg {
   height: 100dvh;
 }
 
+/*
+ * While a route loads after Play, Continue or Discard and start, a bar across the top of the viewport says the game
+ * is working: a navy track, visible on the cream screens, with an amber segment, visible on the navy window bars. It
+ * lets clicks through and moves only where the system and the settings allow motion.
+ */
+#app[aria-busy='true'] {
+  cursor: progress;
+}
+
+#app[aria-busy='true']::before,
+#app[aria-busy='true']::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  height: var(--space-1);
+  pointer-events: none;
+}
+
+#app[aria-busy='true']::before {
+  right: 0;
+  background: var(--color-ink);
+}
+
+#app[aria-busy='true']::after {
+  width: 35%;
+  background: var(--color-accent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  #app[aria-busy='true']::after {
+    animation: route-loading-bar 1400ms var(--ease-in-out) infinite alternate;
+  }
+}
+
+:root[data-reduced-motion='true'] #app[aria-busy='true']::after {
+  animation: none;
+}
+
+@keyframes route-loading-bar {
+  to {
+    transform: translateX(186%);
+  }
+}
+
 .screen {
   /* Positioned, like every scroller, so a visually hidden label stays inside it instead of stretching the page. */
   position: relative;

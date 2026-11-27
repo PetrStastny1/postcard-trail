@@ -256,6 +256,42 @@ test('a run restored after the route changed its order shows its own stop, found
   await expect(page.locator('.result-sentence')).toHaveText(firstStop.feedback.en)
 })
 
+for (const reducedMotion of ['no-preference', 'reduce'] as const) {
+  test(`while the route loads after Play a bar across the top shows the game is working (${reducedMotion} motion)`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion })
+    let releaseRoute = () => undefined as void
+    const routeRequested = new Promise<void>((requested) => {
+      void page.route('**/src/content/routes/paris.json*', (route) => {
+        requested()
+        releaseRoute = () => void route.continue()
+      })
+    })
+    await page.goto('/')
+    await page.getByRole('button', { name: 'Play' }).click()
+    await routeRequested
+    await expect(page.locator('#app')).toHaveAttribute('aria-busy', 'true')
+    const bar = await page.evaluate(() => {
+      const app = document.querySelector('#app') as HTMLElement
+      const track = getComputedStyle(app, '::before')
+      const segment = getComputedStyle(app, '::after')
+      return {
+        cursor: getComputedStyle(app).cursor,
+        track: [track.position, track.top, track.height, track.width, track.backgroundColor],
+        segment: [segment.height, segment.backgroundColor, segment.animationName],
+        viewport: `${innerWidth}px`,
+      }
+    })
+    expect(bar.cursor).toBe('progress')
+    expect(bar.track).toEqual(['fixed', '0px', '4px', bar.viewport, 'rgb(21, 31, 68)'])
+    expect(bar.segment).toEqual(['4px', 'rgb(255, 191, 54)', reducedMotion === 'reduce' ? 'none' : 'route-loading-bar'])
+
+    releaseRoute()
+    await expectState(page, 'question')
+    await expect(page.locator('#app')).not.toHaveAttribute('aria-busy')
+    expect(await page.evaluate(() => getComputedStyle(document.querySelector('#app') as HTMLElement, '::before').content)).toBe('none')
+  })
+}
+
 test('a route load error takes the focus on Try again, and Escape works like × back to the title', async ({ page }) => {
   await page.route('**/src/content/routes/paris.json*', (route) => route.abort())
   await page.goto('/')
