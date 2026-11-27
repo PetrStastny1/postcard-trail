@@ -47,7 +47,8 @@ test.describe('in Prague time', () => {
     await openDailyOn(page, '2026-12-05T23:30:00Z')
     await expect(page.locator('.daily-date')).toHaveText('December 5, 2026, UTC')
     const { route } = dailyPlanOn(today)
-    await expect(page.locator('.daily-state')).toHaveText(`Today: three stops in ${route.name.en}.`)
+    await expect(page.locator('.daily-city')).toHaveText(route.name.en)
+    await expect(page.locator('.daily-state')).toHaveText('Today: three stops.')
   })
 })
 
@@ -57,7 +58,7 @@ test('the daily challenge plays the city and stops of dailyPlan, hides the place
   await openDailyOn(page, `${today}T08:00:00Z`)
   await expect(page.locator('.daily-date')).toHaveText('December 5, 2026, UTC')
   await expect(page.getByRole('heading', { name: route.name.en })).toBeVisible()
-  await expect(page.locator('.daily-state')).toHaveText(`Today: three stops in ${route.name.en}.`)
+  await expect(page.locator('.daily-state')).toHaveText('Today: three stops.')
   await expect(daily(page).locator('.summary-stats > div')).toHaveText([/^Today’s scoreNot played yet$/, /^Day streak0 days$/])
   await expect(page.getByRole('button', { name: 'Start' })).toBeFocused()
 
@@ -95,7 +96,8 @@ test('the daily challenge plays the city and stops of dailyPlan, hides the place
   await expect(page.getByRole('heading', { name: 'Daily challenge done' })).toBeVisible()
   await expect(page.getByRole('heading', { name: route.name.en })).toBeVisible()
   await expect(page.locator('.summary-stats > div')).toHaveText([/^Today’s score2\/3$/, /^Day streak1 day$/])
-  await expect(page.getByRole('button', { name: 'Daily challenge' })).toBeFocused()
+  await expect(page.getByRole('button', { name: 'Daily overview' })).toBeFocused()
+  await expect(page.getByRole('button', { name: /start|play/i })).toHaveCount(0)
   const events = await recordedEvents(page)
   expect(events[0]).toEqual({ name: 'route_started', cityId: plan.cityId, mode: 'daily', resumed: true })
   expect(events.slice(-2)).toEqual([
@@ -104,7 +106,7 @@ test('the daily challenge plays the city and stops of dailyPlan, hides the place
   ])
   expect(await savedSection(page, 'progress')).toEqual(parisDone)
 
-  await page.getByRole('button', { name: 'Daily challenge' }).click()
+  await page.getByRole('button', { name: 'Daily overview' }).click()
   await expect(page.locator('.daily-city')).toHaveText(route.name.en)
   await expect(page.locator('.daily-state')).toHaveText('Done for today. A new challenge comes tomorrow.')
   await expect(daily(page).locator('.summary-stats > div')).toHaveText([/^Today’s score2\/3$/, /^Day streak1 day$/])

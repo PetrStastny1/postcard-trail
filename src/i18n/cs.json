@@ -113,7 +113,7 @@
   "daily.date": "{date}, UTC",
   "daily.notOffered": "První denní výzva bude {date}.",
   "daily.notOfferedTitle": "Zatím se nenabízí",
-  "daily.available": "Dnes: tři zastávky, město {city}.",
+  "daily.available": "Dnes: tři zastávky.",
   "daily.inProgress": "Denní výzvu máš rozehranou.",
   "daily.done": "Dnešní výzva je hotová. Nová bude zítra.",
   "daily.score": "Dnešní skóre",
@@ -126,5 +126,6 @@
   "daily.start": "Začít",
   "daily.continue": "Pokračovat",
   "dailySummary.title": "Denní výzva hotová",
+  "dailySummary.overview": "Denní přehled",
   "result.outOf": "{count}/{total}"
 }

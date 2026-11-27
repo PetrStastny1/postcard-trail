@@ -113,7 +113,7 @@
   "daily.date": "{date}, UTC",
   "daily.notOffered": "The first daily challenge is on {date}.",
   "daily.notOfferedTitle": "Not offered yet",
-  "daily.available": "Today: three stops in {city}.",
+  "daily.available": "Today: three stops.",
   "daily.inProgress": "Your daily challenge is in progress.",
   "daily.done": "Done for today. A new challenge comes tomorrow.",
   "daily.score": "Today’s score",
@@ -126,5 +126,6 @@
   "daily.start": "Start",
   "daily.continue": "Continue",
   "dailySummary.title": "Daily challenge done",
+  "dailySummary.overview": "Daily overview",
   "result.outOf": "{count}/{total}"
 }
