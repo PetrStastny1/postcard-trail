@@ -42,6 +42,12 @@ async function expectCityRowsApart(page: Page) {
   expect(problems).toEqual([])
 }
 
+/** A narrow list puts every state on its own line, so rows with stars and rows with a state word keep one rhythm. */
+async function expectOneRowHeight(page: Page) {
+  const heights = await page.locator('.city-row').evaluateAll((rows) => [...new Set(rows.map((row) => Math.round(row.getBoundingClientRect().height)))])
+  expect(heights).toHaveLength(1)
+}
+
 async function homeFromScreen(page: Page) {
   await page.locator('.window-screen [data-focus-id="window-home"]').click()
   await expect(control(page, 'title-play')).toBeVisible()
@@ -63,6 +69,7 @@ for (const locale of ['en', 'cs'] as const) {
 
         await control(page, 'title-map').click()
         await expect(page.locator('.map-point').first()).toBeVisible()
+        await expectOneRowHeight(page)
         await expectUsableLayout(page)
         // The layout check leaves the map scrolled, and controls scrolled away would count as overlapping, so the
         // zoomed map is checked on a fresh map.
@@ -123,6 +130,7 @@ for (const locale of ['en', 'cs'] as const) {
         await control(page, 'title-map').click()
         await expect(page.locator('.city-row')).toHaveCount(20)
         await expectCityRowsApart(page)
+        await expectOneRowHeight(page)
         await expectUsableLayout(page)
         await homeFromScreen(page)
 

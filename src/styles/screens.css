@@ -176,6 +176,7 @@
 }
 
 .city-list {
+  container: city-list / inline-size;
   display: grid;
   gap: var(--space-2);
   margin: 0;
@@ -228,6 +229,18 @@
   gap: 0 var(--space-2);
   font-size: var(--text-small);
   font-weight: var(--weight-regular);
+}
+
+/*
+ * The widest row (a long name, "Completed" and three stars) needs about 19.3rem. Below 20rem every state goes to its
+ * own line, so all rows share one height instead of only the long names wrapping.
+ */
+@container city-list (width < 20rem) {
+  /* As tall as the line with stars, so a row with only a state word is as tall as a completed one. */
+  .city-state {
+    flex-basis: 100%;
+    min-height: calc(var(--text-control) * var(--leading-tight));
+  }
 }
 
 .city-state .star-rating {
@@ -448,8 +461,9 @@ dialog.window:has(~ dialog.window-narrow[open])::backdrop {
 }
 
 /*
- * Landscape follows the game screen: the postcard on the left as large as the height allows, the result on the right
- * centred vertically. The reserve is the bar, the padding and the caption under the postcard.
+ * Landscape follows the game screen: the postcard on the left sized by the height like the game's scene (the same
+ * reserve as `--landscape-reserve` in play.css, 184 px on 568 × 320), so its caption stays in view; the result on the
+ * right centred vertically.
  */
 @media (orientation: landscape) {
   .window-screen.summary-screen > .window-body > * {
@@ -457,7 +471,7 @@ dialog.window:has(~ dialog.window-narrow[open])::backdrop {
   }
 
   .summary {
-    --summary-reserve: calc(var(--hit-target) + 2 * var(--space-4) + var(--space-2) + var(--text-small) * var(--leading-normal));
+    --summary-reserve: 8.5rem;
     grid-template-columns: auto minmax(0, 1fr);
     align-items: center;
     column-gap: var(--space-8);
@@ -504,6 +518,11 @@ dialog.window:has(~ dialog.window-narrow[open])::backdrop {
 
   .summary-city {
     font-size: var(--text-title);
+  }
+
+  /* Side by side, both actions fit under the result on the smallest landscape screen. */
+  .summary .window-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -570,6 +589,24 @@ dialog.window:has(~ dialog.window-narrow[open])::backdrop {
   overflow-wrap: anywhere;
 }
 
+/*
+ * Wide screens: the collection takes the game's width with larger cards instead of a narrow column. The least card
+ * width follows the height too, so a short wide window shows more of the collection at once.
+ */
+@media (min-width: 48rem) {
+  .window-screen.collection-screen > .window-body > * {
+    max-width: var(--play-max-width);
+  }
+
+  .postcard-grid {
+    grid-template-columns: repeat(auto-fill, minmax(clamp(6.5rem, 22dvh, 10rem), 1fr));
+  }
+
+  .postcard-name {
+    font-size: var(--text-control);
+  }
+}
+
 /* Daily challenge overview and summary. */
 .daily {
   display: grid;
@@ -580,6 +617,13 @@ dialog.window:has(~ dialog.window-narrow[open])::backdrop {
 .daily-head {
   display: grid;
   gap: var(--space-1);
+}
+
+/* Centred like the city summary, so both ends of a run read the same. */
+.daily-head,
+.daily-city,
+.daily-state {
+  text-align: center;
 }
 
 .daily-date {
@@ -599,6 +643,18 @@ dialog.window:has(~ dialog.window-narrow[open])::backdrop {
 .daily-state {
   margin: 0;
   font-weight: var(--weight-semibold);
+}
+
+/* Landscape: as wide as the city summary's result and centred vertically, never a strip under the bar. */
+@media (orientation: landscape) {
+  .window-screen.daily-screen > .window-body > * {
+    max-width: calc(28rem + 2 * var(--window-side));
+  }
+
+  .daily {
+    align-content: center;
+    min-height: 100%;
+  }
 }
 
 @media (orientation: landscape) and (max-height: 30rem) {
