@@ -1,4 +1,5 @@
-import type { Catalog } from '../content/types.ts'
+import type { Catalog, Route } from '../content/types.ts'
+import type { RunState } from '../game/logic/run.ts'
 import type { GameStorage } from '../game/storage/gameStorage.ts'
 
 /**
@@ -14,4 +15,19 @@ export function completeFinishedRun(storage: GameStorage, catalog: Catalog): boo
   if (run.mode === 'city') storage.completeCityRun(run, catalog)
   else storage.completeDailyRun(run)
   return true
+}
+
+/**
+ * A saved run points at its route's stops and choices by ID. A run saved by another build or edited by hand may name
+ * IDs the loaded route does not have; the game screen could not draw it, so it is never continued.
+ */
+export function runMatchesRoute(run: RunState, route: Route): boolean {
+  const stopsById = new Map(route.stops.map((stop) => [stop.id, stop]))
+  const stopsMatch = run.stops.every((runStop) => {
+    const stop = stopsById.get(runStop.stopId)
+    if (!stop || stop.correctChoiceId !== runStop.correctChoiceId) return false
+    const routeChoiceIds = new Set(stop.choices.map((choice) => choice.id))
+    return runStop.choiceIds.length === routeChoiceIds.size && runStop.choiceIds.every((choiceId) => routeChoiceIds.has(choiceId))
+  })
+  return stopsMatch && run.results.every((result, index) => result.chosenChoiceId === null || run.stops[index].choiceIds.includes(result.chosenChoiceId))
 }

@@ -18,9 +18,19 @@ import { storageNotice } from '../ui/storageNotice.ts'
 import { titleScreen } from '../ui/title.ts'
 import { activeRunStorageKey, loadPlaceholderSceneIds, startPlay, type PlaySession } from './play.ts'
 import type { RunCompletion } from './runController.ts'
-import { completeFinishedRun } from './runs.ts'
+import { completeFinishedRun, runMatchesRoute } from './runs.ts'
 import { changeSettings, type SettingsChange } from './settings.ts'
 import type { GameSession } from './start.ts'
+
+/** Bars above the screen; each shows at most once per session. */
+const notices = {
+  storage: { message: 'storage.notice', focusId: 'storage-dismiss' },
+  runRemoved: { message: 'storage.runRemoved', focusId: 'run-removed-dismiss' },
+} as const
+type Notice = keyof typeof notices
+
+/** What a route start shows once the route has loaded: the run to play, or another screen when the run cannot begin. */
+type RouteStart = RunState | (() => void)
 
 /**
  * Screens switch in memory without touching the URL, because the game runs inside a portal frame.
@@ -49,7 +59,9 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
   // Whether the title on screen offers Continue, so a run started or finished in another tab redraws it only then.
   let titleShowsActiveRun = false
   let settingsDialog: OpenDialog | null = null
-  let storageNoticeOpen = false
+  let settingsClosedWaiters: (() => void)[] = []
+  const openNotices = new Set<Notice>()
+  let runRemovedNoticeShown = false
   let activePlay: PlaySession | null = null
   // Counts the screens shown, so a route that finishes loading after the player has left does not start its run.
   let shownScreens = 0
@@ -119,28 +131,37 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
     const focusId = document.activeElement instanceof HTMLElement ? document.activeElement.dataset.focusId : undefined
     if (activePlay) activePlay.redraw()
     else screenSlot.replaceChildren(renderScreen())
-    if (storageNoticeOpen) renderStorageNotice()
+    if (openNotices.size > 0) renderNotices()
     settingsDialog?.replaceContent(settingsContent())
     // Windows share the IDs of their bar buttons, so the control is looked up in the window that has focus.
     const layer: ParentNode = topDialog() ?? root
     if (focusId) layer.querySelector<HTMLElement>(`[data-focus-id="${focusId}"]`)?.focus()
   }
 
-  function renderStorageNotice(): void {
+  function renderNotices(): void {
     noticeSlot.replaceChildren(
-      storageNotice(() => {
-        storageNoticeOpen = false
-        noticeSlot.replaceChildren()
-        screenSlot.querySelector<HTMLElement>('button')?.focus()
-      }),
+      ...[...openNotices].map((notice) =>
+        storageNotice(notices[notice].message, notices[notice].focusId, () => {
+          openNotices.delete(notice)
+          renderNotices()
+          screenSlot.querySelector<HTMLElement>('button')?.focus()
+        }),
+      ),
     )
   }
 
   function showStorageNoticeOnce(): void {
     // `takeUnavailableNotice` answers true once per session, so the notice never comes back after it is closed.
     if (!session.storage.takeUnavailableNotice()) return
-    storageNoticeOpen = true
-    renderStorageNotice()
+    openNotices.add('storage')
+    renderNotices()
+  }
+
+  function showRunRemovedNoticeOnce(): void {
+    if (runRemovedNoticeShown) return
+    runRemovedNoticeShown = true
+    openNotices.add('runRemoved')
+    renderNotices()
   }
 
   function settingsContent(): HTMLElement[] {
@@ -170,8 +191,15 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
       returnFocusId,
       onClosed: () => {
         settingsDialog = null
+        for (const settingsClosed of settingsClosedWaiters) settingsClosed()
+        settingsClosedWaiters = []
       },
     })
+  }
+
+  /** Brief §3: open settings hold the time, so a run whose route loads under them waits until they close. */
+  function settingsClosed(): Promise<void> {
+    return new Promise((closed) => settingsClosedWaiters.push(closed))
   }
 
   /** A window screen takes the focus on its first control, so the keyboard continues where the eye goes. */
@@ -212,15 +240,17 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
     const cityId = nextCityToPlay(session.storage.loadProgress(), catalog)
     // With every released city done, Play opens the map.
     if (cityId === null) return openMap()
-    startCity(cityId, false)
+    startCity(cityId, null)
   }
 
   /**
    * Brief §3: the device keeps one active run. Choosing another one asks first; Keep and × return to the window the
-   * choice came from (`returnFocusId` is its control). `start(true)` replaces the saved run.
+   * choice came from (`returnFocusId` is its control). `start` gets the ID of the run the player agreed to discard,
+   * so a run another tab starts meanwhile is never discarded with it.
    */
-  function changeRun(returnFocusId: string, start: (discard: boolean) => void): void {
-    if (session.storage.loadActiveRun() === null) return start(false)
+  function changeRun(returnFocusId: string, start: (discardRunId: string | null) => void): void {
+    const confirmedRun = session.storage.loadActiveRun()
+    if (confirmedRun === null) return start(null)
     const dialog = openDialog({
       labelledBy: routeChangeTitleId,
       className: 'window-narrow',
@@ -228,7 +258,7 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
         onKeep: () => dialog.close(),
         onDiscard: () => {
           closeDialogs()
-          start(true)
+          start(confirmedRun.runId)
         },
         onHome: homeFromDialog,
       }),
@@ -238,26 +268,32 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
   }
 
   /** Removes only the active run; rewards stay. The run is taken over first, since only its owner tab may remove it. */
-  function discardActiveRun(): void {
+  function removeActiveRun(): RunState | null {
     const run = session.storage.resumeRun()
-    if (run === null) return
-    session.storage.discardRun(run.runId)
-    session.adapter.track({ name: 'route_left', cityId: run.cityId, mode: run.mode, index: run.stopIndex + 1, reason: 'abandoned' })
+    if (run !== null) session.storage.discardRun(run.runId)
+    return run
   }
 
   /**
-   * Another tab may have started a run while the route loaded. Without the player's consent to discard, that run stays
-   * and the title offers "Continue".
+   * Called once the new route has loaded, right before the new run is saved. Only the run the player agreed to discard
+   * goes; another tab may have started a different one while the route loaded, and that run stays (the title then
+   * offers "Continue"). Returns whether the new run may begin.
    */
-  function runStartedMeanwhile(discard: boolean): boolean {
-    return !discard && session.storage.loadActiveRun() !== null
+  function makeRoomForNewRun(discardRunId: string | null): boolean {
+    const active = session.storage.loadActiveRun()
+    if (active === null) return true
+    if (active.runId !== discardRunId) return false
+    const run = removeActiveRun()
+    if (run !== null) session.adapter.track({ name: 'route_left', cityId: run.cityId, mode: run.mode, index: run.stopIndex + 1, reason: 'abandoned' })
+    return true
   }
 
+  const titleOnPlay = () => showTitle('title-play')
+
   // The old run goes only once the new route has loaded, so a failed load leaves it saved.
-  function startCity(cityId: string, discard: boolean): void {
+  function startCity(cityId: string, discardRunId: string | null): void {
     void openRoute(cityId, (route) => {
-      if (runStartedMeanwhile(discard)) return null
-      if (discard) discardActiveRun()
+      if (!makeRoomForNewRun(discardRunId)) return titleOnPlay
       const run = startCityRun({ route, runId: crypto.randomUUID(), untimed: session.settings.untimed, random: Math.random })
       session.storage.startRun(run)
       session.adapter.track({ name: 'route_started', cityId: run.cityId, mode: run.mode, resumed: false })
@@ -265,13 +301,14 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
     })
   }
 
-  function startDaily(discard: boolean): void {
+  function startDaily(discardRunId: string | null): void {
     const plan = dailyPlan(catalog, utcDateOf(Date.now()))
-    // Another tab may have finished today's challenge since the overview was drawn.
-    if (plan === null || hasDailyResult(session.storage.loadDailyResults(), plan.utcDate)) return openDaily()
+    // Another tab may have finished today's challenge since the overview was drawn, or while the route loads.
+    const doneToday = () => plan !== null && hasDailyResult(session.storage.loadDailyResults(), plan.utcDate)
+    if (plan === null || doneToday()) return openDaily()
     void openRoute(plan.cityId, (route) => {
-      if (runStartedMeanwhile(discard)) return null
-      if (discard) discardActiveRun()
+      if (doneToday()) return openDaily
+      if (!makeRoomForNewRun(discardRunId)) return titleOnPlay
       const run = startDailyRun({ route, plan, runId: crypto.randomUUID(), untimed: session.settings.untimed })
       session.storage.startRun(run)
       session.adapter.track({ name: 'route_started', cityId: run.cityId, mode: run.mode, resumed: false })
@@ -306,7 +343,7 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
       content: cityDetailWindow({
         entry,
         locale: session.settings.locale,
-        onPlay: () => changeRun('city-play', (discard) => startCity(cityId, discard)),
+        onPlay: () => changeRun('city-play', (discardRunId) => startCity(cityId, discardRunId)),
         onContinue: () => {
           closeDialogs()
           continueRun()
@@ -394,7 +431,7 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
       unlockedCity: catalog.cities.find((city) => city.id === summary.newlyUnlockedCityId) ?? null,
       nextCity: catalog.cities.at(index + 1) ?? null,
       locale: session.settings.locale,
-      onPlayCity: (cityId, returnFocusId) => changeRun(returnFocusId, (discard) => startCity(cityId, discard)),
+      onPlayCity: (cityId, returnFocusId) => changeRun(returnFocusId, (discardRunId) => startCity(cityId, discardRunId)),
       onMap: openMap,
       onClose: () => showTitle('title-play'),
       onHome: goHome,
@@ -417,13 +454,27 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
   function continueRun(): void {
     const stored = session.storage.loadActiveRun()
     if (stored === null) return showTitle('title-play')
-    void openRoute(stored.cityId, () => {
+    if (!catalog.cities.some((city) => city.id === stored.cityId)) return removeMismatchedRun()
+    void openRoute(stored.cityId, (route) => {
       // While the route loaded, the run may have been finished, discarded or replaced in another tab.
-      if (session.storage.loadActiveRun()?.runId !== stored.runId) return null
+      const active = session.storage.loadActiveRun()
+      if (active?.runId !== stored.runId) return titleOnPlay
+      if (!runMatchesRoute(active, route)) return removeMismatchedRun
       const run = session.storage.resumeRun()
-      if (run !== null) session.adapter.track({ name: 'route_started', cityId: run.cityId, mode: run.mode, resumed: true })
+      if (run === null) return titleOnPlay
+      session.adapter.track({ name: 'route_started', cityId: run.cityId, mode: run.mode, resumed: true })
       return run
     })
+  }
+
+  /**
+   * A saved run that names a city, stop or choice this build does not have cannot be played. Only that run goes, without
+   * `route_left`, since the player never left it; progress and daily results stay, and the player hears why once.
+   */
+  function removeMismatchedRun(): void {
+    removeActiveRun()
+    showTitle('title-play')
+    showRunRemovedNoticeOnce()
   }
 
   /**
@@ -431,7 +482,7 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
    * route loads (×, Escape, Home) cancels the start. Of two starts made while loading, the first to load shows its screen
    * and so cancels the other, so only one run begins.
    */
-  async function openRoute(cityId: string, begin: (route: Route) => RunState | null): Promise<void> {
+  async function openRoute(cityId: string, begin: (route: Route) => RouteStart): Promise<void> {
     // The game or the error screen replaces the screen below, so no window may stay open over it.
     closeDialogs()
     const shownBefore = shownScreens
@@ -448,13 +499,16 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
       screenSlot.querySelector<HTMLElement>('[data-focus-id="route-retry"]')?.focus()
       return
     }
+    // Settings opened over the title while the route loaded; Home there leaves the screen and so cancels the start.
+    if (settingsDialog) await settingsClosed()
     setRouteLoading(-1)
     if (shownScreens !== shownBefore) return
     // Another tab may have left a finished run while the route loaded; it is completed, never discarded or continued.
     completeRunFinishedElsewhere()
-    const run = begin(route)
+    const start = begin(route)
     showStorageNoticeOnce()
-    if (run === null) return showTitle('title-play')
+    if (typeof start === 'function') return start()
+    const run = start
     activePlay = startPlay({
       session,
       catalog,

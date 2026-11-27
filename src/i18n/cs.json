@@ -27,6 +27,7 @@
   "settings.untimed": "Bez časového limitu",
   "settings.untimedNote": "Platí od příští nové trasy.",
   "storage.notice": "Prohlížeč hru neukládá. Můžeš hrát dál, ale postup se nemusí uložit.",
+  "storage.runRemoved": "Uložená trasa už neodpovídá této verzi hry, a proto byla odstraněna. Hvězdy a pohlednice ti zůstaly.",
   "storage.dismiss": "Zavřít upozornění",
   "title.continue": "Pokračovat",
   "play.leave": "Uložit a přejít na úvod",

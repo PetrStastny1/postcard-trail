@@ -27,6 +27,7 @@
   "settings.untimed": "Untimed",
   "settings.untimedNote": "Applies from your next new route.",
   "storage.notice": "This browser is not saving the game. You can keep playing, but your progress may be lost.",
+  "storage.runRemoved": "Your saved route no longer matches this version of the game, so it was removed. Your stars and postcards stay.",
   "storage.dismiss": "Close the notice",
   "title.continue": "Continue",
   "play.leave": "Save and go to Home",
