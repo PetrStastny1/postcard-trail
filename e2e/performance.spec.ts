@@ -64,6 +64,23 @@ function recordRequests(page: Page): string[] {
   return paths
 }
 
+/**
+ * Resolves once no request has been open for 500 ms, as Playwright's `networkidle` would, but at any point of the
+ * page's life: that load state is reached once per document and never waited for again.
+ */
+function trackNetwork(page: Page): () => Promise<void> {
+  let open = 0
+  let lastChange = Date.now()
+  const change = (step: number) => () => {
+    open += step
+    lastChange = Date.now()
+  }
+  page.on('request', change(1))
+  page.on('requestfinished', change(-1))
+  page.on('requestfailed', change(-1))
+  return () => expect.poll(() => open === 0 && Date.now() - lastChange >= 500, { message: 'the network goes quiet', intervals: [100] }).toBe(true)
+}
+
 const routeRequests = (paths: string[]) => [...routeChunks].filter(([, file]) => paths.includes(file)).map(([cityId]) => cityId)
 const sceneRequests = (paths: string[]) => [...new Set(paths.filter((file) => file.startsWith('scenes/') && file.endsWith('.webp')).map((file) => path.basename(file, '.webp')))].sort()
 
@@ -93,28 +110,44 @@ test('the start payload of the title stays within 700 kB gzip, the build within 
   report(`whole build: ${kilobytes(buildBytes)} of ${kilobytes(maxBuildBytes)}`)
   expect(buildBytes).toBeLessThanOrEqual(maxBuildBytes)
 
-  // The entry module the HTML names carries the catalog (with each city's postcard sentence) but no question.
+  // The entry module the HTML names carries the catalog (with each city's postcard sentence) but nothing else of any
+  // route: no question, choice, feedback or scene description. The postcard sentence is the feedback of its stop, and
+  // a sentence may name a choice, so a text the catalog holds itself is left out. So are two-letter choices (metro
+  // lines M1–M4), which any minified code contains.
   const html = readFileSync(path.join(outDir, 'index.html'), 'utf8')
   const entry = html.match(/<script type="module"[^>]*src="([^"]+)"/)?.[1]
   expect(entry).toBeDefined()
   const entryCode = readFileSync(path.join(outDir, (entry ?? '').replace(base, '')), 'utf8')
   expect(entryCode).toContain(catalog.cities[0].name.en)
-  for (const cityId of ['paris', 'budapest', 'madrid']) {
-    for (const stop of readRoute(cityId).stops) {
-      for (const text of [stop.question.en, stop.question.cs]) expect(entryCode.includes(text), `the entry chunk contains "${text}"`).toBe(false)
-    }
-  }
+  const routeTexts = catalog.cities.flatMap((city) =>
+    readRoute(city.id).stops.flatMap((stop) =>
+      [stop.question, stop.feedback, stop.sceneAlt, ...stop.choices.map((choice) => choice.label)].flatMap((text) => [text.en, text.cs]),
+    ),
+  )
+  expect(routeTexts.length).toBe(catalog.cities.length * 10 * 7 * 2)
+  const catalogTexts = catalog.cities.flatMap((city) => [city.name.en, city.name.cs, city.postcard.sentence.en, city.postcard.sentence.cs])
+  const routeOnly = routeTexts.filter((text) => text.length > 2 && !catalogTexts.some((catalogText) => catalogText.includes(text)))
+  report(`route texts checked against the entry chunk: ${routeOnly.length} of ${routeTexts.length}`)
+  expect(routeOnly.filter((text) => entryCode.includes(text) || entryCode.includes(JSON.stringify(text).slice(1, -1)))).toEqual([])
 })
 
 test('the route loads only when the run starts, and each stop has fetched exactly the next scene', async ({ page }) => {
   const paths = recordRequests(page)
+  const networkQuiet = trackNetwork(page)
   await page.goto(`${origin}${base}`)
   await page.locator('[data-focus-id="title-play"]').click()
-  for (const [index, stop] of paris.stops.slice(0, 4).entries()) {
+  const checked = paris.stops.slice(0, 4)
+  for (const [index, stop] of checked.entries()) {
     await expect(page.locator('.play')).toHaveAttribute('data-state', 'question')
     await expect(page.locator('.play-title')).toHaveText(`Paris · ${index + 1}/10`)
     const expected = paris.stops.slice(0, index + 2).map((each) => each.id).sort()
     await expect.poll(() => sceneRequests(paths), `scenes during stop ${index + 1}`).toEqual(expected)
+    if (index === checked.length - 1) {
+      // A preload of the stop after next would come after the expected one; once nothing is loading, it is not there.
+      await networkQuiet()
+      expect(sceneRequests(paths), `scenes once stop ${index + 1} has finished loading`).toEqual(expected)
+      break
+    }
     await correctChoice(page, stop).click()
     await page.locator('.next').click()
   }
@@ -127,6 +160,7 @@ test('the daily challenge loads its route at Start and preloads only its own nex
   await seedStorage(page, { progress: progressWith(1, 0) })
   await page.clock.install({ time: new Date(`${today}T08:00:00Z`) })
   const paths = recordRequests(page)
+  const networkQuiet = trackNetwork(page)
   await page.goto(`${origin}${base}`)
   await page.locator('[data-focus-id="title-daily"]').click()
   await expect(page.locator('[data-focus-id="daily-start"]')).toBeVisible()
@@ -138,6 +172,10 @@ test('the daily challenge loads its route at Start and preloads only its own nex
     // The third question has no next stop in the challenge, so nothing more is fetched.
     const expected = stops.slice(0, Math.min(index + 2, stops.length)).map((each) => each.id).sort()
     await expect.poll(() => sceneRequests(paths), `scenes during question ${index + 1}`).toEqual(expected)
+    if (index === stops.length - 1) {
+      await networkQuiet()
+      expect(sceneRequests(paths), `scenes once question ${index + 1} has finished loading`).toEqual(expected)
+    }
     await correctChoice(page, stop).click()
     await page.locator('.next').click()
   }

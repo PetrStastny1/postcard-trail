@@ -17,12 +17,22 @@ async function closeTopDialog(page: Page) {
 }
 
 /**
- * The map draws its groups again for its measured size. Resize observers run in the rendering step after animation
- * frames, so two frames later that has happened.
+ * The map draws its groups for its measured size from a resize observer on its frame. Observers are notified in the
+ * order they were made and a new one is always notified of the current size, so when one made now is notified, the
+ * map's own has handled that size.
  */
 async function mapDrawn(page: Page) {
   await expect(page.locator('.map-point').first()).toBeVisible()
-  await page.evaluate(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))))
+  await page.locator('.map-frame').evaluate(
+    (frame) =>
+      new Promise<void>((done) => {
+        const observer = new ResizeObserver(() => {
+          observer.disconnect()
+          done()
+        })
+        observer.observe(frame)
+      }),
+  )
 }
 
 const focused = (page: Page) => page.evaluate(() => (document.activeElement as HTMLElement | null)?.dataset.focusId ?? document.activeElement?.tagName)
@@ -45,6 +55,7 @@ async function expectTabCycle(page: Page, what: string) {
       .map(key)
   })
   const count = expected.length
+  const inDialog = (await page.locator('dialog[open]').count()) > 0
   expect(count, `${what}: tabbable controls`).toBeGreaterThan(0)
   expect(new Set(expected).size, `${what}: every control can be told apart`).toBe(count)
   expect(await page.locator('[tabindex]:not([tabindex="-1"]):not([tabindex="0"])').count(), `${what}: no positive tabindex`).toBe(0)
@@ -60,12 +71,19 @@ async function expectTabCycle(page: Page, what: string) {
         const node = document.activeElement as HTMLElement | null
         if (!node || node === document.body) return null
         const style = getComputedStyle(node)
+        const topDialog = [...document.querySelectorAll('dialog[open]')].at(-1)
         return {
           key: `${node.dataset.focusId ?? node.tagName}|${(node.getAttribute('aria-label') ?? node.textContent ?? '').trim()}`,
           ring: node.matches(':focus-visible') && style.outlineStyle !== 'none' && parseFloat(style.outlineWidth) >= 2,
+          inTopDialog: topDialog?.contains(node) ?? false,
         }
       })
-      // Leaving the last control of the page passes through the browser's own UI, which the page does not see.
+      // Leaving the last control of the page passes through the browser's own UI, which the page does not see. A
+      // modal window keeps the focus inside, so there the focus may never leave it.
+      if (inDialog) {
+        expect(state, `${what}: ${press} moved the focus out of the window`).not.toBeNull()
+        expect(state?.inTopDialog, `${what}: ${press} moved the focus to ${state?.key} outside the window`).toBe(true)
+      }
       if (state === null) continue
       const order = expected.indexOf(state.key)
       expect(order, `${what}: ${press} reached ${state.key} outside the expected controls`).not.toBe(-1)
