@@ -12,3 +12,11 @@ export function changeSettings(session: GameSession, change: SettingsChange): vo
   if (next.soundEnabled !== previous.soundEnabled) session.feedback.setSoundEnabled(next.soundEnabled)
   if (next.vibrationEnabled !== previous.vibrationEnabled) session.feedback.setVibrationEnabled(next.vibrationEnabled)
 }
+
+/** One-time hints (brief §6) are remembered with the settings, so the player sees each only once. */
+export function rememberHint(session: GameSession, hintId: string): void {
+  if (session.settings.shownHintIds.includes(hintId)) return
+  const next: Settings = { ...session.settings, shownHintIds: [...session.settings.shownHintIds, hintId] }
+  session.storage.saveSettings(next)
+  session.settings = next
+}

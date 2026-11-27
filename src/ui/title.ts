@@ -7,6 +7,10 @@ import { titleScene } from './titleScene.ts'
 export interface TitleOptions {
   totals: ProgressTotals
   dailyUnlocked: boolean
+  /** A saved run exists: "Continue" takes the place of "Play". */
+  hasActiveRun: boolean
+  onPlay(): void
+  onContinue(): void
   onOpenSettings(): void
 }
 
@@ -15,14 +19,15 @@ const logoMarkup = `<svg class="logo-arc" viewBox="0 0 240 60" aria-hidden="true
 <span class="logo-line">Postcard</span> <span class="logo-line">Trail</span>`
 
 /**
- * The title screen. Play, the map, the collection and the daily challenge are wired by the later packages;
- * until then only Settings opens a window.
+ * The title screen. The map, the collection and the daily challenge are wired by the later packages;
+ * until then Play, Continue and Settings act.
  */
-export function titleScreen({ totals, dailyUnlocked, onOpenSettings }: TitleOptions): HTMLElement {
+export function titleScreen({ totals, dailyUnlocked, hasActiveRun, onPlay, onContinue, onOpenSettings }: TitleOptions): HTMLElement {
   const logo = element('h1', { class: 'logo' })
   logo.innerHTML = logoMarkup
 
-  const play = element('button', { class: 'primary title-play', type: 'button', 'data-focus-id': 'title-play' }, t('title.play'))
+  const play = element('button', { class: 'primary title-play', type: 'button', 'data-focus-id': 'title-play' }, t(hasActiveRun ? 'title.continue' : 'title.play'))
+  play.addEventListener('click', hasActiveRun ? onContinue : onPlay)
   const settings = secondaryButton('title-settings', t('title.settings'))
   settings.addEventListener('click', onOpenSettings)
 

@@ -5,6 +5,8 @@ export interface DialogOptions {
   content: HTMLElement[]
   /** `data-focus-id` of the opener. Looked up on close, so it still works after the opener was re-rendered. */
   returnFocusId: string
+  /** Extra class next to `window`, e.g. for a window that fills the whole viewport. */
+  className?: string
   onClosed(): void
 }
 
@@ -21,8 +23,8 @@ export function topDialog(): HTMLDialogElement | null {
 }
 
 /** A modal window. Escape closes it like ×, Tab and Shift+Tab stay inside, focus returns to the opener. */
-export function openDialog({ labelledBy, content, returnFocusId, onClosed }: DialogOptions): OpenDialog {
-  const dialog = element('dialog', { class: 'window', 'aria-labelledby': labelledBy }, ...content)
+export function openDialog({ labelledBy, content, returnFocusId, className, onClosed }: DialogOptions): OpenDialog {
+  const dialog = element('dialog', { class: className ? `window ${className}` : 'window', 'aria-labelledby': labelledBy }, ...content)
 
   dialog.addEventListener('keydown', (event) => {
     if (event.key !== 'Tab') return
