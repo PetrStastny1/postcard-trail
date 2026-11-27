@@ -272,18 +272,26 @@ export function createPlayScreen(handlers: PlayHandlers): PlayScreen {
     const seconds = Math.ceil(view.remainingMs / 1000)
     timerValue.textContent = t('play.seconds', { seconds })
     timerFill.style.width = `${Math.min(100, (view.remainingMs / currentStop(run).timeLimitMs) * 100)}%`
+    // Disabling the focused button would drop focus to the page, so a used lifeline hands it on.
+    const focusedLifeline = [fiftyFifty, extraTime].find((button) => button === document.activeElement)
     const fiftyUsed = run.usedLifelines.includes('fiftyFifty')
     const extraUsed = run.usedLifelines.includes('extraTime')
     fiftyFifty.disabled = state !== 'question' || fiftyUsed
     fiftyFifty.classList.toggle('is-used', fiftyUsed)
     extraTime.disabled = state !== 'question' || extraUsed
     extraTime.classList.toggle('is-used', extraUsed)
+    if (state === 'question' && focusedLifeline?.disabled) {
+      const otherLifeline = focusedLifeline === fiftyFifty && !run.untimed ? extraTime : fiftyFifty
+      const nextFocus = otherLifeline.disabled ? question : otherLifeline
+      nextFocus.focus({ preventScroll: true })
+    }
     fiftyFiftyHint.hidden = !view.fiftyFiftyHint
     if (view.fiftyFiftyHint) {
-      // The label may cover the time bar but not the seconds; without the time it has the row up to its start.
+      // The label may cover the time bar but not the seconds; without the time it has the row up to its start. Half the
+      // row's gap on each side leaves the longest word of the label room on a 320 px screen.
       const rowStyle = getComputedStyle(actionRow)
       const start = run.untimed ? actionRow.getBoundingClientRect().left + parseFloat(rowStyle.paddingLeft) : timerValue.getBoundingClientRect().right
-      lifelines.style.setProperty('--hint-room', `${lifelines.getBoundingClientRect().left - start - 1.5 * parseFloat(rowStyle.columnGap)}px`)
+      lifelines.style.setProperty('--hint-room', `${lifelines.getBoundingClientRect().left - start - parseFloat(rowStyle.columnGap)}px`)
     }
 
     if (state !== 'result') result.replaceChildren()

@@ -240,6 +240,11 @@
   line-height: var(--leading-tight);
 }
 
+/* Focused by the screen for keyboard and screen reader users; it is not a control, so it gets no focus ring. */
+.question:focus {
+  outline: none;
+}
+
 .choices {
   display: grid;
   flex: none;
@@ -440,9 +445,10 @@
 .lifeline-hint {
   position: absolute;
   top: 50%;
-  right: calc(100% + var(--space-2));
+  right: calc(100% + var(--space-1));
   width: max-content;
   max-width: var(--hint-room, 12rem);
+  /* "Removes" needs the whole room on a 320 px screen, so the side padding stays at --space-1. */
   padding: var(--space-1);
   border-radius: var(--radius-sm);
   background: var(--color-ink);
@@ -450,7 +456,8 @@
   font-size: var(--text-small);
   font-weight: var(--weight-semibold);
   line-height: var(--leading-tight);
-  text-align: end;
+  /* One line takes its own width, so centring only shows where the room is narrow and the label wraps. */
+  text-align: center;
   transform: translateY(-50%);
   pointer-events: none;
 }

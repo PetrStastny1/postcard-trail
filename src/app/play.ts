@@ -77,7 +77,9 @@ export function startPlay({ session, catalog, route, placeholderSceneIds, run, m
   let elsewhereDialog: OpenDialog | null = null
   let leaving = false
 
-  const routeStop = (runStop: RunStop): Stop => route.stops[runStop.routeStopNumber - 1]
+  // By ID, not by position: a saved run keeps pointing at its own stops even if the route's order changes.
+  const stopsById: Record<string, Stop> = Object.fromEntries(route.stops.map((stop) => [stop.id, stop]))
+  const routeStop = (runStop: RunStop): Stop => stopsById[runStop.stopId]
 
   const controller = createRunController({
     run,

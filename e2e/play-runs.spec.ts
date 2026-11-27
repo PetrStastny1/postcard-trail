@@ -197,6 +197,34 @@ test('a reload in the middle of a run continues at the same stop', async ({ page
   await expect(page.locator('.streak')).toHaveText('Streak 3')
 })
 
+test('a run restored after the route changed its order shows its own stop, found by ID', async ({ page }) => {
+  // The run was started when the route listed its stops in the opposite order.
+  const run = startCityRun({ route: { ...paris, stops: paris.stops.toReversed() }, runId: 'reordered-run', untimed: false, random: () => 0.5 })
+  const firstStop = paris.stops.at(-1) as Stop
+  await seedStorage(page, { 'active-run': { ownerTabId: 'closed-tab', run } })
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Continue' }).click()
+  await page.getByRole('dialog', { name: 'Paused' }).getByRole('button', { name: 'Continue' }).click()
+  await expectState(page, 'question')
+  await expect(page.locator('.question')).toHaveText(firstStop.question.en)
+  await correctChoice(page, firstStop).click()
+  await expect(page.locator('.result-sentence')).toHaveText(firstStop.feedback.en)
+})
+
+test('a failed placeholders.json is a route load failure, and Try again starts the run with the scene caption', async ({ page }) => {
+  let failing = true
+  await page.route('**/scenes/placeholders.json', (route) => (failing ? route.abort() : route.fulfill({ json: { stopIds: [paris.stops[0].id] } })))
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Play' }).click()
+  await expect(page.getByRole('alert')).toHaveText(/The route could not load\./)
+  expect(await savedSection(page, 'active-run')).toBeUndefined()
+  failing = false
+  await page.getByRole('button', { name: 'Try again' }).click()
+  await expectState(page, 'question')
+  await expect(page.locator('.play-title')).toHaveText('Paris · 1/10')
+  await expect(page.locator('.scene-caption')).toHaveText(paris.stops[0].sceneAlt.en)
+})
+
 test('a route that fails to load offers Try again and Home, and the retry starts the run', async ({ page }) => {
   let failing = true
   await page.route('**/src/content/routes/paris.json*', (route) => (failing ? route.abort() : route.continue()))

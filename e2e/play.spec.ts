@@ -244,8 +244,9 @@ test('a choice locks the question and the result shows the verdict, the sentence
   await page.keyboard.press('Enter')
   await expectState(page, 'question')
   await expect(page.locator('.play-title')).toHaveText('Paris · 2/10')
-  // Next goes away with the result, so the keyboard continues from the new question.
+  // Next goes away with the result, so the keyboard continues from the new question, which is no control to outline.
   await expect(page.locator('.question')).toBeFocused()
+  await expect(page.locator('.question')).toHaveCSS('outline-style', 'none')
 
   const second = paris.stops[1]
   const index = (await choiceLabels(page)).indexOf(correctLabel(second))
@@ -324,6 +325,28 @@ test('50:50 and +10 s work together on one question, then a correct answer count
   await expectState(page, 'question')
   await expect(page.locator('[data-lifeline="fifty"]')).toBeDisabled()
   await expect(page.locator('.choice.is-removed')).toHaveCount(0)
+})
+
+test('a lifeline used from the keyboard hands focus to the other lifeline, and the last one to the question', async ({ page }) => {
+  await startParis(page, { pausedClock: true })
+  const fifty = page.locator('[data-lifeline="fifty"]')
+  const extraTime = page.locator('[data-lifeline="time"]')
+  await fifty.focus()
+  await page.keyboard.press('Enter')
+  await expect(page.locator('.choice.is-removed')).toHaveCount(2)
+  await expect(extraTime).toBeFocused()
+  await page.keyboard.press('Space')
+  await expect(timer(page)).toHaveText('35 s')
+  await expect(page.locator('.question')).toBeFocused()
+})
+
+test('in the untimed mode 50:50 used from the keyboard hands focus to the question', async ({ page }) => {
+  await seedStorage(page, { settings: { untimed: true } })
+  await startParis(page)
+  await page.locator('[data-lifeline="fifty"]').focus()
+  await page.keyboard.press('Enter')
+  await expect(page.locator('.choice.is-removed')).toHaveCount(2)
+  await expect(page.locator('.question')).toBeFocused()
 })
 
 test('the untimed mode from settings hides the time and +10 s and never times out', async ({ page }) => {

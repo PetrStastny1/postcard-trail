@@ -90,16 +90,19 @@ export async function playStops(page: Page, stops: Stop[], outcome: 'correct' | 
  * lifelines, Next, verdict and zoom button in view without scrolling, no word broken inside a choice name, the
  * `has-more` signal when choices are cut, 44 px targets and no horizontal scrolling. The prototype's `markMore()` is
  * the game's scroll listener here. On top of those: the scene caption is reachable, uncovered and not cut; the result's
- * verdict and sentence are in view, never faded by a mask, and the result covers no choice; the 50:50 hint covers no
- * choice, control or the seconds.
+ * verdict and sentence are in view, never faded by a mask, and the result covers no choice; the 50:50 hint lies only
+ * over the action row and the time bar, never over a choice, a control or the seconds, and its text stays inside it.
  */
 export async function inspectPlayLayout(page: Page) {
   return page.evaluate(() => {
-    const shown = (el: Element) => {
+    const visible = (el: Element) => {
       const s = getComputedStyle(el)
       const r = el.getBoundingClientRect()
-      return s.display !== 'none' && s.visibility !== 'hidden' && r.width > 0 && r.height > 0 && !el.closest('[aria-hidden="true"]')
+      return s.display !== 'none' && s.visibility !== 'hidden' && r.width > 0 && r.height > 0
     }
+    // The scene caption and the 50:50 hint are visual only and so sit in `aria-hidden`; every other target outside it.
+    const shown = (el: Element) => visible(el) && !el.closest('[aria-hidden="true"]')
+    const captions = [...document.querySelectorAll<HTMLElement>('.scene-caption')].filter(visible)
     const covered = (el: Element) => {
       const r = el.getBoundingClientRect()
       const fx = (f: number) => r.left + r.width * f
@@ -112,7 +115,7 @@ export async function inspectPlayLayout(page: Page) {
       })
     }
     const className = (el: Element) => (typeof el.className === 'string' ? el.className : el.getAttribute('class') ?? '')
-    const targets = [...document.querySelectorAll('.choice, .lifeline, .timer, .next, .scene-error button, .icon-button, .zoom-button, .question, .result-verdict, .result-sentence, .scene-caption')].filter(shown)
+    const targets = [...document.querySelectorAll('.choice, .lifeline, .timer, .next, .scene-error button, .icon-button, .zoom-button, .question, .result-verdict, .result-sentence')].filter(shown).concat(captions)
     const scrollers = [...document.querySelectorAll<HTMLElement>('.play-main, .panel')]
     const reachable = (el: Element) => {
       if (!covered(el)) return true
@@ -139,19 +142,44 @@ export async function inspectPlayLayout(page: Page) {
       const q = b.getBoundingClientRect()
       return Math.min(r.right, q.right) - Math.max(r.left, q.left) > 1 && Math.min(r.bottom, q.bottom) - Math.max(r.top, q.top) > 1
     }
-    const masked = [...document.querySelectorAll('.result-verdict, .result-sentence, .scene-caption')].filter(shown).filter((el) => {
+    const masked = [...document.querySelectorAll('.result-verdict, .result-sentence')].filter(shown).concat(captions).filter((el) => {
       for (let node: Element | null = el; node; node = node.parentElement) if (getComputedStyle(node).maskImage !== 'none') return true
       return false
     })
     const result = document.querySelector('.result')
     const resultOverChoices =
       play?.dataset.state === 'result' && result && [...document.querySelectorAll('.choice')].some((choice) => overlapping(choice, result))
-    const captionCut = [...document.querySelectorAll<HTMLElement>('.scene-caption')].filter(shown).filter((el) => el.scrollHeight > el.clientHeight + 1)
+    const captionCut = captions.filter((el) => el.scrollHeight > el.clientHeight + 1)
+    // The hint lets clicks through, so `elementFromPoint` finds what lies under it: only the action row and the time bar may.
     const hint = document.querySelector('.lifeline-hint')
-    const hintOver =
-      hint && shown(hint)
-        ? [...document.querySelectorAll('.choice, button, .timer-value, .question')].filter(shown).filter((el) => overlapping(hint, el)).map(className)
-        : []
+    const hintOver = new Set<string>()
+    if (hint && visible(hint)) {
+      const r = hint.getBoundingClientRect()
+      for (const fx of [0.05, 0.25, 0.5, 0.75, 0.95]) {
+        for (const fy of [0.05, 0.5, 0.95]) {
+          const under = document.elementFromPoint(r.left + r.width * fx, r.top + r.height * fy)
+          const allowed = under && (under.classList.contains('action-row') || under.classList.contains('timer') || under.closest('.timer-track'))
+          if (!allowed) hintOver.add(under ? className(under.closest('.choice, button, .timer-value, .timer-icon, .timer, .question') ?? under) : 'outside the page')
+        }
+      }
+    }
+    // Every word of the hint stays inside its padding, so no letter touches or leaves the edge of the label. Words, not
+    // lines: the space at the end of a wrapped line may hang into the padding.
+    const hintWordsOut: string[] = []
+    const hintText = hint?.firstChild
+    if (hint && hintText && visible(hint)) {
+      const r = hint.getBoundingClientRect()
+      const s = getComputedStyle(hint)
+      let start = 0
+      for (const word of (hintText.textContent ?? '').split(' ')) {
+        const range = document.createRange()
+        range.setStart(hintText, start)
+        range.setEnd(hintText, start + word.length)
+        start += word.length + 1
+        const box = range.getBoundingClientRect()
+        if (box.left < r.left + parseFloat(s.paddingLeft) - 0.5 || box.right > r.right - parseFloat(s.paddingRight) + 0.5) hintWordsOut.push(word)
+      }
+    }
     const brokenWords: string[] = []
     for (const label of document.querySelectorAll('.choice-label')) {
       if (!shown(label)) continue
@@ -190,7 +218,8 @@ export async function inspectPlayLayout(page: Page) {
         ...masked.map((el) => `masked ${className(el)}`),
         ...(resultOverChoices ? ['the result covers a choice'] : []),
         ...captionCut.map(() => 'the scene caption is cut'),
-        ...hintOver.map((name) => `the 50:50 hint covers ${name}`),
+        ...[...hintOver].map((name) => `the 50:50 hint covers ${name}`),
+        ...hintWordsOut.map((word) => `the 50:50 hint word ${word} leaves its padding`),
       ],
     }
   })
