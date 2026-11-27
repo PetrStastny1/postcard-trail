@@ -330,6 +330,8 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
     activePlay = null
     if (completion.mode === 'city') showWindow(() => renderCitySummary(completion), ['summary-next'])
     else showWindow(() => renderDailySummary(completion), ['daily-summary-overview'])
+    // Rewards that did not reach the store are kept for this session only, so the player hears about it here (A3).
+    showStorageNoticeOnce()
   }
 
   function renderCitySummary({ run, summary }: Extract<RunCompletion, { mode: 'city' }>): HTMLElement {

@@ -66,13 +66,11 @@ export function createRunController({ run: initialRun, storage, adapter, feedbac
     const after = reduceRun(before, action)
     if (after === before) return
     run = after
-    if (after.phase === 'summary') {
-      trackChange(before, after)
-      return finish()
-    }
-    // A tab that lost the run reports and plays nothing for it.
+    // A tab that lost the run reports and plays nothing for it. The summary phase is saved too, so rewards that fail to
+    // reach the store are completed from it after a reload (A11) instead of offering the last result again.
     if (storage.saveRunCheckpoint(after) === 'notOwner') return loseOwnership()
     trackChange(before, after)
+    if (after.phase === 'summary') return finish()
     const wasRunning = before.phase === 'question' && !before.paused
     if (!wasRunning && running()) adapter.gameplayStart()
     if (!before.paused && after.paused) adapter.gameplayStop()
