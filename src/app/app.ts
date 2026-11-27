@@ -210,9 +210,18 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
     session.adapter.track({ name: 'route_left', cityId: run.cityId, mode: run.mode, index: run.stopIndex + 1, reason: 'abandoned' })
   }
 
+  /**
+   * Another tab may have started a run while the route loaded. Without the player's consent to discard, that run stays
+   * and the title offers "Continue".
+   */
+  function runStartedMeanwhile(discard: boolean): boolean {
+    return !discard && session.storage.loadActiveRun() !== null
+  }
+
   // The old run goes only once the new route has loaded, so a failed load leaves it saved.
   function startCity(cityId: string, discard: boolean): void {
     void openRoute(cityId, (route) => {
+      if (runStartedMeanwhile(discard)) return null
       if (discard) discardActiveRun()
       const run = startCityRun({ route, runId: crypto.randomUUID(), untimed: session.settings.untimed, random: Math.random })
       session.storage.startRun(run)
@@ -226,6 +235,7 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
     // Another tab may have finished today's challenge since the overview was drawn.
     if (plan === null || hasDailyResult(session.storage.loadDailyResults(), plan.utcDate)) return openDaily()
     void openRoute(plan.cityId, (route) => {
+      if (runStartedMeanwhile(discard)) return null
       if (discard) discardActiveRun()
       const run = startDailyRun({ route, plan, runId: crypto.randomUUID(), untimed: session.settings.untimed })
       session.storage.startRun(run)
@@ -402,7 +412,7 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
     if (shownScreens !== shownBefore) return
     const run = begin(route)
     showStorageNoticeOnce()
-    if (run === null) return showTitle()
+    if (run === null) return showTitle('title-play')
     activePlay = startPlay({
       session,
       catalog,

@@ -292,6 +292,41 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
   })
 }
 
+for (const start of ['city', 'daily'] as const) {
+  test(`a ${start} start without a discard keeps a run another tab started while the route loaded`, async ({ page }) => {
+    const otherRun = cityRunBeforeLastNext('rome', 2)
+    const plan = dailyPlan(catalog, '2026-12-05')
+    const cityId = start === 'city' ? 'paris' : (plan?.cityId ?? '')
+    let releaseRoute = () => undefined as void
+    const routeRequested = new Promise<void>((requested) => {
+      void page.route(`**/src/content/routes/${cityId}.json*`, (route) => {
+        requested()
+        releaseRoute = () => void route.continue()
+      })
+    })
+    if (start === 'daily') {
+      await seedStorage(page, { progress: { completedCityIds: ['paris'], bestStars: { paris: 1 }, postcardCityIds: ['paris'] } })
+      await page.clock.install({ time: new Date('2026-12-05T08:00:00Z') })
+    }
+    await page.goto('/')
+    if (start === 'city') await page.getByRole('button', { name: 'Play' }).click()
+    else {
+      await page.getByRole('button', { name: 'Daily challenge' }).click()
+      await page.getByRole('button', { name: 'Start' }).click()
+    }
+    await routeRequested
+    const otherSave = JSON.stringify({ version: 1, data: { ownerTabId: 'other-tab', run: otherRun } })
+    await page.evaluate(([key, value]) => localStorage.setItem(key, value), [storageKey('active-run'), otherSave])
+    releaseRoute()
+
+    await expect(page.locator('#app')).not.toHaveAttribute('data-route-loading')
+    await expect(page.locator('.play')).toHaveCount(0)
+    await expect(page.getByRole('button', { name: 'Continue', exact: true })).toBeFocused()
+    expect(await page.evaluate((key) => localStorage.getItem(key), storageKey('active-run'))).toBe(otherSave)
+    expect((await recordedEvents(page)).filter((event) => event.name === 'route_started' || event.name === 'route_left')).toEqual([])
+  })
+}
+
 test('a route load error takes the focus on Try again, and Escape works like × back to the title', async ({ page }) => {
   await page.route('**/src/content/routes/paris.json*', (route) => route.abort())
   await page.goto('/')
