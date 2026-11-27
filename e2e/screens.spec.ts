@@ -460,6 +460,11 @@ for (const [locale, title, count, sentence] of [
     await page.getByRole('button', { name: title }).click()
     await expect(page.locator('.collection-count')).toHaveText(count)
     await expect(page.locator('.collection-count + .collection-empty')).toHaveText(sentence)
+    // The sentence belongs to the count: closer to it than to the grid below.
+    const [countBox, emptyBox, gridBox] = await Promise.all(['.collection-count', '.collection-empty', '.postcard-grid'].map((selector) => page.locator(selector).boundingBox()))
+    const toCount = emptyBox!.y - (countBox!.y + countBox!.height)
+    const toGrid = gridBox!.y - (emptyBox!.y + emptyBox!.height)
+    expect(toCount).toBeLessThan(toGrid)
   })
 }
 

@@ -558,6 +558,12 @@ dialog.window:has(~ dialog.window-narrow[open])::backdrop {
   font-variant-numeric: tabular-nums;
 }
 
+/* The sentence on how to earn a postcard belongs to the count, so it sits closer to it than the grid does. */
+.collection-head {
+  display: grid;
+  gap: var(--space-1);
+}
+
 .collection-empty {
   margin: 0;
   color: var(--color-ink-soft);
