@@ -11,6 +11,11 @@ body {
   height: 100%;
 }
 
+/* In a portal frame neither a scroll that reaches the end of the game nor one the game cannot take moves the page. */
+html {
+  overscroll-behavior: none;
+}
+
 /*
  * The inline edge of every window: the bar's × and the window content both start on it. In landscape the game's scene
  * and the city summary's postcard take the window height minus the same reserve for the bars around them.
