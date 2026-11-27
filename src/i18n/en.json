@@ -108,6 +108,7 @@
   "collection.title": "Collection",
   "collection.count": "{count}/{total} postcards",
   "collection.missing": "not collected yet",
+  "collection.empty": "Finish a city route to earn its postcard.",
   "daily.title": "Daily challenge",
   "daily.date": "{date}, UTC",
   "daily.notOffered": "The first daily challenge is on {date}.",

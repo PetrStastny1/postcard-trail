@@ -426,6 +426,27 @@ test.describe('collection', () => {
   })
 })
 
+for (const [locale, title, count, sentence] of [
+  ['en', 'Collection', '0/20 postcards', 'Finish a city route to earn its postcard.'],
+  ['cs', 'Sbírka', '0/20 pohlednic', 'Dokonči trasu města a získáš jeho pohlednici.'],
+] as const) {
+  test(`an empty collection says under the count how to earn a postcard in ${locale}`, async ({ page }) => {
+    await seedStorage(page, { settings: { locale, soundEnabled: true, volume: 0.6, vibrationEnabled: true, reducedMotion: false, untimed: false, shownHintIds: [] } })
+    await page.goto('/')
+    await page.getByRole('button', { name: title }).click()
+    await expect(page.locator('.collection-count')).toHaveText(count)
+    await expect(page.locator('.collection-count + .collection-empty')).toHaveText(sentence)
+  })
+}
+
+test('a collection with a postcard has no sentence on how to earn one', async ({ page }) => {
+  await seedStorage(page, { progress: progressWith(1, 0) })
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Collection' }).click()
+  await expect(page.locator('.collection-count')).toHaveText('1/20 postcards')
+  await expect(page.locator('.collection-empty')).toHaveCount(0)
+})
+
 test('with all 20 cities done the collection has 20 postcards, the title 20/20 and 60 stars at most, and Play opens the map', async ({ page }) => {
   await seedStorage(page, { progress: progressWith(20, 3) })
   await page.goto('/')

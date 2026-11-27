@@ -556,6 +556,11 @@ dialog.window:has(~ dialog.window-narrow[open])::backdrop {
   font-variant-numeric: tabular-nums;
 }
 
+.collection-empty {
+  margin: 0;
+  color: var(--color-ink-soft);
+}
+
 .postcard-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));

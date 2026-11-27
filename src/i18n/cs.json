@@ -108,6 +108,7 @@
   "collection.title": "Sbírka",
   "collection.count": "{count}/{total} pohlednic",
   "collection.missing": "zatím nezískaná",
+  "collection.empty": "Dokonči trasu města a získáš jeho pohlednici.",
   "daily.title": "Denní výzva",
   "daily.date": "{date}, UTC",
   "daily.notOffered": "První denní výzva bude {date}.",
