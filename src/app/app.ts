@@ -59,22 +59,16 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
 
   // Capturing on window runs before any other handler, so a cue played by that handler can already sound, and the
   // handler already works with the stored state settled.
-  window.addEventListener(
-    'click',
-    () => {
-      session.feedback.unlock()
-      completeRunFinishedElsewhere()
-    },
-    { capture: true },
-  )
-  window.addEventListener(
-    'keydown',
-    () => {
-      session.feedback.unlock()
-      completeRunFinishedElsewhere()
-    },
-    { capture: true },
-  )
+  for (const input of ['click', 'keydown'] as const) {
+    window.addEventListener(
+      input,
+      () => {
+        session.feedback.unlock()
+        completeRunFinishedElsewhere()
+      },
+      { capture: true },
+    )
+  }
   // Escape works like × on a window screen and on the route load error as well; a dialog closes itself on Escape and
   // the game has its own keys.
   document.addEventListener('keydown', (event) => {
