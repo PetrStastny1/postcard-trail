@@ -31,6 +31,7 @@ test('the day before the catalog is effective no daily challenge is offered', as
   await seedStorage(page, { progress: parisDone })
   await openDailyOn(page, '2026-11-30T23:30:00Z')
   await expect(page.locator('.daily-date')).toHaveText('November 30, 2026, UTC')
+  await expect(page.locator('.daily-city')).toHaveText('Not offered yet')
   await expect(page.locator('.daily-state')).toHaveText('The first daily challenge is on December 1, 2026.')
   await expect(daily(page).getByRole('button')).toHaveCount(0)
   await expect(page.getByRole('button', { name: 'Close' })).toBeFocused()
@@ -55,6 +56,7 @@ test('the daily challenge plays the city and stops of dailyPlan, hides the place
   await seedStorage(page, { progress: parisDone, settings: untimedSettings })
   await openDailyOn(page, `${today}T08:00:00Z`)
   await expect(page.locator('.daily-date')).toHaveText('December 5, 2026, UTC')
+  await expect(page.getByRole('heading', { name: route.name.en })).toBeVisible()
   await expect(page.locator('.daily-state')).toHaveText(`Today: three stops in ${route.name.en}.`)
   await expect(daily(page).locator('.summary-stats > div')).toHaveText([/^Today’s scoreNot played yet$/, /^Day streak0 days$/])
   await expect(page.getByRole('button', { name: 'Start' })).toBeFocused()
@@ -91,6 +93,7 @@ test('the daily challenge plays the city and stops of dailyPlan, hides the place
   }
 
   await expect(page.getByRole('heading', { name: 'Daily challenge done' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: route.name.en })).toBeVisible()
   await expect(page.locator('.summary-stats > div')).toHaveText([/^Today’s score2\/3$/, /^Day streak1 day$/])
   await expect(page.getByRole('button', { name: 'Daily challenge' })).toBeFocused()
   const events = await recordedEvents(page)
@@ -102,6 +105,7 @@ test('the daily challenge plays the city and stops of dailyPlan, hides the place
   expect(await savedSection(page, 'progress')).toEqual(parisDone)
 
   await page.getByRole('button', { name: 'Daily challenge' }).click()
+  await expect(page.locator('.daily-city')).toHaveText(route.name.en)
   await expect(page.locator('.daily-state')).toHaveText('Done for today. A new challenge comes tomorrow.')
   await expect(daily(page).locator('.summary-stats > div')).toHaveText([/^Today’s score2\/3$/, /^Day streak1 day$/])
   await expect(daily(page).getByRole('button')).toHaveCount(0)
@@ -129,7 +133,9 @@ test('a daily run left on the game screen shows as in progress and Continue resu
   await expectState(page, 'question')
   await page.locator('.play-bar').getByRole('button', { name: 'Save and go to Home' }).click()
   await page.getByRole('button', { name: 'Daily challenge' }).click()
+  await expect(page.locator('.daily-city')).toHaveText(route.name.en)
   await expect(page.locator('.daily-state')).toHaveText('Your daily challenge is in progress.')
+  await expect(daily(page).locator('.summary-stats > div').first()).toHaveText(/^Today’s scoreIn progress$/)
   await expect(page.getByRole('button', { name: 'Continue' })).toBeFocused()
   await page.getByRole('button', { name: 'Continue' }).click()
   await expect(page.getByRole('dialog', { name: 'Paused' })).toBeVisible()

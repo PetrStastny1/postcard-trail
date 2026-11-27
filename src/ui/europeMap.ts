@@ -135,3 +135,37 @@ export function clusterCities(
   }
   return groups.map((group) => ({ ...centre(group), cityIds: group.map((city) => city.cityId) }))
 }
+
+/** The deepest a single click on a group zooms in; a group still too close for its own targets takes another click. */
+export const maxZoomStep = 3
+/** The view around a group is this much wider than the group, so its outer cities keep some map around them. */
+const zoomMargin = 1.6
+
+/**
+ * The view a click on a group zooms to: centred on the group and showing all of it, zoomed in only as far as the
+ * group's two closest cities need to stand `frame.spacing` px apart in a frame `frame.width` px wide, and at most
+ * `maxZoomStep` times. Distances count on the nearer axis, like the targets in `clusterCities`.
+ */
+export function zoomView(members: MapPoint[], view: MapView, frame: { width: number; spacing: number }): MapView {
+  let closest = Infinity
+  for (const [index, first] of members.entries()) {
+    for (const second of members.slice(index + 1)) closest = Math.min(closest, Math.max(Math.abs(first.x - second.x), Math.abs(first.y - second.y)))
+  }
+  const step = Math.min(maxZoomStep, frame.spacing / ((closest * frame.width) / view.width))
+  const xs = members.map((city) => city.x)
+  const ys = members.map((city) => city.y)
+  const aspect = fullMapView.width / fullMapView.height
+  const width = Math.min(
+    view.width,
+    Math.max(view.width / step, (Math.max(...xs) - Math.min(...xs)) * zoomMargin, (Math.max(...ys) - Math.min(...ys)) * zoomMargin * aspect),
+  )
+  const height = width / aspect
+  const centreX = (Math.max(...xs) + Math.min(...xs)) / 2
+  const centreY = (Math.max(...ys) + Math.min(...ys)) / 2
+  return {
+    x: Math.min(Math.max(centreX - width / 2, 0), fullMapView.width - width),
+    y: Math.min(Math.max(centreY - height / 2, 0), fullMapView.height - height),
+    width,
+    height,
+  }
+}

@@ -2,7 +2,7 @@ import type { Catalog, CatalogCity, Locale } from '../content/types.ts'
 import { unlockedCityIds, type Progress, type Stars } from '../game/logic/progress.ts'
 import { plural, t } from '../i18n/index.ts'
 import { element, icon } from './element.ts'
-import { clusterCities, fullMapView, landPaths, project, type MapCluster, type MapView, type PlacedCity } from './europeMap.ts'
+import { clusterCities, fullMapView, landPaths, project, zoomView, type MapCluster, type MapView, type PlacedCity } from './europeMap.ts'
 import { markMoreContent } from './moreContent.ts'
 import { starRating } from './stars.ts'
 import { windowBar, windowScreen } from './windowBar.ts'
@@ -39,9 +39,6 @@ export interface MapOptions {
 }
 
 export const mapTitleId = 'map-title'
-/** Each click on a group shows at most this share of the current view, or the group itself when it is wider. */
-const zoomStep = 4
-const zoomMargin = 1.6
 
 function stateLabel({ state, stars }: MapCity): string {
   if (state === 'completed') return `${t('city.completed')}, ${t('stars.spoken', { stars })}`
@@ -69,7 +66,7 @@ export function mapScreen({ cities, locale, onOpenCity, onClose, onHome }: MapOp
   function drawPoints(focusCityId?: string): void {
     const width = frame.clientWidth
     if (width === 0) return
-    const target = parseFloat(getComputedStyle(frame).getPropertyValue('--hit-target'))
+    const target = cssPixels('--hit-target')
     const clusters = clusterCities(placed, view, { width, height: frame.clientHeight, target })
     const key = JSON.stringify([view, clusters])
     if (key === drawnKey && focusCityId === undefined) return
@@ -79,6 +76,7 @@ export function mapScreen({ cities, locale, onOpenCity, onClose, onHome }: MapOp
     points.replaceChildren(...clusters.map(pointButton))
     svg.setAttribute('viewBox', `${view.x} ${view.y} ${view.width} ${view.height}`)
     const zoomed = view !== fullMapView
+    if (zoomed) labelPoints(clusters)
     tools.replaceChildren(...(zoomed ? [zoomOutButton()] : []))
     const wanted = focusCityId ?? focusedId?.split(' ')[0]
     if (wanted) [...points.querySelectorAll<HTMLElement>('.map-point')].find((point) => point.dataset.cityIds?.split(' ').includes(wanted))?.focus()
@@ -112,25 +110,52 @@ export function mapScreen({ cities, locale, onOpenCity, onClose, onHome }: MapOp
     return button
   }
 
+  function cssPixels(token: string): number {
+    return parseFloat(getComputedStyle(frame).getPropertyValue(token))
+  }
+
   function zoomTo(cluster: MapCluster): void {
     const members = placed.filter((city) => cluster.cityIds.includes(city.cityId))
-    const xs = members.map((city) => city.x)
-    const ys = members.map((city) => city.y)
-    const aspect = fullMapView.width / fullMapView.height
-    const width = Math.min(
-      fullMapView.width,
-      Math.max(view.width / zoomStep, (Math.max(...xs) - Math.min(...xs)) * zoomMargin, (Math.max(...ys) - Math.min(...ys)) * zoomMargin * aspect),
-    )
-    const height = width / aspect
-    const centreX = (Math.max(...xs) + Math.min(...xs)) / 2
-    const centreY = (Math.max(...ys) + Math.min(...ys)) / 2
-    view = {
-      x: Math.min(Math.max(centreX - width / 2, 0), fullMapView.width - width),
-      y: Math.min(Math.max(centreY - height / 2, 0), fullMapView.height - height),
-      width,
-      height,
-    }
+    view = zoomView(members, view, { width: frame.clientWidth, spacing: cssPixels('--hit-target') + cssPixels('--space-2') })
     drawPoints(cluster.cityIds[0])
+  }
+
+  /**
+   * Zoomed in, each single city gets its name beside the dot: right, left, below or above, whichever stays inside the
+   * map and clear of every dot and earlier name. A name that fits nowhere is left out; the target still says it.
+   */
+  function labelPoints(clusters: MapCluster[]): void {
+    const origin = points.getBoundingClientRect()
+    const relative = (rect: DOMRect) => ({ left: rect.left - origin.left, top: rect.top - origin.top, right: rect.right - origin.left, bottom: rect.bottom - origin.top })
+    const taken = [...points.querySelectorAll('.map-dot')].map((dot) => relative(dot.getBoundingClientRect()))
+    const offset = cssPixels('--space-6') / 2 + cssPixels('--space-1')
+    for (const cluster of clusters) {
+      if (cluster.cityIds.length > 1) continue
+      const label = element('span', { class: 'map-label', 'aria-hidden': 'true' }, (byId.get(cluster.cityIds[0]) as MapCity).city.name[locale])
+      points.append(label)
+      const { width, height } = label.getBoundingClientRect()
+      const spots = [
+        { left: cluster.x + offset, top: cluster.y - height / 2 },
+        { left: cluster.x - offset - width, top: cluster.y - height / 2 },
+        { left: cluster.x - width / 2, top: cluster.y + offset },
+        { left: cluster.x - width / 2, top: cluster.y - offset - height },
+      ].map(({ left, top }) => ({ left, top, right: left + width, bottom: top + height }))
+      const free = spots.find(
+        (spot) =>
+          spot.left >= 0 &&
+          spot.top >= 0 &&
+          spot.right <= origin.width &&
+          spot.bottom <= origin.height &&
+          taken.every((box) => spot.right <= box.left || spot.left >= box.right || spot.bottom <= box.top || spot.top >= box.bottom),
+      )
+      if (!free) {
+        label.remove()
+        continue
+      }
+      label.style.left = `${free.left}px`
+      label.style.top = `${free.top}px`
+      taken.push(free)
+    }
   }
 
   function zoomOutButton(): HTMLButtonElement {
@@ -196,40 +221,35 @@ export interface CityDetailOptions {
 
 export const cityDetailTitleId = 'city-detail-title'
 
-/** The modal detail of a city: the unlock condition when locked, else the postcard scene, best stars and the play action. */
+/**
+ * The modal detail of a city: the postcard scene (a dashed place with a lock while locked), the main state and the
+ * play action, or the unlock condition without any action while locked.
+ */
 export function cityDetailWindow({ entry, locale, hasActiveRunHere, onPlay, onContinue, onClose, onHome }: CityDetailOptions): HTMLElement[] {
   const { city, state, stars, previous } = entry
   const bar = windowBar({ titleId: cityDetailTitleId, title: city.name[locale], onClose, onHome })
+  let art: HTMLElement
+  let info: HTMLElement[]
   if (state === 'locked' && previous) {
-    const body = element(
-      'div',
-      { class: 'window-body' },
-      element(
-        'div',
-        { class: 'city-detail is-locked' },
-        icon('lock', { class: 'city-detail-lock' }),
-        element('p', { class: 'city-condition' }, t('city.condition', { city: previous.name[locale] })),
-      ),
-    )
-    return [bar, body]
+    art = element('span', { class: 'city-detail-blank', 'aria-hidden': 'true' }, icon('lock', { class: 'city-detail-lock' }))
+    info = [element('p', { class: 'city-condition' }, t('city.condition', { city: previous.name[locale] }))]
+  } else {
+    const action = hasActiveRunHere ? 'continue' : state === 'completed' ? 'playAgain' : 'play'
+    const play = element('button', { class: 'primary city-play', type: 'button', autofocus: true, 'data-focus-id': 'city-play' }, t(`city.${action}`))
+    play.addEventListener('click', hasActiveRunHere ? onContinue : onPlay)
+    art = element('img', { class: 'postcard-art', src: `${import.meta.env.BASE_URL}${city.postcard.sceneAsset}`, alt: city.name[locale] })
+    // A run in progress is the main state; the best stars of an earlier completion stay beside it.
+    info = [
+      ...(hasActiveRunHere ? [element('p', { class: 'city-status' }, t('city.inProgress'))] : []),
+      ...(state === 'completed' ? [element('p', { class: 'city-best' }, element('span', {}, t('city.best')), starRating(stars, { withCount: true }))] : []),
+      ...(!hasActiveRunHere && state !== 'completed' ? [element('p', { class: 'city-status' }, t('city.notPlayed'))] : []),
+      play,
+    ]
   }
-
-  const action = hasActiveRunHere ? 'continue' : state === 'completed' ? 'playAgain' : 'play'
-  const play = element('button', { class: 'primary city-play', type: 'button', autofocus: true, 'data-focus-id': 'city-play' }, t(`city.${action}`))
-  play.addEventListener('click', hasActiveRunHere ? onContinue : onPlay)
-  const best =
-    state === 'completed'
-      ? element('p', { class: 'city-best' }, element('span', {}, t('city.best')), starRating(stars))
-      : element('p', { class: 'city-best' }, t('city.notPlayed'))
   const body = element(
     'div',
     { class: 'window-body' },
-    element(
-      'div',
-      { class: 'city-detail' },
-      element('img', { class: 'postcard-art', src: `${import.meta.env.BASE_URL}${city.postcard.sceneAsset}`, alt: city.name[locale] }),
-      element('div', { class: 'city-detail-info' }, best, ...(hasActiveRunHere ? [element('p', { class: 'city-note' }, t('city.inProgress'))] : []), play),
-    ),
+    element('div', { class: state === 'locked' ? 'city-detail is-locked' : 'city-detail' }, art, element('div', { class: 'city-detail-info' }, ...info)),
   )
   markMoreContent(body)
   return [bar, body]

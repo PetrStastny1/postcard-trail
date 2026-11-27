@@ -39,6 +39,14 @@
   line-height: var(--leading-tight);
 }
 
+.star-count {
+  margin-inline-start: var(--space-2);
+  font-size: var(--text-control);
+  font-weight: var(--weight-bold);
+  letter-spacing: normal;
+  font-variant-numeric: tabular-nums;
+}
+
 .postcard-art {
   display: block;
   width: 100%;
@@ -131,6 +139,19 @@
   background: var(--color-on-ink);
 }
 
+.map-label {
+  position: absolute;
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-sm);
+  background: var(--color-on-ink);
+  color: var(--color-ink);
+  font-size: var(--text-small);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-tight);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
 .map-cluster .map-dot {
   width: var(--space-8);
   height: var(--space-8);
@@ -162,11 +183,12 @@
   list-style: none;
 }
 
+/* A row too narrow for the name and the state moves the state to its own line, so text never overlaps. */
 .city-row {
-  display: grid;
-  grid-template-columns: 2ch minmax(0, 1fr) auto;
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-3);
+  gap: 0 var(--space-3);
   width: 100%;
   min-height: var(--hit-target);
   padding: var(--space-1) var(--space-3);
@@ -186,12 +208,19 @@
 }
 
 .city-number {
+  flex: none;
+  width: 2ch;
   color: var(--color-ink-soft);
   font-variant-numeric: tabular-nums;
   text-align: right;
 }
 
+.city-name {
+  flex: 1 0 auto;
+}
+
 .city-state {
+  margin-inline-start: auto;
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
@@ -255,14 +284,31 @@
 }
 
 .city-detail .postcard-art,
+.city-detail-blank,
 .postcard-detail .postcard-art {
   justify-self: center;
   width: min(100%, 20rem);
 }
 
+/* A locked city keeps the place of its postcard, dashed like a missing card in the collection. */
+.city-detail-blank {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  border: var(--border) dashed var(--color-ink-soft);
+  border-radius: var(--radius-md);
+  color: var(--color-ink-soft);
+}
+
 .city-detail-info {
   display: grid;
   gap: var(--space-3);
+}
+
+.city-status {
+  margin: 0;
+  font-weight: var(--weight-semibold);
+  text-align: center;
 }
 
 .city-best {
@@ -274,29 +320,15 @@
   font-weight: var(--weight-semibold);
 }
 
-.city-note {
-  margin: 0;
-  color: var(--color-ink-soft);
-  font-size: var(--text-small);
-  text-align: center;
-}
-
 .city-play {
   min-height: var(--primary-height);
   font-size: var(--text-question);
-}
-
-.city-detail.is-locked {
-  justify-items: center;
-  padding-block: var(--space-8);
-  text-align: center;
 }
 
 .city-detail-lock svg {
   display: block;
   width: var(--space-8);
   height: var(--space-8);
-  color: var(--color-ink-soft);
 }
 
 .city-condition,
@@ -305,8 +337,34 @@
   font-weight: var(--weight-semibold);
 }
 
-.postcard-sentence {
+.city-condition {
+  text-align: center;
+}
+
+.route-change-title {
   margin: 0;
+  font-size: var(--text-title);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+}
+
+/* Under the centred card the sentence is centred on the card's width too. */
+.postcard-sentence {
+  justify-self: center;
+  max-width: 20rem;
+  margin: 0;
+  text-align: center;
+}
+
+/* Over the city detail the route change is a smaller sheet, and only the scrim right under it dims the screen. */
+@media (min-width: 48rem) and (min-height: 28rem) {
+  dialog.window.window-narrow {
+    max-width: 28rem;
+  }
+}
+
+dialog.window:has(~ dialog.window-narrow[open])::backdrop {
+  background: transparent;
 }
 
 /* Summaries: the postcard and the result; side by side in landscape. */
@@ -388,27 +446,50 @@
   text-align: center;
 }
 
+/*
+ * Landscape follows the game screen: the postcard on the left as large as the height allows, the result on the right
+ * centred vertically. The reserve is the bar, the padding and the caption under the postcard.
+ */
 @media (orientation: landscape) {
+  .window-screen.summary-screen > .window-body > * {
+    max-width: var(--play-max-width);
+  }
+
   .summary {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    --summary-reserve: calc(var(--hit-target) + 2 * var(--space-4) + var(--space-2) + var(--text-small) * var(--leading-normal));
+    grid-template-columns: auto minmax(0, 1fr);
     align-items: center;
+    column-gap: var(--space-8);
+    min-height: 100%;
   }
 
   .summary-postcard {
-    width: min(100%, 16rem, calc(100dvh - 9rem));
+    width: min(45vw, 100dvh - var(--summary-reserve) - env(safe-area-inset-top));
+  }
+
+  .summary-info {
+    justify-self: center;
+    width: min(100%, 28rem);
   }
 }
 
 @media (orientation: landscape) and (max-height: 30rem) {
-  .city-detail:not(.is-locked),
+  .city-detail,
   .postcard-detail {
     grid-template-columns: auto minmax(0, 1fr);
     align-items: center;
   }
 
   .city-detail .postcard-art,
+  .city-detail-blank,
   .postcard-detail .postcard-art {
     width: min(14rem, calc(100dvh - var(--hit-target) - 2 * var(--space-4)));
+  }
+
+  .postcard-sentence {
+    justify-self: stretch;
+    max-width: none;
+    text-align: start;
   }
 
   .summary,
@@ -495,9 +576,21 @@
   padding: var(--space-4) var(--window-side) max(var(--space-4), env(safe-area-inset-bottom));
 }
 
+.daily-head {
+  display: grid;
+  gap: var(--space-1);
+}
+
 .daily-date {
   margin: 0;
-  font-size: var(--text-title);
+  color: var(--color-ink-soft);
+  font-size: var(--text-small);
+  font-weight: var(--weight-semibold);
+}
+
+.daily-city {
+  margin: 0;
+  font-size: var(--text-display);
   font-weight: var(--weight-bold);
   line-height: var(--leading-tight);
 }

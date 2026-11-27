@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 import type { RunState } from '../src/game/logic/run.ts'
 import { catalog, expectState, paris, playStops, recordedEvents, savedSection, seedStorage, startParis } from './game.ts'
-import { cityRunBeforeLastNext, continueToSummary, progressWith } from './screens.ts'
+import { cityRunBeforeLastNext, continueToSummary, dailyRunBeforeLastNext, progressWith } from './screens.ts'
 
 const parisDone = progressWith(1, 0)
 const cityNames = catalog.cities.map((city) => city.name.en)
@@ -62,7 +62,8 @@ test.describe('route change', () => {
   test('the city with the active run offers Continue without asking', async ({ page }) => {
     await withLondonInProgress(page)
     await cityRow(page, 'London').click()
-    await expect(dialog(page, 'London').getByText('Route in progress')).toBeVisible()
+    await expect(dialog(page, 'London').locator('.city-status')).toHaveText('Route in progress')
+    await expect(dialog(page, 'London')).not.toContainText('Not played yet')
     await dialog(page, 'London').getByRole('button', { name: 'Continue' }).click()
     await expect(routeChange(page)).toHaveCount(0)
     await expect(dialog(page, 'Paused')).toBeVisible()
@@ -156,10 +157,40 @@ test.describe('map', () => {
     await expect(cityRow(page, 'London')).toBeFocused()
 
     await cityRow(page, 'Paris').click()
-    await expect(dialog(page, 'Paris').locator('.city-best')).toHaveText(/^Best☆☆☆0 of 3 stars$/)
+    await expect(dialog(page, 'Paris').locator('.city-best')).toHaveText(/^Best☆☆☆0\/30 of 3 stars$/)
     await dialog(page, 'Paris').getByRole('button', { name: 'Play again' }).click()
     await expectState(page, 'question')
     await expect(page.locator('.play-title')).toHaveText('Paris · 1/10')
+    // No window stays over the game, so the question can be answered.
+    await expect(page.getByRole('dialog')).toHaveCount(0)
+    await page.locator('.choice').first().click()
+    await expectState(page, 'result')
+  })
+
+  test('Play in the detail of a new city starts it with no window left over the game', async ({ page }) => {
+    await seedStorage(page, { progress: parisDone })
+    await page.goto('/')
+    await openMap(page)
+    await cityRow(page, 'London').click()
+    await dialog(page, 'London').getByRole('button', { name: 'Play', exact: true }).click()
+    await expectState(page, 'question')
+    await expect(page.locator('.play-title')).toHaveText('London · 1/10')
+    await expect(page.getByRole('dialog')).toHaveCount(0)
+    await page.locator('.choice').first().click()
+    await expectState(page, 'result')
+  })
+
+  test('a route that fails to load from the detail shows its error screen with no window over it', async ({ page }) => {
+    await seedStorage(page, { progress: parisDone })
+    await page.route('**/src/content/routes/london.json*', (route) => route.abort())
+    await page.goto('/')
+    await openMap(page)
+    await cityRow(page, 'London').click()
+    await dialog(page, 'London').getByRole('button', { name: 'Play', exact: true }).click()
+    await expectState(page, 'error')
+    await expect(page.getByRole('dialog')).toHaveCount(0)
+    await page.getByRole('button', { name: 'Home' }).click()
+    await expect(page.getByRole('button', { name: 'Play' })).toBeFocused()
   })
 
   test('the map × returns to City map on the title and Home to Play', async ({ page }) => {
@@ -199,7 +230,7 @@ test.describe('city summary', () => {
     await expect(page.getByRole('heading', { name: 'Route complete' })).toBeVisible()
     const summary = page.locator('.summary')
     await expect(summary.locator('.summary-city')).toHaveText('Paris')
-    await expect(summary.locator('.summary-stats > div')).toHaveText([/^Score0\/10$/, /^Best streak0$/, /^Stars☆☆☆0 of 3 stars$/])
+    await expect(summary.locator('.summary-stats > div')).toHaveText([/^Score0\/10$/, /^Best streak0$/, /^Stars☆☆☆0\/30 of 3 stars$/])
     const postcard = summary.locator('.summary-postcard')
     await expect(postcard).toHaveAttribute('data-new', '')
     await expect(postcard.locator('figcaption')).toHaveText('New postcard')
@@ -236,7 +267,7 @@ test.describe('city summary', () => {
     await seedStorage(page, { progress: progressWith(2, 1), 'active-run': { ownerTabId: 'closed-tab', run: cityRunBeforeLastNext('paris', 9) } })
     await page.goto('/')
     await continueToSummary(page)
-    await expect(page.locator('.summary-stats > div')).toHaveText([/^Score9\/10$/, /^Best streak9$/, /^Stars★★★3 of 3 stars$/])
+    await expect(page.locator('.summary-stats > div')).toHaveText([/^Score9\/10$/, /^Best streak9$/, /^Stars★★★3\/33 of 3 stars$/])
     const postcard = page.locator('.summary-postcard')
     await expect(postcard).not.toHaveAttribute('data-new')
     await expect(postcard).toHaveCSS('animation-name', 'none')
@@ -254,7 +285,7 @@ test.describe('city summary', () => {
     await seedStorage(page, { progress: progressWith(19, 2), 'active-run': { ownerTabId: 'closed-tab', run: cityRunBeforeLastNext('reykjavik', 3) } })
     await page.goto('/')
     await continueToSummary(page)
-    await expect(page.locator('.summary-stats > div').last()).toHaveText(/^Stars☆☆☆0 of 3 stars$/)
+    await expect(page.locator('.summary-stats > div').last()).toHaveText(/^Stars☆☆☆0\/30 of 3 stars$/)
     await expect(page.getByRole('button', { name: 'Next city' })).toHaveCount(0)
     await page.getByRole('button', { name: 'Map', exact: true }).click()
     await expect(page.getByRole('heading', { name: 'City map' })).toBeVisible()
@@ -351,4 +382,58 @@ test('with all 20 cities done the collection has 20 postcards, the title 20/20 a
   await page.getByRole('button', { name: 'Play' }).click()
   await expect(page.getByRole('heading', { name: 'City map' })).toBeVisible()
   await expect(page.locator('.city-state')).toHaveText(Array.from({ length: 20 }, () => /^Completed★★★/))
+})
+
+test.describe('Escape works like × on every window screen, with the focus on the page', () => {
+  async function escapeWithoutFocus(page: Page) {
+    await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur())
+    await page.keyboard.press('Escape')
+  }
+
+  test('map, collection and daily overview return to their title button', async ({ page }) => {
+    await seedStorage(page, { progress: parisDone })
+    await page.goto('/')
+    for (const [opener, heading] of [
+      ['City map', 'City map'],
+      ['Collection', 'Collection'],
+      ['Daily challenge', 'Daily challenge'],
+    ]) {
+      await page.getByRole('button', { name: opener }).click()
+      await expect(page.getByRole('heading', { name: heading })).toBeVisible()
+      await escapeWithoutFocus(page)
+      await expect(page.getByRole('heading', { name: heading })).toHaveCount(0)
+      await expect(page.getByRole('button', { name: opener })).toBeFocused()
+    }
+  })
+
+  test('Escape in a city detail closes only the detail, and the map then closes on the next Escape', async ({ page }) => {
+    await seedStorage(page, { progress: parisDone })
+    await page.goto('/')
+    await openMap(page)
+    await cityRow(page, 'London').click()
+    await page.keyboard.press('Escape')
+    await expect(page.getByRole('dialog')).toHaveCount(0)
+    await expect(page.getByRole('heading', { name: 'City map' })).toBeVisible()
+    await page.keyboard.press('Escape')
+    await expect(page.getByRole('button', { name: 'City map' })).toBeFocused()
+  })
+
+  test('the city summary goes to the title', async ({ page }) => {
+    await seedStorage(page, { 'active-run': { ownerTabId: 'closed-tab', run: cityRunBeforeLastNext('paris', 4) } })
+    await page.goto('/')
+    await continueToSummary(page)
+    await expect(page.getByRole('heading', { name: 'Route complete' })).toBeVisible()
+    await escapeWithoutFocus(page)
+    await expect(page.getByRole('button', { name: 'Play' })).toBeFocused()
+  })
+
+  test('the daily summary goes to the title', async ({ page }) => {
+    await seedStorage(page, { progress: parisDone, 'active-run': { ownerTabId: 'closed-tab', run: dailyRunBeforeLastNext('2026-12-05', 1) } })
+    await page.clock.install({ time: new Date('2026-12-05T08:00:00Z') })
+    await page.goto('/')
+    await continueToSummary(page)
+    await expect(page.getByRole('heading', { name: 'Daily challenge done' })).toBeVisible()
+    await escapeWithoutFocus(page)
+    await expect(page.getByRole('button', { name: 'Play' })).toBeFocused()
+  })
 })

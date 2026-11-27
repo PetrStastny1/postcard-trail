@@ -40,7 +40,7 @@ export function citySummaryScreen(options: CitySummaryOptions): HTMLElement {
     { class: 'summary-stats' },
     element('div', {}, element('dt', {}, t('summary.score')), element('dd', {}, t('result.outOf', { count: run.correct, total: run.stops.length }))),
     element('div', {}, element('dt', {}, t('summary.bestStreak')), element('dd', {}, String(run.bestStreak))),
-    element('div', {}, element('dt', {}, t('summary.stars')), element('dd', {}, starRating(summary.stars))),
+    element('div', {}, element('dt', {}, t('summary.stars')), element('dd', {}, starRating(summary.stars, { withCount: true }))),
   )
   const postcard = element(
     'figure',

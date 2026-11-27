@@ -13,30 +13,13 @@ import {
   savedSection,
   seedStorage,
   startParis,
+  textOutsideChoices,
   wrongChoice,
 } from './game.ts'
 
 const timer = (page: Page) => page.locator('.timer-value')
 const verdict = (page: Page) => page.locator('.result-verdict')
 const choiceLabels = (page: Page) => page.locator('.choice-label').allTextContents()
-
-/** The page text and accessible names outside the choice buttons, where `Stop.place` must not appear before the answer. */
-async function textOutsideChoices(page: Page): Promise<string> {
-  return page.evaluate(() => {
-    const outside = (node: Element) => !node.closest('.choice')
-    const clone = document.body.cloneNode(true) as HTMLElement
-    clone.querySelectorAll('.choice, script').forEach((node) => node.remove())
-    const texts = [clone.textContent ?? '']
-    for (const node of document.querySelectorAll('[aria-label], [alt], [title]')) {
-      if (outside(node)) texts.push(...['aria-label', 'alt', 'title'].map((name) => node.getAttribute(name) ?? ''))
-    }
-    for (const node of document.querySelectorAll('[aria-describedby]')) {
-      if (!outside(node)) continue
-      for (const id of (node.getAttribute('aria-describedby') ?? '').split(/\s+/)) texts.push(document.getElementById(id)?.textContent ?? '')
-    }
-    return texts.join('\n').toLowerCase()
-  })
-}
 
 async function expectPlaceHidden(page: Page, stop: Stop) {
   const text = await textOutsideChoices(page)

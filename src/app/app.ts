@@ -1,5 +1,5 @@
 import { loadRoute } from '../content/index.ts'
-import type { Catalog, Route } from '../content/types.ts'
+import type { Catalog, CatalogCity, Route } from '../content/types.ts'
 import { routeErrorScreen } from '../game/render/playScreen.ts'
 import { dailyPlan, dailyStreak, dailyUnlocked, hasDailyResult, startDailyRun, utcDateOf } from '../game/logic/daily.ts'
 import { nextCityToPlay, progressTotals } from '../game/logic/progress.ts'
@@ -53,6 +53,11 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
   // Capturing on window runs before any other handler, so a cue played by that handler can already sound.
   window.addEventListener('click', () => session.feedback.unlock(), { capture: true })
   window.addEventListener('keydown', () => session.feedback.unlock(), { capture: true })
+  // Escape works like × on a window screen as well; a dialog closes itself on Escape and the game has its own keys.
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape' || activePlay || topDialog()) return
+    screenSlot.querySelector<HTMLElement>('.window-screen > .window-bar [data-focus-id="window-close"]')?.click()
+  })
 
   function applySettings(): void {
     setLocale(session.settings.locale)
@@ -174,6 +179,7 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
     if (session.storage.loadActiveRun() === null) return start(false)
     const dialog = openDialog({
       labelledBy: routeChangeTitleId,
+      className: 'window-narrow',
       content: routeChangeWindow({
         onKeep: () => dialog.close(),
         onDiscard: () => {
@@ -292,10 +298,13 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
     const results = session.storage.loadDailyResults()
     const plan = dailyPlan(catalog, utcDate)
     const city = plan && catalog.cities.find((candidate) => candidate.id === plan.cityId)
+    const active = session.storage.loadActiveRun()
+    // A daily run belongs to the day it started, so its city can differ from today's.
+    const activeDailyCity = active?.mode === 'daily' ? catalog.cities.find((candidate) => candidate.id === active.cityId) : undefined
     let state: DailyOverviewState
     if (!city) state = { status: 'notOffered', firstUtcDate: catalog.versions[0].effectiveUtcDate }
-    else if (session.storage.loadActiveRun()?.mode === 'daily') state = { status: 'inProgress' }
-    else if (hasDailyResult(results, utcDate)) state = { status: 'done', correct: results[utcDate].correct }
+    else if (activeDailyCity) state = { status: 'inProgress', city: activeDailyCity }
+    else if (hasDailyResult(results, utcDate)) state = { status: 'done', city, correct: results[utcDate].correct }
     else state = { status: 'available', city }
     return dailyScreen({
       utcDate,
@@ -333,9 +342,11 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
     })
   }
 
-  function renderDailySummary({ utcDate, dailyResults }: Extract<RunCompletion, { mode: 'daily' }>): HTMLElement {
+  function renderDailySummary({ run, utcDate, dailyResults }: Extract<RunCompletion, { mode: 'daily' }>): HTMLElement {
     // A result another tab saved first for the same date wins (brief §3), so the summary shows the stored one.
     return dailySummaryScreen({
+      city: catalog.cities.find((city) => city.id === run.cityId) as CatalogCity,
+      locale: session.settings.locale,
       correct: dailyResults[utcDate].correct,
       streak: dailyStreak(dailyResults, utcDateOf(Date.now())),
       onOverview: openDaily,
@@ -358,6 +369,8 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
   async function openRoute(cityId: string, begin: (route: Route) => RunState | null): Promise<void> {
     if (openingRoute) return
     openingRoute = true
+    // The game or the error screen replaces the screen below, so no window may stay open over it.
+    closeDialogs()
     let route: Route
     let placeholderSceneIds: ReadonlySet<string>
     try {
