@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { correctChoice, expectState, installClock, paris, pauseClock, seedStorage } from './game.ts'
-import { cityRunBeforeLastNext, continueToSummary, progressWith } from './screens.ts'
+import { cityRunBeforeLastNext, continueToSummary, dailyRunBeforeLastNext, progressWith } from './screens.ts'
 
 // Brief §8, A13: with less motion asked for, by the system or by "Reduce motion", nothing moves for longer than 100 ms.
 
@@ -80,6 +80,16 @@ for (const [mode, setting] of [
       await page.locator('.next').click()
       await expect(page.locator('.pause-hint')).toBeVisible()
       await expectNoLongMotion(page, 'the hint by the pause button')
+      await correctChoice(page, paris.stops[3]).click()
+      await expectState(page, 'result')
+      await page.locator('[data-focus-id="play-zoom"]').click()
+      await expect(page.locator('dialog.zoom-window')).toBeVisible()
+      await expectNoLongMotion(page, 'zoom')
+      await page.keyboard.press('Escape')
+      await expect(page.locator('dialog')).toHaveCount(0)
+      await page.locator('[data-focus-id="play-pause"]').click()
+      await expect(page.getByRole('dialog', { name: 'Paused' })).toBeVisible()
+      await expectNoLongMotion(page, 'pause')
     })
 
     test('the wait for a video spot stands still', async ({ page }) => {
@@ -98,6 +108,58 @@ for (const [mode, setting] of [
       await page.locator('dialog[open] .skip-play').click()
       await expect(page.locator('dialog[open] .scene-loading-bar')).toBeVisible()
       await expectNoLongMotion(page, 'wait for the spot')
+    })
+
+    for (const outcome of ['cancelled', 'unavailable'] as const) {
+      test(`the skip confirmation and the ${outcome} spot window stand still`, async ({ page }) => {
+        await seedStorage(page, { settings: settings(setting) })
+        await installClock(page)
+        await page.goto(`/?ad=${outcome}`)
+        await pauseClock(page)
+        await page.locator('[data-focus-id="title-play"]').click()
+        for (const stop of paris.stops.slice(0, 2)) {
+          await correctChoice(page, stop).click()
+          await page.locator('.next').click()
+        }
+        await expectState(page, 'question')
+        await page.keyboard.press('Escape')
+        await page.locator('[data-focus-id="pause-skip"]').click()
+        await expect(page.locator('dialog[open] .skip-play')).toBeVisible()
+        await expectNoLongMotion(page, 'skip confirmation')
+        await page.locator('dialog[open] .skip-play').click()
+        await page.clock.runFor(600)
+        await expect(page.locator('dialog[open] [data-focus-id="skip-back"]')).toBeVisible()
+        await expectNoLongMotion(page, `spot ${outcome}`)
+      })
+    }
+
+    test('a city detail, the route change, a card and the daily summary stand still', async ({ page }) => {
+      await seedStorage(page, { settings: settings(setting), progress: progressWith(2, 1), 'active-run': { ownerTabId: 'closed-tab', run: cityRunBeforeLastNext('rome', 3) } })
+      await page.clock.install({ time: new Date('2026-12-05T08:00:00Z') })
+      await page.goto('/')
+      await page.locator('[data-focus-id="title-map"]').click()
+      await page.locator('[data-focus-id="map-city-paris"]').click()
+      await expect(page.getByRole('dialog', { name: 'Paris' })).toBeVisible()
+      await expectNoLongMotion(page, 'city detail')
+      await page.locator('dialog[open] .city-play').click()
+      await expect(page.getByRole('dialog', { name: 'Discard your current route?' })).toBeVisible()
+      await expectNoLongMotion(page, 'route change')
+      await page.locator('.window-bar').getByRole('button', { name: 'Home' }).last().click()
+      await expect(page.locator('dialog')).toHaveCount(0)
+
+      await page.locator('[data-focus-id="title-collection"]').click()
+      await page.locator('.postcard-card').first().click()
+      await expect(page.locator('dialog[open]')).toHaveCount(1)
+      await expectNoLongMotion(page, 'card')
+      await page.keyboard.press('Escape')
+      await page.keyboard.press('Escape')
+      await expect(page.locator('dialog')).toHaveCount(0)
+
+      await page.evaluate((run) => localStorage.setItem('postcard-trail:active-run', JSON.stringify({ version: 1, data: { ownerTabId: 'closed-tab', run } })), dailyRunBeforeLastNext('2026-12-05', 2))
+      await page.reload()
+      await continueToSummary(page)
+      await expect(page.locator('[data-focus-id="daily-summary-overview"]')).toBeVisible()
+      await expectNoLongMotion(page, 'daily summary')
     })
 
     test('a new postcard, the map, the collection and the daily overview stand still', async ({ page }) => {
