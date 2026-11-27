@@ -12,15 +12,29 @@ const parisDone = progressWith(1, 0)
 
 type FinishingRun = { mode: 'city' | 'daily'; progress: typeof parisDone }
 
-/** Tab A continues a London or daily run one Next before its summary; its store will refuse the rewards. */
-async function tabA(page: Page, { mode, progress }: FinishingRun) {
+/** Tab A opens on the title with a London or daily run saved one Next before its summary. */
+async function openTabA(page: Page, { mode, progress }: FinishingRun) {
   await page.clock.install({ time: new Date(`${today}T08:00:00Z`) })
   const run = mode === 'city' ? cityRunBeforeLastNext('london', 0) : dailyRunBeforeLastNext(today, 2)
   await seedStorage(page, { progress, 'active-run': { ownerTabId: 'closed-tab', run } })
   await page.goto('/')
+}
+
+/** Continue from the title up to the last result, which takes the run over in this tab. */
+async function continueToLastResult(page: Page) {
   await page.getByRole('button', { name: 'Continue', exact: true }).click()
   await page.getByRole('dialog', { name: 'Paused' }).locator('.window-body .primary').click()
   await expectState(page, 'result')
+}
+
+/** Tab A continues the run up to its last result; its store will refuse the rewards. */
+async function tabA(page: Page, finishing: FinishingRun) {
+  await openTabA(page, finishing)
+  await continueToLastResult(page)
+  await refuseRewards(page, finishing.mode)
+}
+
+async function refuseRewards(page: Page, mode: FinishingRun['mode']) {
   await page.evaluate((rewardsKey) => {
     const setItem = Storage.prototype.setItem
     Storage.prototype.setItem = function (key: string, value: string) {
@@ -112,6 +126,47 @@ for (const mode of ['city', 'daily'] as const) {
     expect(await recordedEvents(tabB)).toEqual([{ name: 'route_started', cityId: 'paris', mode: 'city', resumed: false }])
   })
 }
+
+test('Discard and start from the daily overview, opened before the city run fails to save, completes it and starts the daily run', async ({ page, context }) => {
+  await tabA(page, { mode: 'city', progress: parisDone })
+  const tabB = await openTabB(context)
+  await tabB.getByRole('button', { name: 'Daily challenge' }).click()
+  await tabB.getByRole('button', { name: 'Start' }).click()
+  const change = tabB.getByRole('dialog', { name: 'Discard your current route?' })
+  await expect(change).toBeVisible()
+
+  await finishInTabA(page, 'city')
+
+  await change.getByRole('button', { name: 'Discard and start' }).click()
+  await expectState(tabB, 'question')
+  const { route } = dailyPlanOn(today)
+  await expect(tabB.locator('.play-title')).toHaveText(`${route.name.en} · 1/3`)
+  await expectRewardsOf(tabB, 'city')
+  expect(await recordedEvents(tabB)).toEqual([{ name: 'route_started', cityId: route.id, mode: 'daily', resumed: false }])
+})
+
+test('a tab showing Route paused completes the run another tab failed to save, and Home offers Play', async ({ page, context }) => {
+  await openTabA(page, { mode: 'city', progress: parisDone })
+  const tabB = await openTabB(context)
+  await continueToLastResult(tabB)
+  // Tab A takes the run over, so tab B stops with the "Route paused" window.
+  await continueToLastResult(page)
+  const paused = tabB.getByRole('dialog', { name: 'Route paused' })
+  await expect(paused).toBeVisible()
+  await refuseRewards(page, 'city')
+
+  await finishInTabA(page, 'city')
+
+  await paused.locator('.window-body').getByRole('button', { name: 'Home' }).click()
+  await expect(tabB.getByRole('button', { name: 'Play', exact: true })).toBeVisible()
+  await expect(tabB.getByRole('button', { name: 'Continue', exact: true })).toHaveCount(0)
+  await expect(tabB.locator('.title-progress li')).toHaveText(['2/20 cities', /^0\/60 ★/, '2 postcards'])
+  expect(await savedSection(tabB, 'active-run')).toBeNull()
+  await expectRewardsOf(tabB, 'city')
+  const events = await recordedEvents(tabB)
+  expect(events.filter((event) => event.name === 'route_left')).toEqual([])
+  expect(events.filter((event) => event.name === 'route_started')).toHaveLength(1)
+})
 
 test('a run that fails to save while the route of Discard and start loads is completed, not discarded', async ({ page, context }) => {
   await tabA(page, { mode: 'city', progress: parisDone })

@@ -85,15 +85,16 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
    * the stored run, progress and daily results as they are, and never offers a finished run to continue or to discard.
    */
   function completeRunFinishedElsewhere(): boolean {
-    // A tab playing a run owns the stored one; another tab can only take it over, which `play.ts` handles.
-    if (activePlay) return false
+    // The tab that owns the stored run plays it and completes it itself. A tab whose run another tab took over (the
+    // "Route paused" window) does not own it, so it completes a run the other tab left finished.
+    if (session.storage.isActiveRunOwner()) return false
     return completeFinishedRun(session.storage, catalog)
   }
 
   // A run another tab finished or started changes what this tab shows. The title redraws only when its Continue
   // changes, since another tab saves its run every second.
   window.addEventListener('storage', (event) => {
-    if (event.key !== activeRunStorageKey || activePlay) return
+    if (event.key !== activeRunStorageKey) return
     const completed = completeRunFinishedElsewhere()
     const titleChanged = renderScreen === renderTitle && (session.storage.loadActiveRun() !== null) !== titleShowsActiveRun
     if (completed || titleChanged) redraw()
