@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
-import { correctChoice, expectState, inspectPlayLayout, readRoute, seedStorage, storageKey } from './game.ts'
-import { expectUsableLayout } from './layout.ts'
+import { catalog, correctChoice, expectState, inspectPlayLayout, readRoute, seedStorage, storageKey } from './game.ts'
+import { controlSelector, expectUsableLayout } from './layout.ts'
 import { progressWith } from './screens.ts'
 
 // D1: the screens and windows not covered by screens-layout, play-layout and skip specs, at the minimum and Poki sizes.
@@ -110,3 +110,37 @@ for (const locale of ['en', 'cs'] as const) {
     })
   }
 }
+
+/** Every focusable element of the top layer is one the layout check measures, so none escapes the 44 px rule. */
+async function expectCheckedControls(page: Page, what: string) {
+  const unchecked = await page.evaluate((selector) => {
+    const layer: ParentNode = [...document.querySelectorAll('dialog[open]')].at(-1) ?? document
+    return [...layer.querySelectorAll<HTMLElement>('*')]
+      .filter((node) => node.tabIndex >= 0 && !node.matches(selector))
+      .map((node) => `${node.tagName.toLowerCase()}.${node.className}`)
+  }, controlSelector)
+  expect(unchecked, what).toEqual([])
+}
+
+test('the 44 px check measures the map targets, city rows, cards and window buttons', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 568 })
+  await seedStorage(page, { progress: progressWith(3, 2) })
+  await page.goto('/')
+  await page.locator('[data-focus-id="title-map"]').click()
+  await expect(page.locator('.map-point').first()).toBeVisible()
+  await expectCheckedControls(page, 'map')
+  expect(await page.locator(`.map-point:is(${controlSelector})`).count()).toBe(await page.locator('.map-point').count())
+  expect(await page.locator(`.city-row:is(${controlSelector})`).count()).toBe(catalog.cities.length)
+  await page.locator('.city-row').first().click()
+  await expectCheckedControls(page, 'city detail')
+  await page.keyboard.press('Escape')
+  await expect(page.locator('dialog')).toHaveCount(0)
+  await page.locator('.window-screen [data-focus-id="window-home"]').click()
+  await page.locator('[data-focus-id="title-collection"]').click()
+  await expect(page.locator('.postcard-card')).toHaveCount(3)
+  await expectCheckedControls(page, 'collection')
+  expect(await page.locator(`.postcard-card:is(${controlSelector})`).count()).toBe(3)
+  await page.locator('.postcard-card').first().click()
+  await expectCheckedControls(page, 'postcard')
+  expect(await page.locator(`dialog[open] .window-bar :is(${controlSelector})`).count()).toBe(2)
+})
