@@ -365,6 +365,42 @@ test.describe('the hint by the pause button', () => {
     await expect(hint(page)).toBeHidden()
   })
 
+  for (const size of [{ width: 320, height: 568 }, { width: 1440, height: 900 }]) {
+    test(`looks like the 50:50 hint and keeps to the content column at ${size.width} × ${size.height}`, async ({ page }) => {
+      await page.setViewportSize(size)
+      await continueRun(page, runAt(parisRun(), 3))
+      await pauseWindow(page).getByRole('button', { name: 'Continue' }).click()
+      await expect(hint(page)).toBeVisible()
+      const look = await hint(page).evaluate((label) => {
+        const resolve = (token: string) => {
+          const probe = document.createElement('span')
+          probe.style.color = `var(${token})`
+          document.body.append(probe)
+          const color = getComputedStyle(probe).color
+          probe.remove()
+          return color
+        }
+        const style = getComputedStyle(label)
+        const trailRow = document.querySelector('.trail-row') as HTMLElement
+        const box = label.getBoundingClientRect()
+        const peeking = [...document.querySelectorAll('.difficulty, .streak')].filter((pill) => {
+          const other = pill.getBoundingClientRect()
+          const under = other.left < box.right && other.right > box.left
+          return under && (other.top < box.top - 0.5 || other.bottom > box.bottom + 0.5)
+        })
+        return {
+          peeking: peeking.length,
+          background: style.backgroundColor === resolve('--color-ink'),
+          color: style.color === resolve('--color-on-ink'),
+          border: style.borderTopStyle,
+          right: Math.round(label.getBoundingClientRect().right),
+          trailRowRight: Math.round(trailRow.getBoundingClientRect().right),
+        }
+      })
+      expect(look).toEqual({ peeking: 0, background: true, color: true, border: 'none', right: look.trailRowRight, trailRowRight: look.trailRowRight })
+    })
+  }
+
   test('is not shown when the portal offers no rewarded spots', async ({ page }) => {
     await continueRun(page, runAt(parisRun(), 3), { search: '?ads=none' })
     await pauseWindow(page).getByRole('button', { name: 'Continue' }).click()
@@ -464,3 +500,28 @@ for (const locale of ['en', 'cs'] as const) {
     })
   }
 }
+
+const waitBarAnimation = (page: Page) =>
+  skipWindow(page)
+    .locator('.scene-loading-bar')
+    .evaluate((bar) => getComputedStyle(bar, '::before').animationName)
+
+test('the bar in the wait for the spot moves', async ({ page }) => {
+  await continueRun(page, runAt(parisRun(), 2), { search: '?ad=interrupted' })
+  await openConfirm(page)
+  await playVideo(page, 100)
+  await expect(skipWindow(page)).toContainText('Loading the video…')
+  expect(await waitBarAnimation(page)).toBe('skip-wait-bar')
+})
+
+test.describe('reduced motion', () => {
+  test.use({ reducedMotion: 'reduce' })
+
+  test('the bar in the wait for the spot stands still', async ({ page }) => {
+    await continueRun(page, runAt(parisRun(), 2), { search: '?ad=interrupted' })
+    await openConfirm(page)
+    await playVideo(page, 100)
+    await expect(skipWindow(page)).toContainText('Loading the video…')
+    expect(await waitBarAnimation(page)).toBe('none')
+  })
+})

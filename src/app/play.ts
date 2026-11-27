@@ -296,7 +296,6 @@ export function startPlay({ session, catalog, route, placeholderSceneIds, run, m
   /** Closes the game windows and settings without resuming the question. */
   function closeWindowsQuietly(): void {
     skipWindow?.close()
-    skipWindow = null
     closePauseQuietly()
     if (zoomDialog) closeZoom(false)
     for (let open = topDialog(); open; open = topDialog()) open.close()

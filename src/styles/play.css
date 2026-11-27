@@ -773,7 +773,6 @@ dialog.window.zoom-window[open] {
   }
 
   .scene-art,
-  .skip-wait .scene-loading-bar::before,
   .trail[data-advance] .current {
     animation: none;
   }
@@ -791,27 +790,27 @@ dialog.window.zoom-window[open] {
 
 /*
  * Brief §6: a one-time label that the skip for a video is in the pause. It hangs below the bar under the pause button,
- * over the trail row, so it covers no choice and no control, and lets clicks through. Like the 50:50 hint it is the
- * inverse of what it sits on, here the navy bar.
+ * over the trail row, so it covers no choice and no control, and lets clicks through. It looks like the 50:50 hint,
+ * navy on the cream of the screen, and keeps to the right edge of the content column like the trail row.
  */
 .play-bar {
   position: relative;
 }
 
 .pause-hint {
-  --hint-right: max(var(--space-2), env(safe-area-inset-right));
+  --hint-right: calc((100% - min(100%, var(--play-max-width))) / 2 + var(--side));
   position: absolute;
   z-index: 1;
-  /* Level with the trail row, so the pills under it do not peek out. */
+  /* Level with the trail row. */
   top: calc(100% + var(--space-2));
   right: var(--hint-right);
   width: max-content;
   max-width: calc(100% - 2 * var(--hint-right));
-  padding: var(--space-1) var(--space-2);
-  border: var(--border) solid var(--color-ink);
+  /* As tall as the bordered difficulty and streak pills it lies over, so they do not peek out below. */
+  padding: calc(var(--space-1) + var(--border)) calc(var(--space-2) + var(--border));
   border-radius: var(--radius-sm);
-  background: var(--color-paper);
-  color: var(--color-ink);
+  background: var(--color-ink);
+  color: var(--color-on-ink);
   font-size: var(--text-small);
   font-weight: var(--weight-semibold);
   line-height: var(--leading-tight);
@@ -883,7 +882,13 @@ dialog.window.zoom-window[open] {
   height: 100%;
   border-radius: inherit;
   background: var(--color-ink);
-  animation: skip-wait-bar 1400ms var(--ease-in-out) infinite alternate;
+}
+
+/* The bar moves only where the system does not ask for less motion; the Reduce motion setting stops it above. */
+@media (prefers-reduced-motion: no-preference) {
+  .skip-wait .scene-loading-bar::before {
+    animation: skip-wait-bar 1400ms var(--ease-in-out) infinite alternate;
+  }
 }
 
 @keyframes skip-wait-bar {
