@@ -1,20 +1,35 @@
 import { t } from '../../i18n/index.ts'
-import { element, iconButton } from '../../ui/element.ts'
+import { element, icon, iconButton } from '../../ui/element.ts'
 import { windowBar } from '../../ui/windowBar.ts'
 
 export const pauseTitleId = 'pause-title'
 export const zoomTitleId = 'zoom-title'
 export const elsewhereTitleId = 'elsewhere-title'
 
+export interface PauseHandlers {
+  onContinue(): void
+  onSettings(): void
+  onHome(): void
+  /** Present only while the skip lifeline can be used and the portal offers rewarded spots. */
+  onSkip: (() => void) | null
+}
+
 /** The pause window: × and Continue go back to the question, Home saves and leaves. */
-export function pauseWindow({ onContinue, onSettings, onHome }: { onContinue(): void; onSettings(): void; onHome(): void }): HTMLElement[] {
+export function pauseWindow({ onContinue, onSettings, onHome, onSkip }: PauseHandlers): HTMLElement[] {
   const resume = element('button', { class: 'primary', type: 'button', autofocus: true, 'data-focus-id': 'pause-continue' }, t('pause.continue'))
   resume.addEventListener('click', onContinue)
   const settings = element('button', { class: 'secondary', type: 'button', 'data-focus-id': 'pause-settings' }, t('pause.settings'))
   settings.addEventListener('click', onSettings)
+  const actions = element('div', { class: 'pause-actions' }, resume)
+  if (onSkip) {
+    const skip = element('button', { class: 'secondary pause-skip', type: 'button', 'data-focus-id': 'pause-skip' }, icon('video', { class: 'skip-play-icon' }), t('pause.skip'))
+    skip.addEventListener('click', onSkip)
+    actions.append(skip)
+  }
+  actions.append(settings)
   return [
     windowBar({ titleId: pauseTitleId, title: t('pause.title'), onClose: onContinue, onHome }),
-    element('div', { class: 'window-body' }, element('div', { class: 'pause-actions' }, resume, settings)),
+    element('div', { class: 'window-body' }, actions),
   ]
 }
 

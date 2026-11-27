@@ -1,17 +1,20 @@
 import type { Catalog, Route, Stop } from '../content/types.ts'
 import { elsewhereTitleId, elsewhereWindow, pauseTitleId, pauseWindow, zoomTitleId, zoomWindow } from '../game/render/playDialogs.ts'
 import { createPlayScreen, type PlayScene } from '../game/render/playScreen.ts'
-import { currentStop, type RunState, type RunStop } from '../game/logic/run.ts'
+import { canUseSkip, currentStop, type RunState, type RunStop } from '../game/logic/run.ts'
 import { ownsActiveRun, storageKeys } from '../game/storage/schema.ts'
 import { openDialog, topDialog, type OpenDialog } from '../ui/dialog.ts'
 import { createRunController } from './runController.ts'
 import { rememberHint } from './settings.ts'
+import { openSkip, type SkipWindow } from './skip.ts'
 import type { GameSession } from './start.ts'
 
 /** The adapter's key for the active run, as `storage` events name it. */
 const activeRunStorageKey = `postcard-trail:${storageKeys.activeRun}`
 const fiftyFiftyHintId = 'fifty-fifty'
 const hintMs = 1500
+const skipHintId = 'skip-video'
+const skipHintMs = 3000
 const choiceKeys = ['1', '2', '3', '4']
 
 export interface PlayOptions {
@@ -72,6 +75,9 @@ export function startPlay({ session, catalog, route, placeholderSceneIds, run, m
   let tickTimer: ReturnType<typeof setTimeout> | undefined
   let hintTimer: ReturnType<typeof setTimeout> | undefined
   let hintVisible = false
+  let skipHintTimer: ReturnType<typeof setTimeout> | undefined
+  let skipHintVisible = false
+  let skipWindow: SkipWindow | null = null
   let pauseDialog: OpenDialog | null = null
   let zoomDialog: OpenDialog | null = null
   let elsewhereDialog: OpenDialog | null = null
@@ -93,6 +99,8 @@ export function startPlay({ session, catalog, route, placeholderSceneIds, run, m
         // The label belongs to the open question: an answer, 50:50 or the next stop takes it away at once.
         if (changedRun.phase !== 'question' || changedRun.usedLifelines.includes('fiftyFifty')) hideFiftyFiftyHint()
         showFiftyFiftyHintOnce(changedRun)
+        if (changedRun.phase !== 'question' || changedRun.paused) hideSkipHint()
+        showSkipHintOnce(changedRun)
         // A new stop starts with its own scene loading, so the previous image is never shown with the new question.
         if (changedRun.round !== loadedRound) void loadScene()
         else render()
@@ -123,6 +131,7 @@ export function startPlay({ session, catalog, route, placeholderSceneIds, run, m
       scene,
       remainingMs: controller.remainingMs(),
       fiftyFiftyHint: hintVisible,
+      skipHint: skipHintVisible,
     })
     scheduleTick()
   }
@@ -152,6 +161,23 @@ export function startPlay({ session, catalog, route, placeholderSceneIds, run, m
   function hideFiftyFiftyHint(): void {
     clearTimeout(hintTimer)
     hintVisible = false
+  }
+
+  /** Brief §6: the first time a question runs with a streak of 3, the pause button says once that the skip is inside. */
+  function showSkipHintOnce(changedRun: RunState): void {
+    if (session.settings.shownHintIds.includes(skipHintId) || changedRun.phase !== 'question' || changedRun.paused) return
+    if (changedRun.streak < 3 || changedRun.usedLifelines.includes('skipVideo') || !session.adapter.rewardedAdsOffered()) return
+    rememberHint(session, skipHintId)
+    skipHintVisible = true
+    skipHintTimer = setTimeout(() => {
+      skipHintVisible = false
+      render()
+    }, skipHintMs)
+  }
+
+  function hideSkipHint(): void {
+    clearTimeout(skipHintTimer)
+    skipHintVisible = false
   }
 
   async function loadScene(): Promise<void> {
@@ -216,7 +242,26 @@ export function startPlay({ session, catalog, route, placeholderSceneIds, run, m
   }
 
   function pauseContent(): HTMLElement[] {
-    return pauseWindow({ onContinue: continueFromPause, onSettings: () => openSettings('pause-settings'), onHome: goHome })
+    // The portal may stop offering spots during the session, so the offer is read on every draw.
+    const skipOffered = canUseSkip(controller.run) && session.adapter.rewardedAdsOffered()
+    return pauseWindow({ onContinue: continueFromPause, onSettings: () => openSettings('pause-settings'), onHome: goHome, onSkip: skipOffered ? openSkipWindow : null })
+  }
+
+  /** The skip windows take the place of the pause; × there opens the pause again. */
+  function openSkipWindow(): void {
+    closePauseQuietly()
+    skipWindow = openSkip({
+      controller,
+      createAttemptId: () => crypto.randomUUID(),
+      closed: () => {
+        skipWindow = null
+      },
+      backToPause: () => {
+        openPause()
+        topDialog()?.querySelector<HTMLElement>('[data-focus-id="pause-skip"]')?.focus()
+      },
+      goHome,
+    })
   }
 
   function openZoom(): void {
@@ -250,6 +295,7 @@ export function startPlay({ session, catalog, route, placeholderSceneIds, run, m
 
   /** Closes the game windows and settings without resuming the question. */
   function closeWindowsQuietly(): void {
+    skipWindow?.close()
     closePauseQuietly()
     if (zoomDialog) closeZoom(false)
     for (let open = topDialog(); open; open = topDialog()) open.close()
@@ -320,6 +366,7 @@ export function startPlay({ session, catalog, route, placeholderSceneIds, run, m
     redraw() {
       render()
       pauseDialog?.replaceContent(pauseContent())
+      skipWindow?.redraw()
       if (zoomDialog && scene.image) zoomDialog.replaceContent(zoomContent(scene.image))
       elsewhereDialog?.replaceContent(elsewhereWindow({ onHome: () => elsewhereDialog?.close() }))
     },
@@ -333,6 +380,7 @@ export function startPlay({ session, catalog, route, placeholderSceneIds, run, m
       disposed = true
       clearTimeout(tickTimer)
       clearTimeout(hintTimer)
+      clearTimeout(skipHintTimer)
       listeners.abort()
     },
   }

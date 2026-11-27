@@ -7,8 +7,8 @@ import { dailyPlan, startDailyRun } from '../game/logic/daily.ts'
 import { restoreRun, startCityRun, type RunState } from '../game/logic/run.ts'
 import { GameStorage } from '../game/storage/gameStorage.ts'
 import { storageKeys } from '../game/storage/schema.ts'
-import type { AnalyticsEvent, KeyValueStore, PlatformAdapter } from '../platform/types.ts'
-import { createRunController, type RunListener } from './runController.ts'
+import type { AnalyticsEvent, KeyValueStore, PlatformAdapter, RewardedAdOutcome, RewardedAdRequest } from '../platform/types.ts'
+import { createRunController, type RunListener, type SkipSpotListener } from './runController.ts'
 import { completeFinishedRun } from './runs.ts'
 
 // The adapter, the feedback and the clock are the boundary of the app; the storage and the rules are the real ones.
@@ -25,6 +25,7 @@ function memoryStore(): KeyValueStore & { values: Map<string, string> } {
 function harness(run: RunState, options: { store?: KeyValueStore; tabId?: string; start?: boolean } = {}) {
   const calls: string[] = []
   const events: AnalyticsEvent[] = []
+  const adRequests: RewardedAdRequest[] = []
   const store = options.store ?? memoryStore()
   const storage = new GameStorage(store, options.tabId ?? 'tab-1')
   if (options.start ?? true) storage.startRun(run)
@@ -38,7 +39,10 @@ function harness(run: RunState, options: { store?: KeyValueStore; tabId?: string
     gameplayStart: () => calls.push('gameplayStart'),
     gameplayStop: () => calls.push('gameplayStop'),
     rewardedAdsOffered: () => false,
-    requestRewardedAd: () => calls.push('requestRewardedAd'),
+    requestRewardedAd: (request) => {
+      adRequests.push(request)
+      calls.push(`requestRewardedAd ${request.attemptId}`)
+    },
     track: (event) => {
       events.push(event)
       calls.push(`track ${event.name}`)
@@ -52,8 +56,8 @@ function harness(run: RunState, options: { store?: KeyValueStore; tabId?: string
     play: (cue) => calls.push(`play ${cue}`),
     setSoundEnabled: () => undefined,
     setVibrationEnabled: () => undefined,
-    muteForAd: () => undefined,
-    restoreAfterAd: () => undefined,
+    muteForAd: () => calls.push('muteForAd'),
+    restoreAfterAd: () => calls.push('restoreAfterAd'),
     setPortalMuted: () => undefined,
   }
   const listened: string[] = []
@@ -70,6 +74,7 @@ function harness(run: RunState, options: { store?: KeyValueStore; tabId?: string
     calls,
     events,
     listened,
+    adRequests,
     advance: (ms: number) => (clock += ms),
     takeCalls: () => calls.splice(0),
   }
@@ -306,4 +311,153 @@ test('a run saved in its summary phase is completed at start once', () => {
   const reloaded = new GameStorage(store, 'tab-c')
   assert.equal(reloaded.loadActiveRun(), null)
   assert.deepEqual(reloaded.loadProgress(), { completedCityIds: ['paris'], bestStars: { paris: 0 }, postcardCityIds: ['paris'] })
+})
+
+/** A Paris run paused in the question of the third stop after two correct answers, so the skip is on offer. */
+function pausedAtThirdStop() {
+  const setup = harness(newParisRun())
+  for (let stop = 0; stop < 2; stop++) {
+    setup.controller.sceneReady()
+    setup.controller.choose(correctChoiceId(setup.controller.run))
+    setup.controller.next()
+  }
+  setup.controller.sceneReady()
+  setup.advance(4_000)
+  setup.controller.pause()
+  setup.takeCalls()
+  setup.events.length = 0
+  const spot: string[] = []
+  const listener: SkipSpotListener = { started: () => spot.push('started'), finished: (outcome) => spot.push(`finished ${outcome}`) }
+  return { ...setup, spot, listener }
+}
+
+const answer = (request: RewardedAdRequest, outcome: RewardedAdOutcome) => request.onResult({ attemptId: request.attemptId, outcome })
+
+test('a completed spot skips the question with the streak kept, once, and sends no gameplay signal', () => {
+  const { controller, adRequests, takeCalls, events, spot, listener, store } = pausedAtThirdStop()
+  assert.equal(controller.requestSkip('attempt-1', listener), true)
+  assert.equal(savedRun(store).skipAttemptId, 'attempt-1')
+  assert.deepEqual(takeCalls(), ['requestRewardedAd attempt-1'])
+  assert.equal(controller.requestSkip('attempt-2', listener), false, 'one attempt at a time')
+  const [request] = adRequests
+  request.onStart()
+  answer(request, 'completed')
+  answer(request, 'completed')
+  assert.deepEqual(takeCalls(), ['muteForAd', 'restoreAfterAd', 'track rewarded_ad_outcome', 'track question_resolved', 'track lifeline_used'])
+  assert.deepEqual(spot, ['started', 'finished completed'])
+  assert.deepEqual(events, [
+    { name: 'rewarded_ad_outcome', outcome: 'completed' },
+    { name: 'question_resolved', cityId: 'paris', index: 3, mode: 'city', outcome: 'skipped' },
+    { name: 'lifeline_used', lifeline: 'skipVideo', mode: 'city' },
+  ])
+  assert.equal(controller.run.phase, 'feedback')
+  assert.equal(controller.run.streak, 2)
+  assert.equal(controller.run.correct, 2)
+  assert.equal(controller.requestSkip('attempt-3', listener), false, 'the lifeline is used')
+})
+
+for (const outcome of ['cancelled', 'unavailable'] as const) {
+  test(`a ${outcome} spot keeps the question paused with its time, and going back starts gameplay again`, () => {
+    const { controller, adRequests, takeCalls, events, spot, listener, advance } = pausedAtThirdStop()
+    controller.requestSkip('attempt-1', listener)
+    takeCalls()
+    if (outcome === 'cancelled') adRequests[0].onStart()
+    answer(adRequests[0], outcome)
+    assert.deepEqual(events, [{ name: 'rewarded_ad_outcome', outcome }])
+    assert.ok(takeCalls().includes('restoreAfterAd'))
+    assert.deepEqual(spot.at(-1), `finished ${outcome}`)
+    assert.equal(controller.run.paused, true)
+    assert.equal(controller.run.skipAttemptId, null)
+    advance(30_000)
+    assert.equal(controller.remainingMs(), 21_000)
+    controller.resume()
+    assert.deepEqual(takeCalls(), ['gameplayStart'])
+    advance(1_000)
+    assert.equal(controller.remainingMs(), 20_000)
+    controller.pause()
+    assert.equal(controller.requestSkip('attempt-2', listener), true, 'the lifeline is still there')
+  })
+}
+
+test('a late completed after a cancelled spot skips nothing and is not reported again', () => {
+  const { controller, adRequests, events, listener } = pausedAtThirdStop()
+  controller.requestSkip('attempt-1', listener)
+  adRequests[0].onStart()
+  answer(adRequests[0], 'cancelled')
+  controller.resume()
+  answer(adRequests[0], 'completed')
+  assert.equal(controller.run.phase, 'question')
+  assert.deepEqual(events, [{ name: 'rewarded_ad_outcome', outcome: 'cancelled' }])
+})
+
+test('a result with a foreign attempt ID changes nothing', () => {
+  const { controller, adRequests, events, spot, listener } = pausedAtThirdStop()
+  controller.requestSkip('attempt-1', listener)
+  adRequests[0].onResult({ attemptId: 'other', outcome: 'completed' })
+  assert.equal(controller.run.skipAttemptId, 'attempt-1')
+  assert.deepEqual(events, [])
+  assert.deepEqual(spot, [])
+})
+
+test('a hung spot given up restores the sound, runs the question from its time and ignores the late result', () => {
+  const { controller, adRequests, takeCalls, events, listener, advance } = pausedAtThirdStop()
+  controller.requestSkip('attempt-1', listener)
+  adRequests[0].onStart()
+  takeCalls()
+  advance(90_000)
+  controller.abandonSkip()
+  assert.deepEqual(takeCalls(), ['restoreAfterAd', 'gameplayStart'])
+  assert.equal(controller.remainingMs(), 21_000)
+  answer(adRequests[0], 'completed')
+  assert.equal(controller.run.phase, 'question')
+  assert.deepEqual(events, [])
+  assert.equal(controller.run.usedLifelines.includes('skipVideo'), false)
+  assert.deepEqual(takeCalls(), ['gameplayStart'], 'the adapter dropped the first start while the portal had no result')
+  answer(adRequests[0], 'completed')
+  assert.deepEqual(takeCalls(), [], 'a repeated late result sends nothing')
+})
+
+test('a late result of a hung spot sends no gameplay signal when the question is not running', () => {
+  const { controller, adRequests, takeCalls, listener } = pausedAtThirdStop()
+  controller.requestSkip('attempt-1', listener)
+  adRequests[0].onStart()
+  controller.abandonSkip()
+  controller.pause()
+  takeCalls()
+  answer(adRequests[0], 'completed')
+  assert.deepEqual(takeCalls(), [])
+})
+
+test('hiding the page during a spot sends no gameplay signal', () => {
+  const { controller, adRequests, takeCalls, listener } = pausedAtThirdStop()
+  controller.requestSkip('attempt-1', listener)
+  adRequests[0].onStart()
+  takeCalls()
+  controller.pageHidden()
+  assert.deepEqual(takeCalls(), [])
+  assert.equal(controller.run.skipAttemptId, 'attempt-1')
+})
+
+test('the skip is not offered before the third stop or outside the pause', () => {
+  const early = harness(newParisRun())
+  early.controller.sceneReady()
+  early.controller.pause()
+  assert.equal(early.controller.requestSkip('attempt-1', { started() {}, finished() {} }), false)
+  const { controller, adRequests, listener } = pausedAtThirdStop()
+  controller.resume()
+  assert.equal(controller.requestSkip('attempt-2', listener), false)
+  assert.equal(early.adRequests.length + adRequests.length, 0)
+})
+
+test('a tab that loses the run during a spot restores the sound and ignores the result', () => {
+  const { controller, adRequests, takeCalls, events, store, listener, spot } = pausedAtThirdStop()
+  controller.requestSkip('attempt-1', listener)
+  adRequests[0].onStart()
+  takeCalls()
+  new GameStorage(store, 'tab-2').resumeRun()
+  controller.ownershipChecked(false)
+  assert.deepEqual(takeCalls(), ['restoreAfterAd', 'gameplayStop'])
+  answer(adRequests[0], 'completed')
+  assert.deepEqual(events, [])
+  assert.deepEqual(spot, ['started'])
 })

@@ -1,8 +1,8 @@
 import type { Catalog } from '../content/types.ts'
 import type { Feedback } from '../game/feedback/index.ts'
-import { reduceRun, visibleChoiceIds, type RunAction, type RunState } from '../game/logic/run.ts'
+import { canUseSkip, reduceRun, visibleChoiceIds, type RunAction, type RunState } from '../game/logic/run.ts'
 import type { GameStorage } from '../game/storage/gameStorage.ts'
-import type { PlatformAdapter } from '../platform/types.ts'
+import type { PlatformAdapter, RewardedAdOutcome } from '../platform/types.ts'
 
 export interface RunListener {
   /** The run changed and its checkpoint is saved. */
@@ -11,6 +11,14 @@ export interface RunListener {
   finished(): void
   /** Another tab took the run over; this tab writes nothing more. */
   ownerLost(): void
+}
+
+/** What the skip window needs to hear about the spot of its attempt. */
+export interface SkipSpotListener {
+  /** The spot started playing. */
+  started(): void
+  /** The first result of the running attempt, told before the run changes, so the window is gone when a result takes focus. */
+  finished(outcome: RewardedAdOutcome): void
 }
 
 export interface RunControllerOptions {
@@ -100,6 +108,8 @@ export function createRunController({ run: initialRun, storage, adapter, feedbac
 
   function loseOwnership(): void {
     stopped = true
+    // The attempt is abandoned with the tab, so the sound muted for its spot comes back.
+    if (run.skipAttemptId !== null) feedback.restoreAfterAd()
     adapter.gameplayStop()
     listener.ownerLost()
   }
@@ -162,6 +172,50 @@ export function createRunController({ run: initialRun, storage, adapter, feedbac
       dispatch({ type: 'next', round: run.round })
     },
 
+    /**
+     * Skip for a video: records a new attempt and asks the adapter for its spot. Only the first result of the attempt
+     * that is still running counts; a late, repeated or foreign one changes nothing. While the spot runs the adapter owns
+     * the gameplay signals, so the run sends none. Returns false when the lifeline is not available now.
+     */
+    requestSkip(attemptId: string, spot: SkipSpotListener): boolean {
+      if (stopped || !canUseSkip(run) || run.skipAttemptId !== null) return false
+      dispatch({ type: 'requestSkip', round: run.round, attemptId })
+      if (stopped || run.skipAttemptId !== attemptId) return false
+      const current = () => !stopped && run.skipAttemptId === attemptId
+      let answered = false
+      adapter.requestRewardedAd({
+        attemptId,
+        onStart() {
+          if (!current()) return
+          feedback.muteForAd()
+          spot.started()
+        },
+        onResult(result) {
+          if (result.attemptId !== attemptId) return
+          const first = !answered
+          answered = true
+          if (!current()) {
+            // The adapter drops gameplayStart until the portal has the result, so a question resumed from a hung spot
+            // starts gameplay again once it arrives.
+            if (first && !stopped && running()) adapter.gameplayStart()
+            return
+          }
+          feedback.restoreAfterAd()
+          adapter.track({ name: 'rewarded_ad_outcome', outcome: result.outcome })
+          spot.finished(result.outcome)
+          dispatch({ type: 'adResult', result })
+        },
+      })
+      return true
+    },
+
+    /** A spot that never answers: the attempt is given up and the question runs again from its paused time. */
+    abandonSkip(): void {
+      if (stopped || run.skipAttemptId === null) return
+      feedback.restoreAfterAd()
+      resume()
+    },
+
     /** The enlarged scene covers the choices, so a running question waits for it to close. */
     zoomOpened(): void {
       if (stopped) return
@@ -182,7 +236,8 @@ export function createRunController({ run: initialRun, storage, adapter, feedbac
       if (stopped) return
       if (!run.paused && (run.phase === 'loading' || run.phase === 'question')) return pause()
       if (storage.saveRunCheckpoint(run) === 'notOwner') return loseOwnership()
-      adapter.gameplayStop()
+      // During a spot the adapter has stopped play itself and owns the signals.
+      if (run.skipAttemptId === null) adapter.gameplayStop()
     },
 
     /** × or Home: saves the run paused where it is and leaves the game screen. */
@@ -202,3 +257,5 @@ export function createRunController({ run: initialRun, storage, adapter, feedbac
     },
   }
 }
+
+export type RunController = ReturnType<typeof createRunController>

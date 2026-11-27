@@ -24,6 +24,8 @@ export interface PlayView {
   remainingMs: number
   /** The one-time "Removes two choices" label next to 50:50 (brief §6). */
   fiftyFiftyHint: boolean
+  /** The one-time label by the pause button that the skip for a video is inside (brief §6). */
+  skipHint: boolean
 }
 
 export interface PlayHandlers {
@@ -55,7 +57,9 @@ export function createPlayScreen(handlers: PlayHandlers): PlayScreen {
   const pause = iconButton('pause', '', { class: 'icon-button pause-button', 'data-focus-id': 'play-pause' })
   pause.addEventListener('click', handlers.onPause)
   const title = element('p', { class: 'play-title' })
-  const bar = element('header', { class: 'play-bar' }, leave, title, pause)
+  // Below the bar under the pause button; the button takes it as its description.
+  const skipHint = element('span', { id: 'pause-hint', class: 'pause-hint', 'aria-hidden': 'true', hidden: true })
+  const bar = element('header', { class: 'play-bar' }, leave, title, pause, skipHint)
 
   const trail = element('ol', { class: 'trail' })
   const difficulty = element('p', { class: 'difficulty' })
@@ -140,6 +144,7 @@ export function createPlayScreen(handlers: PlayHandlers): PlayScreen {
     const total = run.stops.length
     leave.setAttribute('aria-label', t('play.leave'))
     pause.setAttribute('aria-label', t('play.pause'))
+    skipHint.textContent = t('play.skipHint')
     title.textContent = t('play.position', { city: route.name[locale], stop: stopNumber, total })
 
     trail.setAttribute('aria-label', t('play.trail', { stop: stopNumber, total }))
@@ -197,8 +202,13 @@ export function createPlayScreen(handlers: PlayHandlers): PlayScreen {
   function showResult(view: PlayView): void {
     const { run, locale, stop } = view
     const stopResult = run.results[run.stopIndex]
-    const verdictIcon = stopResult.outcome === 'correct' ? 'check' : stopResult.outcome === 'timeout' ? 'clock' : 'close'
-    const verdictKey = stopResult.outcome === 'correct' ? 'play.verdict.correct' : stopResult.outcome === 'timeout' ? 'play.verdict.timeout' : 'play.verdict.wrong'
+    const verdict = {
+      correct: { icon: 'check', key: 'play.verdict.correct' },
+      wrong: { icon: 'close', key: 'play.verdict.wrong' },
+      timeout: { icon: 'clock', key: 'play.verdict.timeout' },
+      skipped: { icon: 'skip', key: 'play.verdict.skipped' },
+    } as const satisfies Record<typeof stopResult.outcome, { icon: keyof typeof icons; key: string }>
+    const { icon: verdictIcon, key: verdictKey } = verdict[stopResult.outcome]
     root.dataset.verdict = stopResult.outcome
     const next = element('button', { class: 'primary next', type: 'button', 'data-focus-id': 'play-next' }, t('play.next'))
     next.addEventListener('click', handlers.onNext)
@@ -286,6 +296,9 @@ export function createPlayScreen(handlers: PlayHandlers): PlayScreen {
       nextFocus.focus({ preventScroll: true })
     }
     fiftyFiftyHint.hidden = !view.fiftyFiftyHint
+    skipHint.hidden = !view.skipHint
+    if (view.skipHint) pause.setAttribute('aria-describedby', skipHint.id)
+    else pause.removeAttribute('aria-describedby')
     if (view.fiftyFiftyHint) {
       // The label may cover the time bar but not the seconds; without the time it has the row up to its start. Half the
       // row's gap on each side leaves the longest word of the label room on a 320 px screen.
