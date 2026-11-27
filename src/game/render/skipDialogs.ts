@@ -61,7 +61,12 @@ export function skipOutcomeWindow({ outcome, onClose, onHome, onBack }: SkipWind
     element(
       'div',
       { class: 'window-body' },
-      element('div', { class: 'skip-body' }, element('p', { class: 'skip-text', role: 'status' }, t(`skip.${outcome}`)), element('div', { class: 'skip-actions skip-single-action' }, backButton('primary', onBack))),
+      element(
+        'div',
+        { class: 'skip-body skip-outcome' },
+        element('p', { class: 'skip-text', role: 'status' }, t(`skip.${outcome}`)),
+        element('div', { class: 'skip-actions skip-single-action' }, backButton('primary', onBack)),
+      ),
     ),
   ]
 }

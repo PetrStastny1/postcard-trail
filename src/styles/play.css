@@ -901,6 +901,11 @@ dialog.window.zoom-window[open] {
   }
 }
 
+/* The sentence above the only button of a cancelled or unavailable spot is centred like the button. */
+.skip-outcome {
+  text-align: center;
+}
+
 /*
  * A window with only "Back to the answer" centres it at the width it has in the confirmation. The row for the later
  * button of a hung spot is held from the start.

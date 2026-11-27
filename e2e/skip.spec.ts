@@ -501,7 +501,7 @@ test('Back to the answer is as wide in the unavailable window as in the confirma
 
 for (const outcome of ['cancelled', 'unavailable'] as const) {
   for (const size of [{ width: 1440, height: 900 }, { width: 320, height: 568 }]) {
-    test(`the only Back to the answer of the ${outcome} window is centred and as wide as in the confirmation at ${size.width} × ${size.height}`, async ({ page }) => {
+    test(`the sentence and the only Back to the answer of the ${outcome} window are centred, the button as wide as in the confirmation at ${size.width} × ${size.height}`, async ({ page }) => {
       await page.setViewportSize(size)
       await continueRun(page, runAt(parisRun(), 2), { search: `?ad=${outcome}` })
       await openConfirm(page)
@@ -513,6 +513,16 @@ for (const outcome of ['cancelled', 'unavailable'] as const) {
       const row = (await skipWindow(page).locator('.skip-actions').boundingBox())!
       expect(button.width).toBe(confirmWidth)
       expect(Math.abs(button.x + button.width / 2 - (row.x + row.width / 2))).toBeLessThanOrEqual(1)
+      // The sentence above is centred too: every line of it sits in the middle of the row.
+      const lineOffsets = await skipWindow(page)
+        .locator('.skip-text')
+        .evaluate((node) => {
+          const range = document.createRange()
+          range.selectNodeContents(node)
+          const box = node.getBoundingClientRect()
+          return [...range.getClientRects()].map((line) => line.left + line.width / 2 - (box.left + box.width / 2))
+        })
+      for (const offset of lineOffsets) expect(Math.abs(offset)).toBeLessThanOrEqual(1)
     })
   }
 }
