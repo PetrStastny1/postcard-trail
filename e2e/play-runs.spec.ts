@@ -106,6 +106,64 @@ test('rewards that fail to save at the last Next complete after a reload and can
   expect(await recordedEvents(page)).toEqual([])
 })
 
+/** Tab A continues a run one Next before its summary; the store of tab A will refuse the rewards. */
+async function tabBeforeFailedRewards(page: Page) {
+  await seedStorage(page, { 'active-run': { ownerTabId: 'closed-tab', run: cityRunBeforeLastNext('paris', 0) } })
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Continue' }).click()
+  await page.getByRole('dialog', { name: 'Paused' }).locator('.window-body .primary').click()
+  await expectState(page, 'result')
+  await page.evaluate((progressKey) => {
+    const setItem = Storage.prototype.setItem
+    Storage.prototype.setItem = function (key: string, value: string) {
+      if (key === progressKey) throw new DOMException('The quota has been exceeded.', 'QuotaExceededError')
+      setItem.call(this, key, value)
+    }
+  }, storageKey('progress'))
+}
+
+const parisDoneProgress = { completedCityIds: ['paris'], bestStars: { paris: 0 }, postcardCityIds: ['paris'] }
+
+test('a tab open on the title before another tab fails to save the rewards completes the run and offers Play', async ({ page, context }) => {
+  await tabBeforeFailedRewards(page)
+  const tabB = await context.newPage()
+  await tabB.goto('/')
+  await expect(tabB.getByRole('button', { name: 'Continue', exact: true })).toBeVisible()
+
+  await page.locator('.next').click()
+  await expect(page.getByRole('heading', { name: 'Route complete' })).toBeVisible()
+
+  await expect(tabB.getByRole('button', { name: 'Play', exact: true })).toBeVisible()
+  await expect(tabB.getByRole('button', { name: 'Continue', exact: true })).toHaveCount(0)
+  await expect(tabB.locator('.title-progress li')).toHaveText(['1/20 cities', /^0\/60 ★/, '1 postcard'])
+  expect(await savedSection(tabB, 'active-run')).toBeNull()
+  expect(await savedSection(tabB, 'progress')).toEqual(parisDoneProgress)
+  expect(await recordedEvents(tabB)).toEqual([])
+})
+
+test('a tab open on the map before another tab fails to save the rewards cannot discard the finished run', async ({ page, context }) => {
+  await tabBeforeFailedRewards(page)
+  const tabB = await context.newPage()
+  await tabB.goto('/')
+  await tabB.getByRole('button', { name: 'City map' }).click()
+  await expect(tabB.getByRole('heading', { name: 'City map' })).toBeVisible()
+
+  await page.locator('.next').click()
+  await expect(page.getByRole('heading', { name: 'Route complete' })).toBeVisible()
+
+  const parisRow = tabB.locator('.city-row').filter({ has: tabB.locator('.city-name', { hasText: /^Paris$/ }) })
+  await parisRow.click()
+  const detail = tabB.getByRole('dialog', { name: 'Paris' })
+  // The detail already shows the completion stored for the finished run.
+  await expect(detail.getByRole('button', { name: 'Play again' })).toBeVisible()
+  await expect(detail.getByRole('button', { name: 'Continue' })).toHaveCount(0)
+  await detail.getByRole('button', { name: 'Play again' }).click()
+  await expectState(tabB, 'question')
+  await expect(tabB.getByRole('dialog', { name: 'Discard your current route?' })).toHaveCount(0)
+  expect(await savedSection(tabB, 'progress')).toEqual(parisDoneProgress)
+  expect((await recordedEvents(tabB)).map((event) => event.name)).toEqual(['route_started'])
+})
+
 test('a saved daily run keeps the place hidden and completes after the third Next on the daily summary', async ({ page }) => {
   const { route, run, stops } = savedDailyRun()
   await seedStorage(page, { 'active-run': { ownerTabId: 'other-tab', run } })

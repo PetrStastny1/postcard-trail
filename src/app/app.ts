@@ -16,7 +16,7 @@ import { routeChangeTitleId, routeChangeWindow } from '../ui/routeChange.ts'
 import { settingsTitleId, settingsWindow } from '../ui/settings.ts'
 import { storageNotice } from '../ui/storageNotice.ts'
 import { titleScreen } from '../ui/title.ts'
-import { loadPlaceholderSceneIds, startPlay, type PlaySession } from './play.ts'
+import { activeRunStorageKey, loadPlaceholderSceneIds, startPlay, type PlaySession } from './play.ts'
 import type { RunCompletion } from './runController.ts'
 import { completeFinishedRun } from './runs.ts'
 import { changeSettings, type SettingsChange } from './settings.ts'
@@ -30,11 +30,14 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
   const screenSlot = element('div', { class: 'screen' })
   const noticeSlot = element('div', { class: 'notice-slot' })
   const renderTitle = () => {
+    // First, so the progress already holds the rewards of a run another tab finished.
+    const hasActiveRun = activeRun() !== null
+    titleShowsActiveRun = hasActiveRun
     const progress = session.storage.loadProgress()
     return titleScreen({
       totals: progressTotals(progress, catalog),
       dailyUnlocked: dailyUnlocked(progress),
-      hasActiveRun: session.storage.loadActiveRun() !== null,
+      hasActiveRun,
       onPlay: playNextCity,
       onContinue: continueRun,
       onOpenSettings: () => openSettings('title-settings'),
@@ -44,6 +47,8 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
     })
   }
   let renderScreen = renderTitle
+  // Whether the title on screen offers Continue, so a run started or finished in another tab redraws it only then.
+  let titleShowsActiveRun = false
   let settingsDialog: OpenDialog | null = null
   let storageNoticeOpen = false
   let activePlay: PlaySession | null = null
@@ -63,6 +68,21 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
     screenSlot
       .querySelector<HTMLElement>('.window-screen > .window-bar [data-focus-id="window-close"], .route-error-screen > .play-bar [data-focus-id="play-leave"]')
       ?.click()
+  })
+
+  /**
+   * The run still being played. A run saved in its summary phase is finished (A11): its tab may have failed to store
+   * the rewards after this tab was opened, so it is completed here and never offered to continue or to discard.
+   */
+  function activeRun(): RunState | null {
+    completeFinishedRun(session.storage, catalog)
+    return session.storage.loadActiveRun()
+  }
+
+  // Another tab may finish or start a run while this one shows the title; its checkpoints every second change nothing here.
+  window.addEventListener('storage', (event) => {
+    if (event.key !== activeRunStorageKey || activePlay || renderScreen !== renderTitle) return
+    if ((activeRun() !== null) !== titleShowsActiveRun) redraw()
   })
 
   function applySettings(): void {
@@ -185,7 +205,7 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
    * choice came from (`returnFocusId` is its control). `start(true)` replaces the saved run.
    */
   function changeRun(returnFocusId: string, start: (discard: boolean) => void): void {
-    if (session.storage.loadActiveRun() === null) return start(false)
+    if (activeRun() === null) return start(false)
     const dialog = openDialog({
       labelledBy: routeChangeTitleId,
       className: 'window-narrow',
@@ -215,7 +235,7 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
    * and the title offers "Continue".
    */
   function runStartedMeanwhile(discard: boolean): boolean {
-    return !discard && session.storage.loadActiveRun() !== null
+    return !discard && activeRun() !== null
   }
 
   // The old run goes only once the new route has loaded, so a failed load leaves it saved.
@@ -244,8 +264,8 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
     })
   }
 
-  function activeCityRunId(): string | null {
-    const active = session.storage.loadActiveRun()
+  function activeCityRunCityId(): string | null {
+    const active = activeRun()
     return active?.mode === 'city' ? active.cityId : null
   }
 
@@ -254,8 +274,10 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
   }
 
   function renderMap(): HTMLElement {
+    // The active run first, so the progress already holds the rewards of a run another tab finished.
+    const activeCityId = activeCityRunCityId()
     return mapScreen({
-      cities: mapCities(session.storage.loadProgress(), catalog, activeCityRunId()),
+      cities: mapCities(session.storage.loadProgress(), catalog, activeCityId),
       locale: session.settings.locale,
       onOpenCity: openCityDetail,
       onClose: () => showTitle('title-map'),
@@ -264,7 +286,8 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
   }
 
   function openCityDetail(cityId: string, returnFocusId: string): void {
-    const entry = mapCities(session.storage.loadProgress(), catalog, activeCityRunId()).find(({ city }) => city.id === cityId)
+    const activeCityId = activeCityRunCityId()
+    const entry = mapCities(session.storage.loadProgress(), catalog, activeCityId).find(({ city }) => city.id === cityId)
     if (!entry) return
     const dialog = openDialog({
       labelledBy: cityDetailTitleId,
@@ -317,10 +340,10 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
   /** The UTC date is taken when the overview is drawn and again at Start. */
   function renderDaily(): HTMLElement {
     const utcDate = utcDateOf(Date.now())
+    const active = activeRun()
     const results = session.storage.loadDailyResults()
     const plan = dailyPlan(catalog, utcDate)
     const city = plan && catalog.cities.find((candidate) => candidate.id === plan.cityId)
-    const active = session.storage.loadActiveRun()
     // A daily run belongs to the day it started, so its city can differ from today's.
     const activeDailyCity = active?.mode === 'daily' ? catalog.cities.find((candidate) => candidate.id === active.cityId) : undefined
     let state: DailyOverviewState
@@ -380,9 +403,11 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
   }
 
   function continueRun(): void {
-    const stored = session.storage.loadActiveRun()
-    if (stored === null) return showTitle()
+    const stored = activeRun()
+    if (stored === null) return showTitle('title-play')
     void openRoute(stored.cityId, () => {
+      // The run may have finished in another tab while the route loaded.
+      if (activeRun() === null) return null
       const run = session.storage.resumeRun()
       if (run !== null) session.adapter.track({ name: 'route_started', cityId: run.cityId, mode: run.mode, resumed: true })
       return run
@@ -440,7 +465,6 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
     else if (loadingRoutes === 0) root.removeAttribute('aria-busy')
   }
 
-  completeFinishedRun(session.storage, catalog)
   applySettings()
   root.replaceChildren(noticeSlot, screenSlot)
   showTitle()

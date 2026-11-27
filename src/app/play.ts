@@ -10,7 +10,7 @@ import { openSkip, type SkipWindow } from './skip.ts'
 import type { GameSession } from './start.ts'
 
 /** The adapter's key for the active run, as `storage` events name it. */
-const activeRunStorageKey = `postcard-trail:${storageKeys.activeRun}`
+export const activeRunStorageKey = `postcard-trail:${storageKeys.activeRun}`
 const fiftyFiftyHintId = 'fifty-fifty'
 const hintMs = 1500
 const skipHintId = 'skip-video'
