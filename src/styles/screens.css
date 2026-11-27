@@ -109,6 +109,19 @@
   transform: translate(-50%, -50%);
 }
 
+/*
+ * Targets touch the edge of the map frame, which clips, so the ring is drawn inside the target, without the cream halo
+ * that would cover the names beside it. It is twice as wide, so where a coastline runs under it, it still covers the
+ * map beyond the line. The names are drawn after the targets and start at their edge; the focused target comes above
+ * them, so its ring is whole.
+ */
+.map-point:focus-visible {
+  z-index: 1;
+  outline-width: calc(var(--focus-ring) * 2);
+  outline-offset: calc(var(--focus-ring) * -2);
+  box-shadow: none;
+}
+
 .map-dot {
   display: grid;
   place-items: center;
@@ -279,11 +292,17 @@
     max-width: 60vw;
   }
 
+  /* A row scrolled into view by Tab keeps room for its focus ring and halo at the edge of the list. */
   .map-list {
     position: relative;
     min-height: 0;
     padding: var(--space-1);
     overflow-y: auto;
+    scroll-padding-block: calc(var(--focus-ring) * 2);
+  }
+
+  .map-list.has-more {
+    scroll-padding-bottom: calc(var(--space-8) + var(--focus-ring) * 2);
   }
 }
 
@@ -462,8 +481,7 @@ dialog.window:has(~ dialog.window-narrow[open])::backdrop {
 
 /*
  * Landscape follows the game screen: the postcard on the left sized by the height like the game's scene (the same
- * reserve as `--landscape-reserve` in play.css, 184 px on 568 × 320), so its caption stays in view; the result on the
- * right centred vertically.
+ * `--landscape-reserve`, 184 px on 568 × 320), so its caption stays in view; the result on the right centred vertically.
  */
 @media (orientation: landscape) {
   .window-screen.summary-screen > .window-body > * {
@@ -471,7 +489,6 @@ dialog.window:has(~ dialog.window-narrow[open])::backdrop {
   }
 
   .summary {
-    --summary-reserve: 8.5rem;
     grid-template-columns: auto minmax(0, 1fr);
     align-items: center;
     column-gap: var(--space-8);
@@ -479,7 +496,7 @@ dialog.window:has(~ dialog.window-narrow[open])::backdrop {
   }
 
   .summary-postcard {
-    width: min(45vw, 100dvh - var(--summary-reserve) - env(safe-area-inset-top));
+    width: min(45vw, 100dvh - var(--landscape-reserve) - env(safe-area-inset-top));
   }
 
   .summary-info {

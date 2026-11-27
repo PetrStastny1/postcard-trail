@@ -3,7 +3,7 @@ import { correctChoice, expectState, inspectPlayLayout, installClock, paris, pau
 
 // The states and sizes of docs/design/check-layout.mjs, checked on the real game screen at the first Paris stop.
 
-type PlayLayoutState = 'question' | 'result' | 'result-correct' | 'result-timeout' | 'loading' | 'error' | 'fifty' | 'untimed'
+type PlayLayoutState = 'question' | 'result' | 'result-correct' | 'result-timeout' | 'result-skipped' | 'loading' | 'error' | 'fifty' | 'untimed'
 type Size = { width: number; height: number }
 
 const sizes: Size[] = [
@@ -12,18 +12,17 @@ const sizes: Size[] = [
   { width: 568, height: 320 },
   { width: 844, height: 390 },
   { width: 640, height: 360 },
+  { width: 836, height: 470 },
+  { width: 1031, height: 580 },
   { width: 1440, height: 900 },
 ]
 
+const allStates: PlayLayoutState[] = ['question', 'result', 'result-correct', 'result-timeout', 'result-skipped', 'loading', 'error', 'fifty', 'untimed']
+
+// D1: every state in both languages on the minimum and Poki sizes; the other design sizes in English.
 const runs: { lang: 'en' | 'cs'; size: Size; states: PlayLayoutState[] }[] = [
-  ...sizes.map((size) => ({
-    lang: 'en' as const,
-    size,
-    states: ['question', 'result', 'result-correct', 'result-timeout', 'loading', 'error', 'fifty', 'untimed'] satisfies PlayLayoutState[],
-  })),
-  ...sizes
-    .filter((size) => [320, 568, 640].includes(size.width))
-    .map((size) => ({ lang: 'cs' as const, size, states: ['question', 'result'] satisfies PlayLayoutState[] })),
+  ...sizes.map((size) => ({ lang: 'en' as const, size, states: allStates })),
+  ...sizes.filter((size) => [320, 568, 640, 836, 1031].includes(size.width)).map((size) => ({ lang: 'cs' as const, size, states: allStates })),
 ]
 
 async function openState(browser: Browser, baseURL: string, size: Size, lang: 'en' | 'cs', state: PlayLayoutState): Promise<Page> {
@@ -32,9 +31,10 @@ async function openState(browser: Browser, baseURL: string, size: Size, lang: 'e
   await seedStorage(page, { settings: { locale: lang, untimed: state === 'untimed' } })
   if (state === 'loading') await page.route('**/scenes/PAR01.webp', () => undefined)
   if (state === 'error') await page.route('**/scenes/PAR01.webp', (route) => route.abort())
-  if (state === 'result-timeout') await installClock(page)
-  await page.goto('/')
-  if (state === 'result-timeout') await pauseClock(page)
+  const clocked = state === 'result-timeout' || state === 'result-skipped'
+  if (clocked) await installClock(page)
+  await page.goto(state === 'result-skipped' ? '/?ad=completed' : '/')
+  if (clocked) await pauseClock(page)
   await page.getByRole('button', { name: lang === 'en' ? 'Play' : 'Hrát', exact: true }).click()
   if (state === 'loading' || state === 'error') {
     await expectState(page, state)
@@ -45,6 +45,19 @@ async function openState(browser: Browser, baseURL: string, size: Size, lang: 'e
   if (state === 'result') await (await wrongChoice(page, stop, lang)).click()
   if (state === 'result-correct') await correctChoice(page, stop, lang).click()
   if (state === 'result-timeout') await page.clock.runFor(25_000)
+  if (state === 'result-skipped') {
+    // The skip is offered from the third stop on; the local spot completes after 500 ms.
+    for (const answered of paris.stops.slice(0, 2)) {
+      await correctChoice(page, answered, lang).click()
+      await page.locator('.next').click()
+      await expectState(page, 'question')
+    }
+    await page.keyboard.press('Escape')
+    await page.locator('[data-focus-id="pause-skip"]').click()
+    await page.locator('dialog[open] .skip-play').click()
+    await page.clock.runFor(600)
+    await expect(page.locator('.result-word')).toHaveText(lang === 'en' ? 'Skipped' : 'Přeskočeno')
+  }
   if (state === 'fifty') {
     await page.locator('[data-lifeline="fifty"]').click()
     await expect(page.locator('.choice.is-removed')).toHaveCount(2)

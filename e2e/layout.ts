@@ -10,6 +10,9 @@ export const layoutSizes = [
   { width: 1440, height: 900 },
 ] as const
 
+/** Every kind of control the game draws: all are buttons, the rest is here for any later link or field. */
+export const controlSelector = 'button, a[href], input, select, textarea, [role="switch"]'
+
 export interface LayoutOptions {
   /** Controls to check. Defaults to every button, link and form control. */
   controls?: string
@@ -21,7 +24,7 @@ export interface LayoutOptions {
  * visible and on top either at once or after scrolling it into view. With a modal dialog open, only the top dialog's
  * controls count, because the screen and the windows behind it are inert.
  */
-export async function expectUsableLayout(page: Page, { controls = 'button, a[href], input, select, textarea, [role="switch"]' }: LayoutOptions = {}) {
+export async function expectUsableLayout(page: Page, { controls = controlSelector }: LayoutOptions = {}) {
   // The signal follows resize observers, so it is polled before anything below scrolls.
   await expect
     .poll(() =>

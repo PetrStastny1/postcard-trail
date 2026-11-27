@@ -49,6 +49,8 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
   let activePlay: PlaySession | null = null
   // Counts the screens shown, so a route that finishes loading after the player has left does not start its run.
   let shownScreens = 0
+  // Routes still loading, cancelled ones included; the app is busy until each has been handled.
+  let loadingRoutes = 0
   markMoreContent(screenSlot)
 
   // Capturing on window runs before any other handler, so a cue played by that handler can already sound.
@@ -69,6 +71,8 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
   function showScreen(render: () => HTMLElement): void {
     renderScreen = render
     shownScreens++
+    // A route still loading for the screen the player has left is no longer awaited.
+    root.removeAttribute('aria-busy')
     screenSlot.replaceChildren(render())
   }
 
@@ -378,14 +382,17 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
     const shownBefore = shownScreens
     let route: Route
     let placeholderSceneIds: ReadonlySet<string>
+    setRouteLoading(1)
     try {
       ;[route, placeholderSceneIds] = await Promise.all([loadRoute(cityId), loadPlaceholderSceneIds()])
     } catch {
+      setRouteLoading(-1)
       if (shownScreens !== shownBefore) return
       // The player sees the failure and can try again; the run, if any, stays saved as it was.
       showScreen(() => routeErrorScreen({ onRetry: () => void openRoute(cityId, begin), onHome: goHome }))
       return
     }
+    setRouteLoading(-1)
     if (shownScreens !== shownBefore) return
     const run = begin(route)
     showStorageNoticeOnce()
@@ -401,6 +408,17 @@ export function mountApp(root: HTMLElement, session: GameSession, catalog: Catal
       goHome,
       finished: finishRun,
     })
+  }
+
+  /**
+   * `aria-busy` tells assistive technology that the screen waits for a route; leaving the screen ends that. Tests see
+   * from `data-route-loading` when every started load, cancelled ones included, has been handled.
+   */
+  function setRouteLoading(change: 1 | -1): void {
+    loadingRoutes += change
+    root.toggleAttribute('data-route-loading', loadingRoutes > 0)
+    if (change === 1) root.setAttribute('aria-busy', 'true')
+    else if (loadingRoutes === 0) root.removeAttribute('aria-busy')
   }
 
   completeFinishedRun(session.storage, catalog)

@@ -39,7 +39,7 @@ Požadavky jsou ve [spec.md](spec.md). Vývojář balíčku zaškrtává hotové
 
 ## Balíček 5: Celé toky, přístupnost a výkon (`quality`), po balíčcích 3 a 4
 
-- [ ] K3: Paříž na desktopu a v mobilním zobrazení, Londýn, zamčený Řím, obnova otázky a výsledku, jazyk a orientace, stav s 20 městy
-- [ ] D1: všechny obrazovky na minimálních a Poki rozměrech, delší překlad, rodič se neposouvá
-- [ ] D2, D3: kontrast a klávesnice na všech obrazovkách, reduced motion a Bez animací
-- [ ] D4: startovní payload, velikost buildu, lazy-load tras a přednačtení jedné scény
+- [x] K3: Paříž na desktopu a v mobilním zobrazení, Londýn, zamčený Řím, obnova otázky a výsledku, jazyk a orientace, stav s 20 městy
+- [x] D1: všechny obrazovky na minimálních a Poki rozměrech, delší překlad, rodič se neposouvá
+- [x] D2, D3: kontrast a klávesnice na všech obrazovkách, reduced motion a Bez animací
+- [x] D4: startovní payload, velikost buildu, lazy-load tras a přednačtení jedné scény
