@@ -28,7 +28,7 @@ function holdRequests(page: Page, pattern: string) {
   }
 }
 
-const cityRow = (page: Page, name: string) => page.locator('.city-row').filter({ has: page.locator('.city-name', { hasText: new RegExp(`^${name}$`) }) })
+const cityRow = (page: Page, name: string) => page.locator('.city-row').filter({ has: page.getByText(name, { exact: true }).and(page.locator('.city-name')) })
 
 async function discardAndStartLondon(page: Page) {
   await page.getByRole('button', { name: 'City map' }).click()

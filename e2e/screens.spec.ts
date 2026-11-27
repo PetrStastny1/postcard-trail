@@ -5,7 +5,7 @@ import { cityRunBeforeLastNext, continueToSummary, dailyRunBeforeLastNext, progr
 
 const parisDone = progressWith(1, 0)
 const cityNames = catalog.cities.map((city) => city.name.en)
-const cityRow = (page: Page, name: string) => page.locator('.city-row').filter({ has: page.locator('.city-name', { hasText: new RegExp(`^${name}$`) }) })
+const cityRow = (page: Page, name: string) => page.locator('.city-row').filter({ has: page.getByText(name, { exact: true }).and(page.locator('.city-name')) })
 const dialog = (page: Page, name: string | RegExp) => page.getByRole('dialog', { name })
 const routeChange = (page: Page) => dialog(page, 'Discard your current route?')
 
@@ -132,12 +132,13 @@ test.describe('map', () => {
     const group = page.locator('.map-cluster').filter({ has: page.locator('.map-dot', { hasText: /^\d+$/ }) }).first()
     const groupIds = ((await group.getAttribute('data-city-ids')) ?? '').split(' ')
     expect(groupIds.length).toBeGreaterThan(1)
-    await expect(group).toHaveAccessibleName(new RegExp(`^${groupIds.length} cities: .+\\. Zoom in$`))
+    await expect(group).toHaveAccessibleName(/^\d+ cities: .+\. Zoom in$/)
+    expect((await group.getAttribute('aria-label'))?.split(' cities: ')[0]).toBe(String(groupIds.length))
     const pointsBefore = await page.locator('.map-point').count()
     await group.click()
     await expect(page.getByRole('button', { name: 'Zoom out' })).toBeVisible()
     // The first city of the group keeps the focus in its new, smaller target.
-    await expect(page.locator('.map-point:focus')).toHaveAttribute('data-city-ids', new RegExp(`(^| )${groupIds[0]}( |$)`))
+    await expect.poll(async () => ((await page.locator('.map-point:focus').getAttribute('data-city-ids')) ?? '').split(' ')).toContain(groupIds[0])
     const shownIds = await mapCityIds(page)
     for (const cityId of groupIds) expect(shownIds).toContain(cityId)
     expect(shownIds.length).toBeLessThan(catalog.cities.length)

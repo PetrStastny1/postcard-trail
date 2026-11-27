@@ -159,7 +159,7 @@ async function playParisThroughTheUi(page: Page, { press, turn }: FlowOptions) {
   await press(page.locator('.window-screen [data-focus-id="window-home"]'))
   await expect(page.locator('.title-progress li').first()).toHaveText('1/20 cities')
   await press(page.getByRole('button', { name: 'City map' }))
-  const cityRow = (name: string) => page.locator('.city-row').filter({ has: page.locator('.city-name', { hasText: new RegExp(`^${name}$`) }) })
+  const cityRow = (name: string) => page.locator('.city-row').filter({ has: page.getByText(name, { exact: true }).and(page.locator('.city-name')) })
   await expect(cityRow('Paris').locator('.city-state')).toHaveText(/^Completed/)
   await expect(cityRow('London').locator('.city-state')).toHaveText('Unlocked')
   await expect(cityRow('Rome').locator('.city-state')).toHaveText('Locked')
