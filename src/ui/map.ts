@@ -128,7 +128,8 @@ export function mapScreen({ cities, locale, onOpenCity, onClose, onHome }: MapOp
     const origin = points.getBoundingClientRect()
     const relative = (rect: DOMRect) => ({ left: rect.left - origin.left, top: rect.top - origin.top, right: rect.right - origin.left, bottom: rect.bottom - origin.top })
     const taken = [...points.querySelectorAll('.map-dot')].map((dot) => relative(dot.getBoundingClientRect()))
-    const offset = cssPixels('--space-6') / 2 + cssPixels('--space-1')
+    // From the target's edge, so the ring of a focused target never covers the start of a name.
+    const offset = cssPixels('--hit-target') / 2
     for (const cluster of clusters) {
       if (cluster.cityIds.length > 1) continue
       const label = element('span', { class: 'map-label', 'aria-hidden': 'true' }, (byId.get(cluster.cityIds[0]) as MapCity).city.name[locale])

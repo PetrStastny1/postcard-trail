@@ -13,8 +13,11 @@ interface TextSample {
 
 interface RingSample {
   name: string
-  /** Per side of the control, points across the band of the ring and its halo, from just inside to just outside. */
-  sides: [number, number][][]
+  /**
+   * Per side of the control, the places along it, and at each place points across the band of the ring and its halo,
+   * from just inside to just outside.
+   */
+  sides: [number, number][][][]
   focused: string
   unfocused: string
 }
@@ -113,11 +116,12 @@ async function focusRings(page: Page): Promise<RingSample[]> {
         (d: number, f: number) => [box.left + box.width * f, box.bottom + d],
         (d: number, f: number) => [box.left - d, box.top + box.height * f],
         (d: number, f: number) => [box.right + d, box.top + box.height * f],
-      ].map((side) => along.flatMap((f) => distances.map((d) => side(d, f))) as [number, number][])
+      ].map((side) => along.map((f) => distances.map((d) => side(d, f)) as [number, number][]))
       // A side beyond the window edge cannot be drawn by any page; the other sides must show the ring.
-      return { name, sides: sides.map((points) => (points.every(([x, y]) => x >= 0 && y >= 0 && x < innerWidth && y < innerHeight) ? points : [])) }
+      const inside = (places: [number, number][][]) => places.flat().every(([x, y]) => x >= 0 && y >= 0 && x < innerWidth && y < innerHeight)
+      return { name, sides: sides.map((places) => (inside(places) ? places : [])) }
     })
-    expect(ring.sides.flat().length, `${ring.name} shows a focus ring`).toBeGreaterThan(0)
+    expect(ring.sides.flat(2).length, `${ring.name} shows a focus ring`).toBeGreaterThan(0)
     rings.push({ ...ring, unfocused, focused: await shot(page, false) })
   }
   await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur())
@@ -193,14 +197,24 @@ export async function expectReadableScreen(page: Page, where: string, { rings = 
   let lowestRing = Infinity
   const measured = rings ? await focusRings(page) : []
   for (const ring of measured) {
-    const points = ring.sides.flat()
+    const points = ring.sides.flat(2)
     const [before, after] = await Promise.all([readPixels(page, ring.unfocused, points), readPixels(page, ring.focused, points)])
-    ring.sides.forEach((side, sideIndex) => {
-      if (side.length === 0) return
-      const offset = ring.sides.slice(0, sideIndex).reduce((total, previous) => total + previous.length, 0)
-      // The strongest change across the band and along the side: the ring, or its halo where the ring itself sits on
-      // a dark surface.
-      const ratio = Math.max(...side.map((_, point) => contrast(before[offset + point], after[offset + point])))
+    let read = 0
+    ring.sides.forEach((places, sideIndex) => {
+      if (places.length === 0) return
+      // Across the band the strongest change counts: the ring, or its halo where the ring itself sits on a dark
+      // surface. Along the side the weakest place counts, so the ring shows at every one of them.
+      const ratio = Math.min(
+        ...places.map((band) =>
+          Math.max(
+            ...band.map(() => {
+              const change = contrast(before[read], after[read])
+              read++
+              return change
+            }),
+          ),
+        ),
+      )
       lowestRing = Math.min(lowestRing, ratio)
       if (ratio < 3) problems.push(`focus ring of ${ring.name}, side ${['top', 'bottom', 'left', 'right'][sideIndex]}: ${ratio.toFixed(2)}:1 < 3:1`)
     })

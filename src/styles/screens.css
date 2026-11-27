@@ -110,12 +110,16 @@
 }
 
 /*
- * Targets touch the edge of the map frame, which clips, so the ring is drawn on the target's own edge. The names are
- * drawn after the targets; the focused target comes above them, so its ring is whole.
+ * Targets touch the edge of the map frame, which clips, so the ring is drawn inside the target, without the cream halo
+ * that would cover the names beside it. It is twice as wide, so where a coastline runs under it, it still covers the
+ * map beyond the line. The names are drawn after the targets and start at their edge; the focused target comes above
+ * them, so its ring is whole.
  */
 .map-point:focus-visible {
   z-index: 1;
-  outline-offset: calc(var(--focus-ring) * -1);
+  outline-width: calc(var(--focus-ring) * 2);
+  outline-offset: calc(var(--focus-ring) * -2);
+  box-shadow: none;
 }
 
 .map-dot {
