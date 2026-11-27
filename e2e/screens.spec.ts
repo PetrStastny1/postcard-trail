@@ -269,13 +269,17 @@ test.describe('city summary', () => {
     await expect(postcard).toHaveCSS('animation-name', 'postcard-in')
     await expect(postcard.getByRole('img', { name: 'Paris', exact: true })).toBeVisible()
     await expect(summary.locator('.summary-unlocked')).toHaveText('London is unlocked')
-    // News, not a control: no fill, no rounded edge and no border around it.
-    expect(
-      await summary.locator('.summary-unlocked').evaluate((node) => {
-        const style = getComputedStyle(node)
-        return [style.backgroundColor, style.borderRadius, style.borderLeftStyle, style.borderRightStyle, style.borderBottomStyle, node.tagName]
-      }),
-    ).toEqual(['rgba(0, 0, 0, 0)', '0px', 'none', 'none', 'none', 'P'])
+    // News, not a control: no fill, no rounded edge and no border; the last stat row's line is the only one above it,
+    // set apart by space.
+    const unlockedLook = await summary.locator('.summary-unlocked').evaluate((node) => {
+      const style = getComputedStyle(node)
+      const lastStat = document.querySelector('.summary-stats > div:last-child') as HTMLElement
+      const gap = node.getBoundingClientRect().top - lastStat.getBoundingClientRect().bottom + parseFloat(style.paddingTop)
+      const borders = [style.borderTopStyle, style.borderLeftStyle, style.borderRightStyle, style.borderBottomStyle]
+      return { look: [style.backgroundColor, style.borderRadius, ...borders, node.tagName], gap }
+    })
+    expect(unlockedLook.look).toEqual(['rgba(0, 0, 0, 0)', '0px', 'none', 'none', 'none', 'none', 'P'])
+    expect(unlockedLook.gap).toBeGreaterThanOrEqual(16)
     await expect(page.getByRole('button', { name: 'Next city' })).toBeFocused()
     await expect(page.getByRole('button', { name: 'Play again' })).toBeVisible()
 

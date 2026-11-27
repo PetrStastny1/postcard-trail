@@ -470,11 +470,13 @@ dialog.window:has(~ dialog.window-narrow[open])::backdrop {
   font-variant-numeric: tabular-nums;
 }
 
-/* A line of news under the result, not a control: no fill or rounded edge that would read as a button. */
+/*
+ * A line of news under the result, not a control: no fill or rounded edge that would read as a button, and no line of
+ * its own, since the last stat row already ends with one; only space sets it apart.
+ */
 .summary-unlocked {
   margin: 0;
   padding-top: var(--space-2);
-  border-top: 1px solid var(--color-separator);
   font-weight: var(--weight-semibold);
   text-align: center;
 }
