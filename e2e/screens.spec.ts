@@ -1,4 +1,4 @@
-import { expect, test, type Page, type Request } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
 import type { RunState } from '../src/game/logic/run.ts'
 import { catalog, expectState, paris, playStops, recordedEvents, savedSection, seedStorage, startParis } from './game.ts'
 import { cityRunBeforeLastNext, continueToSummary, dailyRunBeforeLastNext, progressWith } from './screens.ts'
@@ -313,16 +313,14 @@ test.describe('city summary', () => {
       await continueToSummary(page)
       await page.getByRole('button', { name: 'Next city' }).click()
       await routeRequested
+      await expect(page.locator('#app')).toHaveAttribute('aria-busy', 'true')
       if (leave === 'Escape') await page.keyboard.press('Escape')
       else await page.getByRole('button', { name: leave === '×' ? 'Close' : 'Home' }).click()
       await expect(page.getByRole('button', { name: 'Play' })).toBeFocused()
 
-      const isRoute = (request: Request) => request.url().includes('/routes/london.json')
-      const settled = loaded === 'loads' ? page.waitForEvent('requestfinished', isRoute) : page.waitForEvent('requestfailed', isRoute)
       releaseRoute()
-      await settled
-      // The load resolves in the page's own tasks after the network event; two frames later it has been handled.
-      await page.evaluate(() => new Promise((frame) => requestAnimationFrame(() => requestAnimationFrame(frame))))
+      // The app is busy until it has handled the load, so once it is not, the cancelled start has been decided.
+      await expect(page.locator('#app')).not.toHaveAttribute('aria-busy')
       await expect(page.locator('.play')).toHaveCount(0)
       await expect(page.getByRole('alert')).toHaveCount(0)
       await expect(page.getByRole('button', { name: 'Play' })).toBeVisible()

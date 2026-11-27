@@ -57,7 +57,7 @@ export function createPlayScreen(handlers: PlayHandlers): PlayScreen {
   const pause = iconButton('pause', '', { class: 'icon-button pause-button', 'data-focus-id': 'play-pause' })
   pause.addEventListener('click', handlers.onPause)
   const title = element('p', { class: 'play-title' })
-  // Below the bar under the pause button; the button takes it as its description.
+  // Below the bar, aligned to the right edge of the trail row; the pause button takes it as its description.
   const skipHint = element('span', { id: 'pause-hint', class: 'pause-hint', 'aria-hidden': 'true', hidden: true })
   const bar = element('header', { class: 'play-bar' }, leave, title, pause, skipHint)
 

@@ -300,7 +300,7 @@ test('a reload during the blocked spot comes back in the pause with the lifeline
   await expect(skipWindow(page)).toContainText('Loading the video…')
 })
 
-test('the daily challenge offers the skip only on its third question, where it works the same', async ({ page }) => {
+test('the daily challenge offers the skip only on its third question, where it works the same and Next ends on the daily summary', async ({ page }) => {
   const { route, run } = dailyRun()
   await continueRun(page, runAt(run, 1), { search: '?ad=completed' })
   await expect(page.locator('.play-title')).toHaveText(`${route.name.en} · 2/3`)
@@ -317,6 +317,16 @@ test('the daily challenge offers the skip only on its third question, where it w
   expect((await eventsNamed(page, 'question_resolved')).at(-1)).toEqual({ name: 'question_resolved', cityId: route.id, index: 3, mode: 'daily', outcome: 'skipped' })
   expect(await eventsNamed(page, 'lifeline_used')).toEqual([{ name: 'lifeline_used', lifeline: 'skipVideo', mode: 'daily' }])
   expect(await savedRun(page)).toMatchObject({ correct: 2, streak: 2 })
+
+  // The skipped last question counts as not correct, so the day ends with the two answered before it.
+  await page.locator('.next').click()
+  await expect(page.getByRole('heading', { name: 'Daily challenge done' })).toBeVisible()
+  await expect(page.locator('.summary-stats > div').first()).toHaveText(/^Today’s score2\/3$/)
+  expect((await recordedEvents(page)).slice(-2)).toEqual([
+    { name: 'route_completed', cityId: route.id, mode: 'daily', correct: 2, stars: 0 },
+    { name: 'daily_completed', utcDate: '2026-12-05', correct: 2 },
+  ])
+  expect(await savedSection(page, 'daily-results')).toEqual({ '2026-12-05': { cityId: route.id, correct: 2 } })
 })
 
 const hint = (page: Page) => page.locator('.pause-hint')

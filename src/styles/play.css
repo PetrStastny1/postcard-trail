@@ -581,7 +581,6 @@
 /* Landscape: scene on the left sized by the height, the panel on the right scrolls when text is long. */
 @media (orientation: landscape) {
   .play-main {
-    --landscape-reserve: 8.5rem;
     display: grid;
     grid-template-areas: 'trail trail' 'scene panel';
     grid-template-columns: minmax(0, min(50%, 100dvh - var(--landscape-reserve))) minmax(0, 1fr);
@@ -789,9 +788,9 @@ dialog.window.zoom-window[open] {
 }
 
 /*
- * Brief §6: a one-time label that the skip for a video is in the pause. It hangs below the bar under the pause button,
- * over the trail row, so it covers no choice and no control, and lets clicks through. It looks like the 50:50 hint,
- * navy on the cream of the screen, and keeps to the right edge of the content column like the trail row.
+ * Brief §6: a one-time label that the skip for a video is in the pause. It hangs below the bar over the trail row,
+ * aligned to the trail row's right edge, so it covers no choice and no control and stays in the content column on a
+ * wide screen; it lets clicks through. It looks like the 50:50 hint, navy on the cream of the screen.
  */
 .play-bar {
   position: relative;

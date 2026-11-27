@@ -43,36 +43,45 @@ test.describe('title screen', () => {
     await expect(page.locator('.title-progress li')).toHaveText(['0/20 cities', /^0\/60 ★/, '0 postcards'])
   })
 
-  test('the locked daily tile keeps its place in the 2 × 2 menu and its condition is one line under the menu', async ({ page }) => {
-    for (const size of [
-      { width: 375, height: 812 },
-      { width: 568, height: 320 },
-      { width: 1440, height: 900 },
-    ]) {
-      await page.setViewportSize(size)
-      await openTitle(page)
-      const daily = page.locator('.title-daily')
-      await expect(daily).toHaveCSS('border-top-style', 'dashed')
-      await expect(daily).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
-      await expect(daily).toHaveCSS('color', 'rgb(58, 67, 102)')
-      const tiles = await page.locator('.title-menu button').evaluateAll((buttons) => buttons.map((button) => button.getBoundingClientRect().toJSON() as DOMRect))
-      const [, , collection, dailyTile] = tiles
-      expect(Math.abs(dailyTile.top - collection.top)).toBeLessThan(1)
-      expect(dailyTile.left).toBeGreaterThan(collection.right)
-      expect(new Set(tiles.map((tile) => Math.round(tile.height))).size).toBe(1)
-      expect(new Set(tiles.map((tile) => Math.round(tile.width))).size).toBe(1)
+  for (const [locale, play, condition] of [
+    ['en', 'Play', 'Unlocks after your first city'],
+    ['cs', 'Hrát', 'Odemkne se po prvním městě'],
+  ] as const) {
+    test(`the locked daily tile keeps its place in the 2 × 2 menu and its condition is one line under the menu in ${locale}`, async ({ page }) => {
+      await seedStorage(page, { settings: { locale } })
+      for (const size of [
+        { width: 375, height: 812 },
+        { width: 568, height: 320 },
+        { width: 1440, height: 900 },
+      ]) {
+        await page.setViewportSize(size)
+        await page.goto('/')
+        await expect(page.getByRole('button', { name: play, exact: true })).toBeVisible()
+        const daily = page.locator('.title-daily')
+        await expect(daily).toHaveAccessibleDescription(condition)
+        await expect(daily).toHaveCSS('border-top-style', 'dashed')
+        await expect(daily).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
+        await expect(daily).toHaveCSS('color', 'rgb(58, 67, 102)')
+        const tiles = await page.locator('.title-menu button').evaluateAll((buttons) => buttons.map((button) => button.getBoundingClientRect().toJSON() as DOMRect))
+        const [, , collection, dailyTile] = tiles
+        expect(Math.abs(dailyTile.top - collection.top)).toBeLessThan(1)
+        expect(dailyTile.left).toBeGreaterThan(collection.right)
+        expect(new Set(tiles.map((tile) => Math.round(tile.height))).size).toBe(1)
+        expect(new Set(tiles.map((tile) => Math.round(tile.width))).size).toBe(1)
 
-      const condition = page.locator('.title-daily-condition')
-      await expect(condition).toHaveCSS('text-wrap', 'balance')
-      await expect(condition).toHaveCSS('font-size', '14px')
-      await expect(condition).toHaveCSS('color', 'rgb(58, 67, 102)')
-      const conditionBox = (await condition.boundingBox())!
-      const menuBox = (await page.locator('.title-menu').boundingBox())!
-      expect(conditionBox.y).toBeGreaterThanOrEqual(menuBox.y + menuBox.height)
-      const lineHeight = await condition.evaluate((node) => parseFloat(getComputedStyle(node).lineHeight))
-      expect(conditionBox.height).toBeLessThan(lineHeight * 1.5)
-    }
-  })
+        const conditionLine = page.locator('.title-daily-condition')
+        await expect(conditionLine).toHaveText(condition)
+        await expect(conditionLine).toHaveCSS('text-wrap', 'balance')
+        await expect(conditionLine).toHaveCSS('font-size', '14px')
+        await expect(conditionLine).toHaveCSS('color', 'rgb(58, 67, 102)')
+        const conditionBox = (await conditionLine.boundingBox())!
+        const menuBox = (await page.locator('.title-menu').boundingBox())!
+        expect(conditionBox.y).toBeGreaterThanOrEqual(menuBox.y + menuBox.height)
+        const lineHeight = await conditionLine.evaluate((node) => parseFloat(getComputedStyle(node).lineHeight))
+        expect(conditionBox.height).toBeLessThan(lineHeight * 1.5)
+      }
+    })
+  }
 
   test('the progress comes from the saved progress', async ({ page }) => {
     await seedStorage(page, {
@@ -480,17 +489,26 @@ test.describe('short landscape screens show the whole title and settings without
       })
     })
 
-    for (const size of [
-      { width: 568, height: 320 },
-      { width: 640, height: 360 },
-    ]) {
-      test(`title at ${size.width} × ${size.height}`, async ({ page }) => {
-        await page.setViewportSize(size)
-        await openTitle(page)
-        await expect(page.getByText('This browser is not saving the game.')).toBeVisible()
-        for (const state of await wholeInView(page, `${titleParts}, .title-daily-condition`)) expect(state).toBe('whole')
-        await expect(page.locator('.title-panel')).not.toHaveClass(/has-more/)
-      })
+    for (const locale of ['en', 'cs'] as const) {
+      for (const size of [
+        { width: 568, height: 320 },
+        { width: 640, height: 360 },
+      ]) {
+        test(`title at ${size.width} × ${size.height} in ${locale}`, async ({ page }) => {
+          await page.setViewportSize(size)
+          await openTitle(page)
+          // Nothing is saved, so the language is switched in the settings as a player would.
+          if (locale === 'cs') {
+            await page.getByRole('button', { name: 'Settings' }).click()
+            await page.getByRole('button', { name: 'Čeština' }).click()
+            await page.getByRole('button', { name: 'Zavřít', exact: true }).click()
+            await expect(page.getByRole('dialog')).toHaveCount(0)
+          }
+          await expect(page.getByText(locale === 'en' ? 'This browser is not saving the game.' : 'Prohlížeč hru neukládá.')).toBeVisible()
+          for (const state of await wholeInView(page, `${titleParts}, .title-daily-condition`)) expect(state).toBe('whole')
+          await expect(page.locator('.title-panel')).not.toHaveClass(/has-more/)
+        })
+      }
     }
   })
 })
