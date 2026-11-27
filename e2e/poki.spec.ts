@@ -36,22 +36,53 @@ async function expectFilledFrame(frame: Frame, size: { width: number; height: nu
   expect(box).toEqual({ innerWidth: size.width, innerHeight: size.height, scrollWidth: size.width, scrollHeight: size.height, clientWidth: size.width, clientHeight: size.height, app: { width: size.width, height: size.height } })
 }
 
-const portalScroll = (page: Page) => page.evaluate(() => scrollY)
+/**
+ * The highest `scrollY` the portal page reaches over the next ten frames. A key or wheel scroll may be smooth and
+ * start a frame or two later, so one read at once could miss it or blame the next key.
+ */
+const portalScrollSettled = (page: Page) =>
+  page.evaluate(
+    () =>
+      new Promise<number>((done) => {
+        let highest = scrollY
+        let frames = 10
+        const sample = () => {
+          highest = Math.max(highest, scrollY)
+          if (--frames === 0) done(highest)
+          else requestAnimationFrame(sample)
+        }
+        requestAnimationFrame(sample)
+      }),
+  )
 
-/** Every key the game knows, then the wheel over the game; the portal page must stay at the top. */
+type WheelCount = { portalWheels?: number }
+
+/**
+ * The wheel over the game first, while the screen or window under test is still open, then every key the game knows:
+ * the portal page must stay at the top. The game counts the wheel events it receives, so the test knows they arrived
+ * before it watches the portal page.
+ */
 async function expectPortalStill(page: Page, frame: Frame, where: string) {
-  for (const key of ['Space', 'Enter', 'ArrowDown', 'ArrowUp', 'ArrowRight', 'ArrowLeft', 'PageDown', 'End', 'Tab', 'Shift+Tab', '1', '2', '3', '4']) {
-    await page.keyboard.press(key)
-    expect(await portalScroll(page), `${where}: ${key}`).toBe(0)
-  }
   const box = await page.locator('iframe').boundingBox()
   if (!box) throw new Error('The frame has no box.')
+  await frame.evaluate(() => {
+    const counted = globalThis as WheelCount
+    if (counted.portalWheels === undefined) addEventListener('wheel', () => (counted.portalWheels = (counted.portalWheels ?? 0) + 1), { capture: true, passive: true })
+    counted.portalWheels = 0
+  })
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
   await page.mouse.wheel(0, 600)
   await page.mouse.wheel(0, 600)
-  // Wheel scrolling is applied in a later frame; the game frame's own animation frames come after it.
-  await frame.evaluate(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))))
-  expect(await portalScroll(page), `${where}: wheel`).toBe(0)
+  const wheels = () => frame.evaluate(() => (globalThis as WheelCount).portalWheels)
+  // Once the portal page has moved, the frame is no longer under the pointer and the game may not get the wheel.
+  await expect.poll(async () => (await wheels()) === 2 || (await page.evaluate(() => scrollY)) > 0, `${where}: the wheel arrives`).toBe(true)
+  expect(await portalScrollSettled(page), `${where}: wheel`).toBe(0)
+  expect(await wheels(), `${where}: the game receives the wheel`).toBe(2)
+  // Keys that only move or scroll go first; Space, Enter and Escape may then press a control or close the window.
+  for (const key of ['ArrowDown', 'ArrowUp', 'ArrowRight', 'ArrowLeft', 'PageDown', 'End', 'Tab', 'Shift+Tab', '1', '2', '3', '4', 'Space', 'Enter', 'Escape']) {
+    await page.keyboard.press(key)
+    expect(await portalScrollSettled(page), `${where}: ${key}`).toBe(0)
+  }
 }
 
 for (const size of frames) {
@@ -63,19 +94,36 @@ for (const size of frames) {
       const frame = await openInPortal(page, size)
       expect(await page.evaluate(() => document.documentElement.scrollHeight > innerHeight)).toBe(true)
       await expectFilledFrame(frame, size)
+      const noWindow = () => expect(frame.locator('dialog[open]')).toHaveCount(0)
 
       await frame.locator('[data-focus-id="title-settings"]').focus()
       await expectPortalStill(page, frame, 'title')
+      await frame.locator('[data-focus-id="title-settings"]').click()
+      await expect(frame.getByRole('dialog', { name: 'Settings' })).toBeVisible()
+      await expectPortalStill(page, frame, 'settings over the title')
+      await noWindow()
+
       await frame.locator('[data-focus-id="title-map"]').click()
       await expect(frame.locator('.map-point').first()).toBeVisible()
       await expectFilledFrame(frame, size)
       await expectPortalStill(page, frame, 'map')
-      await page.keyboard.press('Escape')
-      await page.keyboard.press('Escape')
+      await noWindow()
 
       await frame.locator('[data-focus-id="title-play"]').click()
       await expect(frame.locator('.play')).toHaveAttribute('data-state', /question|result/)
       await expectFilledFrame(frame, size)
+      await frame.locator('[data-focus-id="play-pause"]').click()
+      await expect(frame.getByRole('dialog', { name: 'Paused' })).toBeVisible()
+      await expectPortalStill(page, frame, 'pause')
+      await noWindow()
+
+      await frame.locator('.choice:not([disabled])').first().click()
+      await expect(frame.locator('.play')).toHaveAttribute('data-state', 'result')
+      await frame.locator('[data-focus-id="play-zoom"]').click()
+      await expect(frame.locator('dialog.zoom-window')).toBeVisible()
+      await expectPortalStill(page, frame, 'zoom')
+      await noWindow()
+
       // The keys above may answer, pause or leave; the page must stay still whatever they did.
       await expectPortalStill(page, frame, 'game')
       await expectFilledFrame(frame, size)
@@ -97,7 +145,7 @@ for (const size of frames) {
       await page.keyboard.press('Escape')
       await expect(frame.getByRole('dialog')).toHaveCount(0)
       await expect(frame.locator('.play')).toHaveAttribute('data-state', 'question')
-      expect(await portalScroll(page)).toBe(0)
+      expect(await portalScrollSettled(page)).toBe(0)
     })
   })
 }

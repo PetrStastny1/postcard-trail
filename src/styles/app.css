@@ -11,8 +11,12 @@ body {
   height: 100%;
 }
 
-/* In a portal frame neither a scroll that reaches the end of the game nor one the game cannot take moves the page. */
-html {
+/*
+ * In a portal frame neither a scroll that reaches the end of the game nor one the game cannot take moves the page. A
+ * modal dialog sits in the top layer, where the document's setting does not reach, so it needs its own.
+ */
+html,
+dialog {
   overscroll-behavior: none;
 }
 
