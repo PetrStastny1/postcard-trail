@@ -428,6 +428,8 @@ test('the scene zoom holds the question time, returns with × and Escape and wor
   await expect(dialog.getByRole('img', { name: paris.stops[0].sceneAlt.en })).toBeVisible()
   await expect(dialog.getByRole('button', { name: 'Close' })).toBeFocused()
   await page.keyboard.press('Tab')
+  await expect(dialog.getByRole('button', { name: 'Home' })).toBeFocused()
+  await page.keyboard.press('Tab')
   await expect(dialog.getByRole('button', { name: 'Close' })).toBeFocused()
   await page.clock.runFor(5_000)
   await dialog.getByRole('button', { name: 'Close' }).click()
@@ -451,6 +453,28 @@ test('the scene zoom holds the question time, returns with × and Escape and wor
   await page.keyboard.press('Escape')
   await expect(page.getByRole('dialog')).toHaveCount(0)
   await expectState(page, 'result')
+})
+
+test('Home in the scene zoom saves the run paused and goes to the title like Home elsewhere in the game', async ({ page }) => {
+  await startParis(page, { pausedClock: true })
+  await page.clock.runFor(4_000)
+  await page.getByRole('button', { name: 'Enlarge the scene' }).click()
+  const dialog = page.getByRole('dialog', { name: 'Scene' })
+  await expect(dialog.locator('.window-bar').getByRole('button', { name: 'Close' })).toBeVisible()
+  await dialog.locator('.window-bar').getByRole('button', { name: 'Home' }).click()
+
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+  const continueButton = page.getByRole('button', { name: 'Continue', exact: true })
+  await expect(continueButton).toBeFocused()
+  expect((await recordedEvents(page)).filter((event) => event.name === 'route_left')).toEqual([
+    { name: 'route_left', cityId: 'paris', mode: 'city', index: 1, reason: 'paused' },
+  ])
+  const saved = await savedSection<{ run: { phase: string; stopIndex: number; remainingMs: number } }>(page, 'active-run')
+  expect([saved.run.phase, saved.run.stopIndex, saved.run.remainingMs]).toEqual(['question', 0, 21_000])
+
+  await continueButton.click()
+  await expect(page.getByRole('dialog', { name: 'Paused' })).toBeVisible()
+  await expect(timer(page)).toHaveText('21 s')
 })
 
 test('pause by button and Escape holds the time and offers Continue, Settings and Home', async ({ page }) => {

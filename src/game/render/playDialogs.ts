@@ -1,5 +1,5 @@
 import { t } from '../../i18n/index.ts'
-import { element, icon, iconButton } from '../../ui/element.ts'
+import { element, icon } from '../../ui/element.ts'
 import { windowBar } from '../../ui/windowBar.ts'
 
 export const pauseTitleId = 'pause-title'
@@ -33,14 +33,12 @@ export function pauseWindow({ onContinue, onSettings, onHome, onSkip }: PauseHan
   ]
 }
 
-/** The scene over the whole available area; × and Escape return to the same question. */
-export function zoomWindow({ image, caption, onClose }: { image: HTMLImageElement; caption: string | null; onClose(): void }): HTMLElement[] {
-  const close = iconButton('close', t('window.close'), { 'data-focus-id': 'window-close' })
-  close.addEventListener('click', onClose)
+/** The scene over the whole available area; × and Escape return to the same question, Home saves and leaves. */
+export function zoomWindow({ image, caption, onClose, onHome }: { image: HTMLImageElement; caption: string | null; onClose(): void; onHome(): void }): HTMLElement[] {
   const enlarged = image.cloneNode() as HTMLImageElement
   enlarged.className = 'zoom-art'
   return [
-    element('header', { class: 'window-bar' }, close, element('h2', { id: zoomTitleId, class: 'window-title' }, t('zoom.title'))),
+    windowBar({ titleId: zoomTitleId, title: t('zoom.title'), onClose, onHome }),
     element(
       'figure',
       { class: 'zoom-scene' },
