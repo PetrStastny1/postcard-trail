@@ -455,6 +455,40 @@ test('the scene zoom holds the question time, returns with × and Escape and wor
   await expectState(page, 'result')
 })
 
+test('in the portrait result the zoom moves into the result band, takes the focus back and leaves the scene corner', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await startParis(page, { pausedClock: true })
+  const cornerZoom = page.locator('[data-focus-id="play-zoom"]')
+  const bandZoom = page.locator('[data-focus-id="result-zoom"]')
+  await expect(cornerZoom).toBeVisible()
+  await expect(bandZoom).toBeHidden()
+
+  await correctChoice(page, paris.stops[0]).click()
+  await expectState(page, 'result')
+  await expect(page.locator('.next')).toBeFocused()
+  await expect(cornerZoom).toBeHidden()
+  await expect(bandZoom).toBeVisible()
+  await expect(bandZoom).toHaveAccessibleName('Enlarge the scene')
+  await expect(page.locator('.result .primary')).toHaveCount(1)
+  await page.keyboard.press('Shift+Tab')
+  await expect(bandZoom).toBeFocused()
+  await page.keyboard.press('Enter')
+  await expect(page.getByRole('dialog', { name: 'Scene' })).toBeVisible()
+  await page.keyboard.press('Escape')
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+  await expect(bandZoom).toBeFocused()
+
+  // Landscape keeps the zoom in the scene's corner, also in the result.
+  await page.setViewportSize({ width: 812, height: 375 })
+  await expect(cornerZoom).toBeVisible()
+  await expect(bandZoom).toBeHidden()
+  await page.setViewportSize({ width: 375, height: 812 })
+  await page.locator('.next').click()
+  await expectState(page, 'question')
+  await expect(cornerZoom).toBeVisible()
+  await expect(bandZoom).toBeHidden()
+})
+
 test('Home in the scene zoom saves the run paused and goes to the title like Home elsewhere in the game', async ({ page }) => {
   await startParis(page, { pausedClock: true })
   await page.clock.runFor(4_000)

@@ -58,7 +58,7 @@ async function openTabB(context: BrowserContext): Promise<Page> {
   return tabB
 }
 
-const cityRow = (page: Page, name: string) => page.locator('.city-row').filter({ has: page.locator('.city-name', { hasText: new RegExp(`^${name}$`) }) })
+const cityRow = (page: Page, name: string) => page.locator('.city-row').filter({ has: page.getByText(name, { exact: true }).and(page.locator('.city-name')) })
 
 /** The rewards of tab A's run, as tab B completed them. */
 async function expectRewardsOf(tabB: Page, mode: FinishingRun['mode']) {

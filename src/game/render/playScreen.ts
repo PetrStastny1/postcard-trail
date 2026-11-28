@@ -31,7 +31,8 @@ export interface PlayView {
 export interface PlayHandlers {
   onLeave(): void
   onPause(): void
-  onZoom(): void
+  /** `returnFocusId` is the zoom button that was used, where the focus returns when the zoom closes. */
+  onZoom(returnFocusId: string): void
   onRetry(): void
   onChoose(choiceId: string): void
   onFiftyFifty(): void
@@ -78,7 +79,12 @@ export function createPlayScreen(handlers: PlayHandlers): PlayScreen {
   const sceneError = element('div', { class: 'scene-error', role: 'alert' }, errorText, element('div', { class: 'scene-error-actions' }, retry, errorHome))
   const zoom = element('button', { class: 'zoom-button', type: 'button', 'data-focus-id': 'play-zoom' })
   zoom.innerHTML = icons.enlarge
-  zoom.addEventListener('click', handlers.onZoom)
+  zoom.addEventListener('click', () => handlers.onZoom('play-zoom'))
+  // In the portrait result the zoom moves into the result band: scrolled to the result, a tall answer would push the
+  // scene's corner under the bar. Only one of the two is ever shown.
+  const resultZoom = element('button', { class: 'zoom-button result-zoom', type: 'button', 'data-focus-id': 'result-zoom' })
+  resultZoom.innerHTML = icons.enlarge
+  resultZoom.addEventListener('click', () => handlers.onZoom('result-zoom'))
   // The zoom button sits in the scene's corner, so a caption of any length below the scene stays clear.
   const frame = element('figure', { class: 'scene-frame' }, loading, sceneError, zoom)
   const sceneBox = element('div', { class: 'scene-box' }, frame)
@@ -164,6 +170,7 @@ export function createPlayScreen(handlers: PlayHandlers): PlayScreen {
     retry.textContent = t('play.retry')
     errorHome.textContent = t('window.home')
     zoom.setAttribute('aria-label', t('play.zoom'))
+    resultZoom.setAttribute('aria-label', t('play.zoom'))
     caption?.remove()
     // Shown visually only: the image's alt text carries the same description for screen readers.
     caption = view.scene.placeholder
@@ -214,6 +221,7 @@ export function createPlayScreen(handlers: PlayHandlers): PlayScreen {
     next.addEventListener('click', handlers.onNext)
     result.replaceChildren(
       element('p', { class: 'result-verdict' }, icon(verdictIcon, { class: 'result-icon' }), element('span', { class: 'result-word' }, t(verdictKey))),
+      resultZoom,
       element('p', { class: 'result-sentence' }, stop.feedback[locale]),
       next,
     )
@@ -308,13 +316,14 @@ export function createPlayScreen(handlers: PlayHandlers): PlayScreen {
     }
 
     if (state !== 'result') result.replaceChildren()
+    if (enteringResult) showResult(view)
+    // Before the scroll: measuring unstacks the choices for a moment, and the shorter content would clamp it.
+    fitChoices()
     if (enteringResult) {
-      showResult(view)
       // The scrollers end with the result, so it comes into view whole and right under the choices.
       for (const scroller of [main, panel]) scroller.scrollTo(0, scroller.scrollHeight)
       result.querySelector<HTMLElement>('.next')?.focus({ preventScroll: true })
     }
-    fitChoices()
     markActionRow()
   }
 

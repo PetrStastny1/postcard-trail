@@ -530,6 +530,14 @@ describe('answer leaks (K7)', () => {
     ])
   })
 
+  test('a label touched by a letter or digit is not a leak, but a later whole-word use in the same text is', () => {
+    const root = copyContent()
+    writeJson(root, 'src/i18n/en.json', { hints: ['Siklos and siklo2 are not it', 'The siklos, then the siklo.'] })
+    assert.deepEqual(validateContent(root), [
+      'src/i18n/en.json hints[1]: reveals "Sikló", the correct choice of stop B02',
+    ])
+  })
+
   test('a leak in an i18n file whose root is a string is reported at (root)', () => {
     const root = copyContent()
     writeJson(root, 'src/i18n/en.json', 'Take the siklo up the hill')

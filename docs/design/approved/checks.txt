@@ -49,6 +49,11 @@ result.cs.640x360 scene=224 stacked=false choicesBelow=0 ok
 question.en.375x812.focus-choice scene=343 stacked=false choicesBelow=0 ok
 result.en.375x812.focus-next scene=343 stacked=false choicesBelow=0 ok
 question.en.375x812.dark scene=343 stacked=false choicesBelow=0 ok
+result.en.320x568.dark scene=200 stacked=false choicesBelow=0 ok
+result.en.375x812.dark scene=343 stacked=false choicesBelow=0 ok
+result.cs.320x568.dark scene=200 stacked=false choicesBelow=0 ok
+result.cs.375x812 scene=343 stacked=false choicesBelow=0 ok
+result.cs.375x812.dark scene=343 stacked=false choicesBelow=0 ok
 scene size en375x812: 343 same in all states
 scene size en320x568: 200 same in all states
 scene size en568x320: 184 same in all states
@@ -58,3 +63,4 @@ scene size en1440x900: 664 same in all states
 scene size cs320x568: 200 same in all states
 scene size cs568x320: 184 same in all states
 scene size cs640x360: 224 same in all states
+scene size cs375x812: 343 same in all states

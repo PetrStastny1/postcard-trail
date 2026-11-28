@@ -52,9 +52,23 @@ function fold(text: string): string {
   return text.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase()
 }
 
+const wordCharacter = /[\p{L}\p{N}]/u
+
+/** Whether the phrase occurs in the text as whole words: no letter or digit touches it on either side. */
 function containsPhrase(text: string, phrase: string): boolean {
-  const escaped = fold(phrase).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-  return new RegExp(`(?<![\\p{L}\\p{N}])${escaped}(?![\\p{L}\\p{N}])`, 'u').test(fold(text))
+  const folded = fold(text)
+  const needle = fold(phrase)
+  for (let from = 0; from <= folded.length; from++) {
+    const index = folded.indexOf(needle, from)
+    if (index === -1) return false
+    // Taken as whole code points, so a letter outside the Basic Multilingual Plane still counts as a word character.
+    const before = Array.from(folded.slice(Math.max(0, index - 2), index)).at(-1) ?? ''
+    const afterCode = folded.codePointAt(index + needle.length)
+    const after = afterCode === undefined ? '' : String.fromCodePoint(afterCode)
+    if (!wordCharacter.test(before) && !wordCharacter.test(after)) return true
+    from = index
+  }
+  return false
 }
 
 

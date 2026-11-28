@@ -497,7 +497,12 @@
   width: 100%;
 }
 
+/*
+ * Positioned, so the verdict lies above the sentence: where the system font is taller than the sentence's line height
+ * (DejaVu Sans on Linux), the box of its first line reaches up into the verdict's.
+ */
 .result-verdict {
+  position: relative;
   display: flex;
   align-items: center;
   gap: var(--space-1);
@@ -527,9 +532,37 @@
   line-height: var(--leading-tight);
 }
 
+/* Shown only in the portrait result, where it takes the place of the scene corner's zoom. */
+.result-zoom {
+  display: none;
+  position: static;
+}
+
 .next {
   grid-column: 2;
   grid-row: 1 / span 2;
+}
+
+/*
+ * Portrait result: the screen scrolls to the end of the result, which a long question, stacked choices or a long
+ * sentence can push the scene's corner under the bar for. The zoom moves into the band, in the row of the verdict above
+ * Next, so the sentence keeps its width and the band grows by the button's height at most.
+ */
+@media (orientation: portrait) {
+  [data-state='result'] .scene-frame .zoom-button {
+    display: none;
+  }
+
+  .result-zoom {
+    display: inline-grid;
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+  }
+
+  .next {
+    grid-row: 2;
+  }
 }
 
 .play .primary,
@@ -641,6 +674,14 @@
     border-top: 0;
   }
 
+  /*
+   * The narrow panel leaves the 50:50 hint little room beside the seconds; slimmer lifelines keep it to two lines in a
+   * wider system font (DejaVu Sans on Linux), so it stays inside the action row.
+   */
+  .lifeline {
+    padding-inline: var(--space-2);
+  }
+
   /* The narrow panel gives the sentence its full width, so a long one stays clear of the choices above it. */
   .result {
     grid-template-columns: minmax(0, 1fr) auto;
@@ -678,6 +719,14 @@
 
   .choice-mark {
     inset-inline-start: 6px;
+  }
+
+  /*
+   * The 50:50 hint gets the room beside the seconds for its longest word ("Removes", "Odebere") in a wider system font
+   * (DejaVu Sans on Linux) too.
+   */
+  .lifeline {
+    padding-inline: var(--space-1);
   }
 }
 
