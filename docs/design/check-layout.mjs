@@ -8,6 +8,11 @@ for (const state of ['question', 'result']) for (const size of ['320x568', '568x
 runs.push({ state: 'question', size: '375x812', lang: 'en', focus: 'choice' })
 runs.push({ state: 'result', size: '375x812', lang: 'en', focus: 'next' })
 runs.push({ state: 'question', size: '375x812', lang: 'en', scheme: 'dark' })
+// The portrait result holds the zoom in its band: both languages, light and dark, on the smallest and a large phone.
+for (const lang of ['en', 'cs']) for (const size of ['320x568', '375x812']) for (const scheme of ['light', 'dark']) {
+  const run = { state: 'result', size, lang, ...(scheme === 'dark' ? { scheme } : {}) }
+  if (!runs.some((each) => each.state === run.state && each.size === size && each.lang === lang && !each.focus && each.scheme === run.scheme)) runs.push(run)
+}
 
 const inspect = () => {
   const shown = (el) => { const s = getComputedStyle(el); const r = el.getBoundingClientRect(); return s.display !== 'none' && s.visibility !== 'hidden' && r.width > 0 && r.height > 0 && !el.closest('[aria-hidden="true"]') }
@@ -51,8 +56,11 @@ const inspect = () => {
   const state = document.querySelector('.play').dataset.state
   const choicesOut = [...document.querySelectorAll('.choice')].filter(shown).filter(covered).length
   const unsignalled = state !== 'result' && choicesOut > 0 && !document.querySelector('.action-row').classList.contains('has-more')
+  // The scene can be enlarged in the question and the result, from exactly one button.
+  const zooms = [...document.querySelectorAll('.zoom-button')].filter(shown).length
+  const zoomsExpected = state === 'loading' || state === 'error' ? 0 : 1
   const small = [...document.querySelectorAll('button')].filter(shown).filter((b) => { const r = b.getBoundingClientRect(); return r.width < 44 || r.height < 44 }).map((b) => b.className)
-  return { unsignalled, choicesOut, scene: Math.round(document.querySelector('.scene-frame').getBoundingClientRect().width), hidden, notInView, brokenWords, small, stacked: document.querySelector('.choices').classList.contains('is-stacked'), scrollX: document.documentElement.scrollWidth > innerWidth }
+  return { unsignalled, choicesOut, scene: Math.round(document.querySelector('.scene-frame').getBoundingClientRect().width), hidden, notInView, brokenWords, small, zooms, zoomsExpected, stacked: document.querySelector('.choices').classList.contains('is-stacked'), scrollX: document.documentElement.scrollWidth > innerWidth }
 }
 
 const browser = await chromium.launch()
@@ -67,7 +75,7 @@ for (const run of runs) {
   const c = await page.evaluate(inspect)
   const key = run.lang + run.size
   if (!['error'].includes(run.state)) (sceneBySize[key] ??= new Set()).add(c.scene)
-  const problems = [c.hidden.length && 'hidden=' + c.hidden, c.notInView.length && 'notInView=' + c.notInView, c.brokenWords.length && 'broken=' + c.brokenWords, c.small.length && 'small=' + c.small, c.scrollX && 'scrollX', c.unsignalled && 'hiddenChoicesWithoutSignal'].filter(Boolean)
+  const problems = [c.hidden.length && 'hidden=' + c.hidden, c.notInView.length && 'notInView=' + c.notInView, c.brokenWords.length && 'broken=' + c.brokenWords, c.small.length && 'small=' + c.small, c.scrollX && 'scrollX', c.unsignalled && 'hiddenChoicesWithoutSignal', c.zooms !== c.zoomsExpected && `zooms=${c.zooms}`].filter(Boolean)
   process.stdout.write(`${name} scene=${c.scene} stacked=${c.stacked} choicesBelow=${c.choicesOut} ${problems.length ? 'PROBLEMS ' + problems.join(' ') : 'ok'}\n`)
   await page.close()
 }

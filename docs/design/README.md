@@ -3,7 +3,7 @@
 Klíčová obrazovka je otázka zastávky a její výsledek. Schválil ji arbitr 26. 11. 2026 ve třetím kole (záznam v [LOG.md](../decisions/LOG.md)). Ostatní obrazovky se z ní odvozují.
 
 - Prototyp: [prototype/question.html](prototype/question.html) a [prototype/question.css](prototype/question.css). Parametry `?state=question|result|result-correct|result-timeout|loading|error|fifty|untimed`, `&lang=cs`, `&focus=choice|next`.
-- Screenshoty: [approved/](approved/). Název je `<stav>.<jazyk>.<velikost>.png`. Výsledky automatické kontroly jsou v [approved/checks.txt](approved/checks.txt).
+- Screenshoty: [approved/](approved/). Název je `<stav>.<jazyk>.<velikost>[.focus-<prvek>][.dark].png`. Výsledky automatické kontroly jsou v [approved/checks.txt](approved/checks.txt).
 - Kontrola rozvržení: [check-layout.mjs](check-layout.mjs), spustí se `node docs/design/check-layout.mjs <url> <výstupní složka>` proti běžícímu Vite. Implementace v `src/` musí projít stejnými kontrolami.
 
 ## Co je závazné
@@ -25,7 +25,7 @@ Klíčová obrazovka je otázka zastávky a její výsledek. Schválil ji arbitr
 **Scéna.**
 - Čtverec s rámečkem. Velikost závisí jen na viewportu, nikdy na stavu.
 - Na 375 × 812 a větších má aspoň 304 px. Na nejmenších velikostech kolem 200 px (k potvrzení Petrem).
-- Tlačítko zvětšení je v pravém dolním rohu obrazu a musí být vidět v otázce i ve výsledku.
+- Tlačítko zvětšení je v otázce a na šířku v pravém dolním rohu obrazu. Ve výsledku na výšku je ve výsledkovém pásu (vedlejší ikonové tlačítko s obrysem, v řadě s verdiktem nad „Další“) a roh obrazu je prázdný, protože po posunu na konec výsledku by roh mohl zajet pod horní pruh. Zvětšení musí být vidět v otázce i ve výsledku, vždy právě jedno.
 - Pod zástupnou scénou je popis (`sceneAlt`).
 
 **Volby.**
@@ -34,7 +34,7 @@ Klíčová obrazovka je otázka zastávky a její výsledek. Schválil ji arbitr
 - Po 50:50 zůstanou odebrané pozice jako prázdná čárkovaná místa, mřížka se nepřeskládá.
 
 **Řádek akcí.**
-- Čas a žolíky, po odpovědi místo nich verdikt slovem i symbolem, věta o místě a jediné plné tlačítko „Další“.
+- Čas a žolíky, po odpovědi místo nich verdikt slovem i symbolem, věta o místě a jediné plné tlačítko „Další“ (na výšku nad ním vedlejší tlačítko zvětšení).
 - Řádek je přilepený ke spodní hraně. Když pod ním pokračuje obsah, má nad sebou stín (`has-more`) a první skrytá volba vykukuje.
 - Po odpovědi se obsah posune tak, aby výsledek nic nepřekrýval.
 - Žolíky jsou vedlejší tlačítka s obrysem. Použitý žolík je čárkovaný a přeškrtnutý.
