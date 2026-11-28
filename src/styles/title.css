@@ -195,6 +195,15 @@
   .title-menu .secondary {
     padding-block: var(--space-1);
   }
+
+  /*
+   * The progress keeps to one line, as the panel has no height for a second one with the storage notice; the small
+   * size leaves room for a wider system font (DejaVu Sans on Linux).
+   */
+  .title-progress {
+    column-gap: var(--space-3);
+    font-size: var(--text-small);
+  }
 }
 
 /* Scene colours from the illustration palette. */
