@@ -1,5 +1,6 @@
 import { expect, test, type Browser, type Page } from '@playwright/test'
-import { correctChoice, expectState, inspectPlayLayout, installClock, paris, pauseClock, seedStorage, startParis, wrongChoice } from './game.ts'
+import { catalog, correctChoice, expectState, inspectPlayLayout, installClock, paris, pauseClock, readRoute, seedStorage, startParis, wrongChoice } from './game.ts'
+import { progressWith } from './screens.ts'
 
 // The states and sizes of docs/design/check-layout.mjs, checked on the real game screen at the first Paris stop.
 
@@ -110,5 +111,37 @@ for (const lang of ['en', 'cs'] as const) {
       }
       expect([...sceneSizes], 'the scene keeps its size on every stop').toHaveLength(1)
     })
+  }
+}
+
+// The tallest wrong-answer results of all 200 stops (long questions, stacked choices, long sentences): in portrait the
+// result band holds the zoom, so it stays in view after the screen scrolls to the end of the result.
+const tallResults = { en: ['AMS03', 'OSL09', 'STO10', 'BER10'], cs: ['HEL10', 'AMS08', 'STO10', 'PAR10'] } as const
+for (const size of [{ width: 320, height: 568 }, { width: 375, height: 812 }]) {
+  for (const lang of ['en', 'cs'] as const) {
+    for (const stopId of tallResults[lang]) {
+      const cityIndex = catalog.cities.findIndex((city) => readRoute(city.id).stops.some((stop) => stop.id === stopId))
+      const route = readRoute(catalog.cities[cityIndex].id)
+      test(`the wrong-answer result of ${stopId} keeps the layout at ${size.width} × ${size.height} in ${lang}`, async ({ page }) => {
+        await page.setViewportSize(size)
+        // The cities before it are completed, so Play opens its city.
+        await seedStorage(page, { settings: { locale: lang }, progress: progressWith(cityIndex, 0) })
+        await installClock(page)
+        await page.goto('/')
+        await pauseClock(page)
+        await page.getByRole('button', { name: lang === 'en' ? 'Play' : 'Hrát', exact: true }).click()
+        await expect(page.locator('.play-title')).toContainText(route.name[lang])
+        const stopIndex = route.stops.findIndex((stop) => stop.id === stopId)
+        for (const stop of route.stops.slice(0, stopIndex)) {
+          await expectState(page, 'question')
+          await correctChoice(page, stop, lang).click()
+          await page.locator('.next').click()
+        }
+        await expectState(page, 'question')
+        await (await wrongChoice(page, route.stops[stopIndex], lang)).click()
+        await expectState(page, 'result')
+        expect((await inspectPlayLayout(page)).problems, `${stopId} result`).toEqual([])
+      })
+    }
   }
 }

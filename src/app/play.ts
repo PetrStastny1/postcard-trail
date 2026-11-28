@@ -275,13 +275,13 @@ export function startPlay({ session, catalog, route, placeholderSceneIds, run, m
     })
   }
 
-  function openZoom(): void {
+  function openZoom(returnFocusId: string): void {
     if (!scene.image || topDialog() || controller.stopped) return
     controller.zoomOpened()
     const dialog: OpenDialog = openDialog({
       labelledBy: zoomTitleId,
       content: zoomContent(scene.image),
-      returnFocusId: 'play-zoom',
+      returnFocusId,
       className: 'zoom-window',
       onClosed: () => {
         if (zoomDialog === dialog) closeZoom(true)

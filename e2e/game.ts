@@ -91,7 +91,8 @@ export async function playStops(page: Page, stops: Stop[], outcome: 'correct' | 
  * `has-more` signal when choices are cut, 44 px targets and no horizontal scrolling. The prototype's `markMore()` is
  * the game's scroll listener here. On top of those: the scene caption is reachable, uncovered and not cut; the result's
  * verdict and sentence are in view, never faded by a mask, and the result covers no choice; the 50:50 hint lies only
- * over the action row and the time bar, never over a choice, a control or the seconds, and its text stays inside it.
+ * over the action row and the time bar, never over a choice, a control or the seconds, and its text stays inside it;
+ * exactly one zoom button is shown in the question and the result, none while the scene loads or failed.
  */
 export async function inspectPlayLayout(page: Page) {
   return page.evaluate(() => {
@@ -205,6 +206,10 @@ export async function inspectPlayLayout(page: Page) {
         return r.width < 44 || r.height < 44
       })
       .map(className)
+    // The scene can be enlarged in the question and the result, from exactly one button: the scene's corner, or the
+    // result band in the portrait result.
+    const zoomsShown = [...document.querySelectorAll('.zoom-button')].filter(shown).length
+    const zoomsExpected = play?.dataset.state === 'question' || play?.dataset.state === 'result' ? 1 : 0
     return {
       scene: Math.round(document.querySelector('.scene-frame')?.getBoundingClientRect().width ?? 0),
       actionRowHeight: Math.round(document.querySelector('.action-row')?.getBoundingClientRect().height ?? 0),
@@ -220,6 +225,7 @@ export async function inspectPlayLayout(page: Page) {
         ...captionCut.map(() => 'the scene caption is cut'),
         ...[...hintOver].map((name) => `the 50:50 hint covers ${name}`),
         ...hintWordsOut.map((word) => `the 50:50 hint word ${word} leaves its padding`),
+        ...(zoomsShown === zoomsExpected ? [] : [`${zoomsShown} zoom buttons shown, ${zoomsExpected} expected`]),
       ],
     }
   })

@@ -532,9 +532,37 @@
   line-height: var(--leading-tight);
 }
 
+/* Shown only in the portrait result, where it takes the place of the scene corner's zoom. */
+.result-zoom {
+  display: none;
+  position: static;
+}
+
 .next {
   grid-column: 2;
   grid-row: 1 / span 2;
+}
+
+/*
+ * Portrait result: the screen scrolls to the end of the result, which a long question, stacked choices or a long
+ * sentence can push the scene's corner under the bar for. The zoom moves into the band, in the row of the verdict above
+ * Next, so the sentence keeps its width and the band grows by the button's height at most.
+ */
+@media (orientation: portrait) {
+  [data-state='result'] .scene-frame .zoom-button {
+    display: none;
+  }
+
+  .result-zoom {
+    display: inline-grid;
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+  }
+
+  .next {
+    grid-row: 2;
+  }
 }
 
 .play .primary,
