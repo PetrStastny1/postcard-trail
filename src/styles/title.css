@@ -1,0 +1,361 @@
+/*
+ * Title screen. Portrait: logo, scene, Play, menu and progress in one column, centred in the height.
+ * Landscape: scene left, logo and controls right. Short landscape: logo above the scene, controls right.
+ */
+.title {
+  /*
+   * The columns of the menu, shared with the note under it. Two columns while a tile is wide enough for its longest
+   * word (7.5em scales with the text size, resolved where used), else one.
+   */
+  --title-menu-columns: repeat(auto-fill, minmax(max(7.5em, calc(50% - var(--title-menu-gap) / 2)), 1fr));
+  --title-menu-gap: var(--space-2);
+  /* The gap between Play, the menu, the condition and the progress, in portrait and in the landscape panel alike. */
+  --title-gap: var(--space-3);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: safe center;
+  gap: var(--title-gap);
+  width: 100%;
+  max-width: 32rem;
+  min-height: 100%;
+  margin: 0 auto;
+  padding: max(var(--space-4), env(safe-area-inset-top)) var(--window-side) max(var(--space-4), env(safe-area-inset-bottom));
+}
+
+.title-panel {
+  display: contents;
+}
+
+.title-scene {
+  flex: none;
+  align-self: center;
+  width: min(100%, 52dvh);
+  margin: 0;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border: var(--border) solid var(--color-ink);
+  border-radius: var(--radius-md);
+  background: var(--scene-navy);
+}
+
+.title-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  stroke: none;
+}
+
+.title-play {
+  width: 100%;
+  min-height: var(--primary-height);
+  font-size: var(--text-question);
+}
+
+/* Equal rows, so a label that wraps to two lines makes every tile as tall as its own. */
+.title-menu {
+  display: grid;
+  grid-template-columns: var(--title-menu-columns);
+  grid-auto-rows: 1fr;
+  gap: var(--title-menu-gap);
+}
+
+.title-menu .secondary {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+}
+
+/* Locked until the first city: drawn as unavailable (dashed edge, soft name, no fill) in its own place in the grid. */
+.title-daily[data-locked] {
+  border-style: dashed;
+  border-color: var(--color-ink-soft);
+  background: transparent;
+  color: var(--color-ink-soft);
+}
+
+/*
+ * The condition stands right under the locked daily tile: the note repeats the columns of the menu and the condition
+ * takes the last one, which is the tile's column in two columns and the whole width in one.
+ */
+.title-daily-note {
+  display: grid;
+  grid-template-columns: var(--title-menu-columns);
+  column-gap: var(--title-menu-gap);
+  margin-top: calc(var(--space-1) - var(--title-gap));
+}
+
+.title-daily-condition {
+  grid-column: -2 / -1;
+  margin: 0;
+  color: var(--color-ink-soft);
+  font-size: var(--text-small);
+  line-height: var(--leading-tight);
+  text-align: center;
+  text-wrap: balance;
+}
+
+.title-progress {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-1) var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+/* A short portrait screen (320 × 568) keeps the progress under the two-line condition in view with tighter rows. */
+@media (orientation: portrait) and (max-height: 37.5rem) {
+  .title {
+    --title-gap: var(--space-2);
+  }
+}
+
+/*
+ * Landscape: the scene fills the left column and the rest of the width; logo and controls sit centred on the right.
+ * The outer rows take the spare height, the panel row shrinks first and then scrolls on its own.
+ */
+@media (orientation: landscape) {
+  .title {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    grid-template-rows: 1fr auto minmax(0, auto) 1fr;
+    grid-template-areas:
+      'scene .'
+      'scene logo'
+      'scene panel'
+      'scene .';
+    column-gap: var(--space-6);
+    row-gap: 0;
+    max-width: var(--play-max-width);
+    height: 100%;
+    min-height: 0;
+    padding-block: max(var(--space-2), env(safe-area-inset-top)) max(var(--space-2), env(safe-area-inset-bottom));
+  }
+
+  .title .logo {
+    grid-area: logo;
+    margin-bottom: var(--space-3);
+  }
+
+  .title-scene {
+    grid-area: scene;
+    width: 100%;
+    max-height: 100%;
+  }
+
+  .title-panel {
+    display: flex;
+    grid-area: panel;
+    flex-direction: column;
+    justify-content: safe center;
+    gap: var(--title-gap);
+    width: 100%;
+    min-height: 0;
+    max-height: 100%;
+    padding: var(--space-2);
+    overflow-y: auto;
+  }
+}
+
+@media (orientation: landscape) and (min-width: 64rem) {
+  .title {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 30rem);
+  }
+}
+
+/*
+ * Short landscape (phones, small portal frames): the logo moves above the scene, so the right column holds only
+ * Play, the menu and the progress and shows them whole. The scene row gives way first when height runs out.
+ */
+@media (orientation: landscape) and (max-height: 30rem) {
+  .title {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    grid-template-rows: 1fr auto minmax(0, auto) 1fr;
+    grid-template-areas:
+      '. panel'
+      'logo panel'
+      'scene panel'
+      '. panel';
+    column-gap: var(--space-4);
+  }
+
+  .title .logo {
+    margin-bottom: var(--space-2);
+    font-size: var(--text-title);
+  }
+
+  .title {
+    --title-gap: var(--space-2);
+  }
+
+  /* Labels wrap to two lines in the narrow column here; tighter tiles keep the panel whole with the storage notice. */
+  .title-menu .secondary {
+    padding-block: var(--space-1);
+  }
+
+  /*
+   * The progress keeps to one line, as the panel has no height for a second one with the storage notice; the small
+   * size leaves room for a wider system font (DejaVu Sans on Linux).
+   */
+  .title-progress {
+    column-gap: var(--space-3);
+    font-size: var(--text-small);
+  }
+}
+
+/* Scene colours from the illustration palette. */
+.title-sky {
+  fill: url('#title-sky');
+}
+
+.title-sky-top {
+  stop-color: var(--scene-violet);
+}
+
+.title-sky-middle {
+  stop-color: var(--scene-dusk);
+}
+
+.title-sky-bottom {
+  stop-color: var(--scene-reflection);
+}
+
+.title-sun {
+  fill: var(--scene-light);
+  opacity: 0.8;
+}
+
+.title-far {
+  fill: var(--scene-violet);
+}
+
+.title-tower {
+  fill: var(--scene-navy);
+}
+
+.title-tower-line {
+  fill: none;
+  stroke: var(--scene-navy);
+  stroke-width: 10;
+}
+
+.title-trees {
+  fill: var(--scene-leaf);
+}
+
+.title-quay {
+  fill: var(--scene-stone);
+}
+
+.title-quay-edge {
+  stroke: var(--scene-ochre);
+  stroke-width: 8;
+}
+
+.title-water {
+  fill: var(--scene-water);
+}
+
+.title-tower-reflection {
+  fill: var(--scene-navy);
+  opacity: 0.35;
+}
+
+.title-shimmer {
+  fill: none;
+  stroke: var(--scene-reflection);
+  stroke-width: 9;
+}
+
+.title-boat-hull {
+  fill: var(--scene-cream);
+  stroke: var(--scene-navy);
+  stroke-width: 5;
+}
+
+.title-boat-cabin {
+  fill: var(--scene-light);
+  stroke: var(--scene-navy);
+  stroke-width: 5;
+}
+
+.title-boat-windows {
+  stroke: var(--scene-navy);
+  stroke-width: 10;
+}
+
+.title-boat-wake {
+  stroke: var(--scene-light);
+  stroke-width: 6;
+}
+
+/* One 8 s loop: the boat leaves over the right edge and returns from the left, the reflections shimmer four times. */
+.title-boat,
+.title-boat-bob,
+.title-shimmer {
+  transform-box: view-box;
+}
+
+.title-boat {
+  animation: title-boat var(--duration-title-loop) linear infinite;
+}
+
+.title-boat-bob {
+  animation: title-bob calc(var(--duration-title-loop) / 4) var(--ease-in-out) infinite;
+}
+
+.title-shimmer {
+  animation: title-shimmer calc(var(--duration-title-loop) / 4) var(--ease-in-out) infinite;
+}
+
+.title-shimmer-late {
+  animation-delay: calc(var(--duration-title-loop) / -8);
+}
+
+@keyframes title-boat {
+  from {
+    transform: translateX(-40%);
+  }
+
+  to {
+    transform: translateX(80%);
+  }
+}
+
+@keyframes title-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(0.6%);
+  }
+}
+
+@keyframes title-shimmer {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: translateX(0);
+  }
+
+  50% {
+    opacity: 0.75;
+    transform: translateX(1.5%);
+  }
+}
+
+/* Reduced motion: the scene stands still in its drawn position. */
+@media (prefers-reduced-motion: reduce) {
+  .title-scene * {
+    animation: none;
+  }
+}
+
+:root[data-reduced-motion='true'] .title-scene * {
+  animation: none;
+}

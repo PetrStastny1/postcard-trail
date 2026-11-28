@@ -1,0 +1,616 @@
+{
+  "id": "helsinki",
+  "name": {
+    "en": "Helsinki",
+    "cs": "Helsinky"
+  },
+  "coordinates": {
+    "lat": 60.1708,
+    "lon": 24.9375
+  },
+  "postcardQuestionId": "HEL01",
+  "stops": [
+    {
+      "id": "HEL01",
+      "place": {
+        "en": "At the foot of the steps from Senate Square",
+        "cs": "Na spodku schodiště Senátního náměstí"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/HEL01.webp",
+      "sceneAlt": {
+        "en": "White walls above a long staircase beneath green domes",
+        "cs": "Světlé stěny nad dlouhým schodištěm a zelené kupole"
+      },
+      "question": {
+        "en": "Which Helsinki landmark has white walls and green domes above this broad flight of steps?",
+        "cs": "Která helsinská stavba stojí nad širokým schodištěm jako bílá dominanta se zelenými kupolemi?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Helsinki Cathedral",
+            "cs": "Helsinská katedrála"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Uspenski Cathedral",
+            "cs": "Uspenská katedrála"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Temppeliaukio Church",
+            "cs": "Chrám Temppeliaukio"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Parliament House",
+            "cs": "Budova parlamentu"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "At the foot of the steps from Senate Square, you can see white walls above a long staircase beneath green domes.",
+        "cs": "Na spodku schodiště Senátního náměstí je dobře vidět světlé stěny nad dlouhým schodištěm a zelené kupole."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Helsinki_Cathedral"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Kirkko3.png"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "HEL02",
+      "place": {
+        "en": "Looking across the square from the side",
+        "cs": "Při bočním pohledu na náměstí"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/HEL02.webp",
+      "sceneAlt": {
+        "en": "A paved square with a central monument below broad stairs to a white church",
+        "cs": "Dlážděná plocha s ústředním pomníkem pod širokými schody k bílému chrámu"
+      },
+      "question": {
+        "en": "Which Helsinki square has a white church above steps and a monument in the centre of a large paved space?",
+        "cs": "Které helsinské náměstí poznáš podle bílého chrámu nad schody a památníku uprostřed velké dlážděné plochy?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Senate Square",
+            "cs": "Senátní náměstí"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Market Square",
+            "cs": "Tržní náměstí Kauppatori"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Railway Square",
+            "cs": "Nádražní náměstí Rautatientori"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Kansalaistori",
+            "cs": "Kansalaistori"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Looking across the square from the side, you can see a tiered monument with smaller figures around the pedestal.",
+        "cs": "Při bočním pohledu na náměstí je dobře vidět výškově odstupňovaný pomník s dalšími postavami kolem podstavce."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Helsinki_Senate_Square"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Helsinki_Senate_Square,_2019_(01).jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "HEL03",
+      "place": {
+        "en": "On the waterfront by Market Square",
+        "cs": "Na nábřeží u Kauppatori"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/HEL03.webp",
+      "sceneAlt": {
+        "en": "Harbour water with a ferry and small islands beyond a city quay",
+        "cs": "Přístavní voda s přívozem a malými ostrovy za městským molem"
+      },
+      "question": {
+        "en": "Which sea does Helsinki’s harbour open onto?",
+        "cs": "Ke kterému moři se otevírá přístav před Helsinkami?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Baltic Sea",
+            "cs": "Baltské moře"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "North Sea",
+            "cs": "Severní moře"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Norwegian Sea",
+            "cs": "Norské moře"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Mediterranean Sea",
+            "cs": "Středozemní moře"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "From Helsinki’s harbour, the Gulf of Finland opens into the Baltic Sea.",
+        "cs": "Z helsinského přístavu se Finský záliv otevírá k Baltskému moři."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Gulf_of_Finland"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Ryss%C3%A4nsaari_Island_in_front_of_Helsinki.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "HEL04",
+      "place": {
+        "en": "Above the harbour by the approach to Katajanokka",
+        "cs": "Nad přístavem u nástupu na Katajanokku"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/HEL04.webp",
+      "sceneAlt": {
+        "en": "A paved space beside the sea, lined with stalls and ferry quays",
+        "cs": "Dlážděné náměstí s tržními stánky a moly hned u moře"
+      },
+      "question": {
+        "en": "Which Helsinki square is in front of you?",
+        "cs": "Které helsinské náměstí máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Senaatintori",
+            "cs": "Senaatintori"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Kauppatori",
+            "cs": "Kauppatori"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Rautatientori",
+            "cs": "Rautatientori"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Kansalaistori",
+            "cs": "Kansalaistori"
+          }
+        }
+      ],
+      "correctChoiceId": "b",
+      "feedback": {
+        "en": "At Kauppatori, the market stalls run right up to the harbour quays.",
+        "cs": "Na Kauppatori končí řady stánků přímo u přístavních mol."
+      },
+      "sourceUrls": [
+        "https://www.myhelsinki.fi/places/market-square/"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Market_Square_in_Helsinki,_Finland,_2024_May.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "HEL05",
+      "place": {
+        "en": "At the edge of the market by the park",
+        "cs": "Na okraji tržiště před parkem"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/HEL05.webp",
+      "sceneAlt": {
+        "en": "A standing figure in the middle with bronze sea lions around the rim",
+        "cs": "Postava uprostřed kruhu, po okraji bronzoví lachtani"
+      },
+      "question": {
+        "en": "What is the name of this fountain?",
+        "cs": "Jak se jmenuje tato fontána?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Three Smiths",
+            "cs": "Tři kováři"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Aleksis Kivi statue",
+            "cs": "Socha Aleksise Kiviho"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Sibelius Monument",
+            "cs": "Pomník Sibeliovi"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Havis Amanda",
+            "cs": "Havis Amanda"
+          }
+        }
+      ],
+      "correctChoiceId": "d",
+      "feedback": {
+        "en": "At the edge of the market by the park, you can see a standing figure in the middle with bronze sea lions around the rim.",
+        "cs": "Na okraji tržiště před parkem je dobře vidět postava uprostřed kruhu, po okraji bronzoví lachtani."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Havis_Amanda"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:The_Havis_Amanda_Fountain.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "HEL06",
+      "place": {
+        "en": "On the straight pedestrian axis of the park",
+        "cs": "Na rovné pěší ose parku"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/HEL06.webp",
+      "sceneAlt": {
+        "en": "A straight pedestrian avenue with raised beds and urban façades on either side",
+        "cs": "Rovná pěší alej s vyvýšenými záhony a městskými domy po obou stranách"
+      },
+      "question": {
+        "en": "Which park fills the long strip between the two streets?",
+        "cs": "Který park zabírá podlouhlý pás mezi dvěma ulicemi?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Esplanadi",
+            "cs": "Esplanadi"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Kaivopuisto",
+            "cs": "Kaivopuisto"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Kaisaniemi",
+            "cs": "Kaisaniemi"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Sibelius Park",
+            "cs": "Sibeliův park"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On the straight pedestrian axis of the park, you can see a straight pedestrian avenue with raised beds and urban façades on either side.",
+        "cs": "Na rovné pěší ose parku je dobře vidět rovná pěší alej s vyvýšenými záhony a městskými domy po obou stranách."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Esplanadi"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Esplanadin_puisto_2020.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "HEL07",
+      "place": {
+        "en": "Approaching the railway station",
+        "cs": "Při příchodu k nádraží"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/HEL07.webp",
+      "sceneAlt": {
+        "en": "A granite station entrance between pairs of large figures holding round lamps",
+        "cs": "Granitový nádražní vstup mezi páry mohutných soch s kulovými lampami"
+      },
+      "question": {
+        "en": "Which building is in front of you?",
+        "cs": "Kterou stavbu máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Helsinki City Hall",
+            "cs": "Helsinská radnice"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Helsinki Central Station",
+            "cs": "Hlavní nádraží Helsinky"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Finnish National Theatre",
+            "cs": "Národní divadlo"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Finnish National Gallery",
+            "cs": "Finská národní galerie"
+          }
+        }
+      ],
+      "correctChoiceId": "b",
+      "feedback": {
+        "en": "Approaching the railway station, you can see a granite station entrance between pairs of large figures holding round lamps.",
+        "cs": "Při příchodu k nádraží je dobře vidět granitový nádražní vstup mezi páry mohutných soch s kulovými lampami."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Helsinki_Central_Station"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:HelsinkiStationEntranceAndClockTower.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "HEL08",
+      "place": {
+        "en": "From Rautatientori square",
+        "cs": "Z náměstí Rautatientori"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/HEL08.webp",
+      "sceneAlt": {
+        "en": "A stone building with gables and corner turrets, with a poet’s statue in the square",
+        "cs": "Kamenná budova se štíty, rohovými věžičkami a sochou básníka na prostranství"
+      },
+      "question": {
+        "en": "Which building is in front of you?",
+        "cs": "Kterou stavbu máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Swedish Theatre",
+            "cs": "Divadlo Svenska Teatern"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Finnish National Opera",
+            "cs": "Národní opera"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Finnish National Theatre",
+            "cs": "Finské národní divadlo"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "National Museum of Finland",
+            "cs": "Národní muzeum"
+          }
+        }
+      ],
+      "correctChoiceId": "c",
+      "feedback": {
+        "en": "From Rautatientori square, you can see a stone building with gables and corner turrets, with a poet’s statue in the square.",
+        "cs": "Z náměstí Rautatientori je dobře vidět kamenná budova se štíty, rohovými věžičkami a sochou básníka na prostranství."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Finnish_National_Theatre"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Teatro_Nacional_de_Finlandia,_Helsinki,_Finlandia,_2012-08-14,_DD_02.JPG"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "HEL09",
+      "place": {
+        "en": "On Kansalaistori",
+        "cs": "Na Kansalaistoru"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/HEL09.webp",
+      "sceneAlt": {
+        "en": "A sweeping timber overhang above a glazed ground floor",
+        "cs": "Zvlněný vysunutý pás ze dřeva nad proskleným přízemím"
+      },
+      "question": {
+        "en": "Which Helsinki library has a sweeping timber overhang above a long glass ground floor on Kansalaistori?",
+        "cs": "Která knihovna v Helsinkách má zvlněný dřevěný převis nad dlouhým skleněným přízemím na Kansalaistoru?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Oodi Library",
+            "cs": "Knihovna Oodi"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Rikhardinkatu Library",
+            "cs": "Knihovna Rikhardinkatu"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "National Library",
+            "cs": "Národní knihovna"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Kaisa House Library",
+            "cs": "Knihovna Kaisa"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On Kansalaistori, you can see a sweeping timber overhang above a glazed ground floor.",
+        "cs": "Na Kansalaistoru je dobře vidět zvlněný vysunutý pás ze dřeva nad proskleným přízemím."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Helsinki_Central_Library_Oodi"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Oodi_Library_(Helsinki,_Finland).jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Široký zvlněný přesah ze dřeva nad sklem přes celé přízemí na velkém náměstí. Ostatní knihovny mají pravidelná kamenná či cihelná průčelí nebo tvarovaný oblouk ve stěně."
+    },
+    {
+      "id": "HEL10",
+      "place": {
+        "en": "On the path by Töölönlahti bay",
+        "cs": "Na chodníku u zátoky Töölönlahti"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/HEL10.webp",
+      "sceneAlt": {
+        "en": "Low white marble volumes and a taller auditorium wing towards the bay",
+        "cs": "Nízké bílé mramorové bloky a výrazná vyšší část sálu obrácená k zálivu"
+      },
+      "question": {
+        "en": "Which hall on Töölönlahti bay has these white marble wings and a higher white auditorium block?",
+        "cs": "Který koncertní a kongresový dům u zátoky Töölönlahti poznáš podle světlého mramoru a vysokého bílého hranolu sálu?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Finlandia Hall",
+            "cs": "Finlandia Hall"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Helsinki Music Centre",
+            "cs": "Helsinki Music Centre"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Finnish National Opera",
+            "cs": "Národní opera"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Parliament House",
+            "cs": "Budova parlamentu"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On the path by Töölönlahti bay, you can see low white marble volumes and a taller auditorium wing towards the bay.",
+        "cs": "Na chodníku u zátoky Töölönlahti je dobře vidět nízké bílé mramorové bloky a výrazná vyšší část sálu obrácená k zálivu."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Finlandia_Hall"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Finlandia_Hall-7141.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Několik nízkých bílých mramorových objemů a vyšší hranol sálu přímo nad zátokou. Hudební centrum je nízké prosklené, opera má protažené bílé průčelí a Parlament sloupový portikus bez této polohy."
+    }
+  ]
+}

@@ -1,0 +1,616 @@
+{
+  "id": "reykjavik",
+  "name": {
+    "en": "Reykjavík",
+    "cs": "Reykjavík"
+  },
+  "coordinates": {
+    "lat": 64.1475,
+    "lon": -21.935
+  },
+  "postcardQuestionId": "REY01",
+  "stops": [
+    {
+      "id": "REY01",
+      "place": {
+        "en": "On the forecourt of Hallgrímskirkja",
+        "cs": "Na prostranství před Hallgrímskirkjou"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/REY01.webp",
+      "sceneAlt": {
+        "en": "Stepped ranks resembling basalt columns on either side of a narrow tower",
+        "cs": "Stupňovité pruhy připomínající čedičové sloupce po obou stranách štíhlé věže"
+      },
+      "question": {
+        "en": "What is the church in the image called?",
+        "cs": "Jak se jmenuje kostel na obrázku?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Hallgrímskirkja",
+            "cs": "Hallgrímskirkja"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Reykjavík Cathedral",
+            "cs": "Reykjavícká katedrála"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Landakotskirkja",
+            "cs": "Landakotskirkja"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Fríkirkjan",
+            "cs": "Fríkirkjan"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On the forecourt of Hallgrímskirkja, you can see stepped ranks resembling basalt columns on either side of a narrow tower.",
+        "cs": "Na prostranství před Hallgrímskirkjou je dobře vidět stupňovité pruhy připomínající čedičové sloupce po obou stranách štíhlé věže."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Hallgr%C3%ADmskirkja"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Hallgrimskirkja_mai_2026.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "REY02",
+      "place": {
+        "en": "By the monument outside Hallgrímskirkja",
+        "cs": "U pomníku před Hallgrímskirkjou"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/REY02.webp",
+      "sceneAlt": {
+        "en": "A standing bronze figure in a long cloak with a hand by the sword hilt, set against a stepped church front",
+        "cs": "Stojící bronzová postava v dlouhém plášti s rukou u jílce a stupňovité kostelní čelo za ní"
+      },
+      "question": {
+        "en": "Who does this Reykjavík statue depict?",
+        "cs": "Koho představuje tato reykjavická socha?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Ingólfur Arnarson",
+            "cs": "Ingólfur Arnarson"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Jón Sigurðsson",
+            "cs": "Jón Sigurðsson"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Leif Erikson",
+            "cs": "Leif Eriksson"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Snorri Sturluson",
+            "cs": "Snorri Sturluson"
+          }
+        }
+      ],
+      "correctChoiceId": "c",
+      "feedback": {
+        "en": "A statue of the explorer Leif Erikson stands on a tall plinth outside Hallgrímskirkja.",
+        "cs": "Před Hallgrímskirkjou stojí na podstavci socha mořeplavce Leifa Erikssona."
+      },
+      "sourceUrls": [
+        "https://www.hallgrimskirkja.is/en-gb/new-page"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Reykjavik-32-Hallgrimskirche-Leifur_Eiriksson-2018-gje.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "REY03",
+      "place": {
+        "en": "By the glass building at the harbour",
+        "cs": "U skleněné budovy u přístavu"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/REY03.webp",
+      "sceneAlt": {
+        "en": "A broad wall of projecting polygonal glass modules beside the sea",
+        "cs": "Rozsáhlá stěna z vystupujících skleněných mnohoúhelníků přímo u vody"
+      },
+      "question": {
+        "en": "Which Reykjavík landmark has a waterfront skin of three-dimensional glass polygons?",
+        "cs": "Kterou stavbu v Reykjavíku poznáš podle skleněného pláště z prostorových mnohoúhelníků u moře?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Harpa",
+            "cs": "Harpa"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Perlan",
+            "cs": "Perlan"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "National Museum of Iceland",
+            "cs": "Islandské národní muzeum"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Nordic House",
+            "cs": "Severský dům"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Harpa concert hall stands on the northern quay with its geometric glass skin.",
+        "cs": "Na severním nábřeží stojí koncertní síň Harpa se skleněným pláštěm z prostorových buněk."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Harpa_(concert_hall)"
+      ],
+      "photoReferenceUrls": [
+        "https://www.harpa.is/en/welcome"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "REY04",
+      "place": {
+        "en": "On the bank by city hall",
+        "cs": "Na břehu u městské radnice"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/REY04.webp",
+      "sceneAlt": {
+        "en": "Still water with green banks, waterfowl and city hall right at the edge",
+        "cs": "Klidná plocha se zelenými břehy, vodními ptáky a budovou radnice přímo u hladiny"
+      },
+      "question": {
+        "en": "What is the Reykjavík lake with city hall right on its bank called?",
+        "cs": "Jak se jmenuje reykjavické jezero s radnicí přímo na břehu?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Tjörnin",
+            "cs": "Tjörnin"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Mývatn",
+            "cs": "Mývatn"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Þingvallavatn",
+            "cs": "Þingvallavatn"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Jökulsárlón",
+            "cs": "Jökulsárlón"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On the bank by city hall, you can see still water with green banks, waterfowl and city hall right at the edge.",
+        "cs": "Na břehu u městské radnice je dobře vidět klidná plocha se zelenými břehy, vodními ptáky a budovou radnice přímo u hladiny."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Tj%C3%B6rnin"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Tjörnin,_Reykjavik.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "REY05",
+      "place": {
+        "en": "From the north shore of Tjörnin",
+        "cs": "Ze severního břehu Tjörnin"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/REY05.webp",
+      "sceneAlt": {
+        "en": "Low horizontal volumes meeting the water with a narrow pedestrian entrance",
+        "cs": "Nízké vodorovné stavby zasahující k hladině s úzkým lávkovým přístupem"
+      },
+      "question": {
+        "en": "Which building is in front of you?",
+        "cs": "Kterou stavbu máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Reykjavík City Hall",
+            "cs": "Reykjavícká radnice"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Parliament of Iceland",
+            "cs": "Islandský parlament"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Höfði",
+            "cs": "Höfði"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Nordic House",
+            "cs": "Severský dům"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "From the north shore of Tjörnin, you can see low horizontal volumes meeting the water with a narrow pedestrian entrance.",
+        "cs": "Ze severního břehu Tjörnin je dobře vidět nízké vodorovné stavby zasahující k hladině s úzkým lávkovým přístupem."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Reykjav%C3%ADk_City_Hall"
+      ],
+      "photoReferenceUrls": [
+        "https://visitreykjavik.is/city-hall"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "REY06",
+      "place": {
+        "en": "On Austurvöllur square",
+        "cs": "Na náměstí Austurvöllur"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/REY06.webp",
+      "sceneAlt": {
+        "en": "A dark stone building with rows of windows and a shallow central projection by the lawn",
+        "cs": "Tmavší kamenná budova s pravidelnými okny a nízkým středovým výstupkem vedle trávníku"
+      },
+      "question": {
+        "en": "Which building is in front of you?",
+        "cs": "Kterou stavbu máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Reykjavík City Hall",
+            "cs": "Reykjavícká radnice"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Alþingishúsið",
+            "cs": "Alþingishúsið"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Höfði",
+            "cs": "Höfði"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "National Theatre",
+            "cs": "Národní divadlo"
+          }
+        }
+      ],
+      "correctChoiceId": "b",
+      "feedback": {
+        "en": "On Austurvöllur square, you can see a dark stone building with rows of windows and a shallow central projection by the lawn.",
+        "cs": "Na náměstí Austurvöllur je dobře vidět tmavší kamenná budova s pravidelnými okny a nízkým středovým výstupkem vedle trávníku."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Al%C3%BEingish%C3%BAsi%C3%B0"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Alþingishúsið.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "REY07",
+      "place": {
+        "en": "Beside Parliament on Austurvöllur",
+        "cs": "Vedle parlamentu na Austurvölluru"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/REY07.webp",
+      "sceneAlt": {
+        "en": "A square with a lawn, bordered by a dark stone building and a low pale church",
+        "cs": "Travnaté prostranství, vedle sebe tmavý kamenný dům a nízký světlý kostel"
+      },
+      "question": {
+        "en": "Which Reykjavík square has the dark parliament house next to a low white cathedral?",
+        "cs": "Které reykjavické náměstí poznáš podle tmavého domu parlamentu a nízké bílé katedrály vedle něj?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Austurvöllur",
+            "cs": "Austurvöllur"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Ingólfstorg",
+            "cs": "Ingólfstorg"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Lækjartorg",
+            "cs": "Lækjartorg"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Hlemmur",
+            "cs": "Hlemmur"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Parliament and the cathedral sit side by side on Austurvöllur.",
+        "cs": "Na Austurvölluru stojí parlament a katedrála vedle sebe."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Austurv%C3%B6llur"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Austurv%C3%B6llur_2023.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "REY08",
+      "place": {
+        "en": "At the harbour basin by Geirsgata",
+        "cs": "U přístavního bazénu poblíž Geirsgaty"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/REY08.webp",
+      "sceneAlt": {
+        "en": "A long fishing quay, low buildings and a protective breakwater",
+        "cs": "Dlouhé molo s rybářskými loděmi, přízemní stavby a ochranný násep"
+      },
+      "question": {
+        "en": "Which Reykjavík waterfront area has a sheltered basin with fishing boats and low buildings along the quay?",
+        "cs": "Kterou část reykjavického pobřeží poznáš podle sevřeného bazénu s rybářskými loděmi a nízkými domečky u mola?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Old Harbour",
+            "cs": "Starý přístav"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Skarfabakki",
+            "cs": "Skarfabakki"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Viðey",
+            "cs": "Viðey"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Nauthólsvík",
+            "cs": "Nauthólsvík"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "The Old Harbour has boats tied beside the low buildings along its quay.",
+        "cs": "Ve Starém přístavu kotví lodě u nízkých domků podél mola."
+      },
+      "sourceUrls": [
+        "https://visitreykjavik.is/old-harbour"
+      ],
+      "photoReferenceUrls": [
+        "https://visitreykjavik.is/old-harbour"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "REY09",
+      "place": {
+        "en": "On the waterfront at Sæbraut",
+        "cs": "Na pobřeží u Sæbrautu"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/REY09.webp",
+      "sceneAlt": {
+        "en": "A freestanding white timber house with dark steep gables and water beyond its lawn",
+        "cs": "Samostatný bílý dřevěný dům, tmavá střecha se strmými štíty a voda za trávníkem"
+      },
+      "question": {
+        "en": "Which Reykjavík waterfront house has white timber walls and several steep gables under a dark roof?",
+        "cs": "Který reykjavický dům u pobřeží má bílé dřevěné průčelí a skupinu strmých štítů pod tmavou střechou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Höfði",
+            "cs": "Höfði"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Bessastaðir",
+            "cs": "Bessastaðir"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Alþingishúsið",
+            "cs": "Alþingishúsið"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Nordic House",
+            "cs": "Severský dům"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Höfði stands on its own lawn beside the coastal road Sæbraut.",
+        "cs": "Höfði stojí samostatně na trávníku u pobřežní ulice Sæbraut."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/H%C3%B6f%C3%B0i"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:H%C3%B6f%C3%B0i.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Bílý osamocený dřevěný dům s příčnými tmavými štíty a trávníkem u zálivu. Parlament je z tmavého kamene, Severský dům má jiné členění a Bessastaðir má širší vícebudovový areál."
+    },
+    {
+      "id": "REY10",
+      "place": {
+        "en": "Looking across the water from Sæbraut",
+        "cs": "Při pohledu přes moře ze Sæbraut"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/REY10.webp",
+      "sceneAlt": {
+        "en": "A broad mountain ridge with several peaks on the far shore",
+        "cs": "Široký členitý horský hřeben na protějším břehu"
+      },
+      "question": {
+        "en": "Which long mountain massif stands opposite Reykjavík across the waters of Faxaflói?",
+        "cs": "Který dlouhý horský masiv stojí naproti Reykjavíku za otevřenou vodou Faxaflói?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Esja",
+            "cs": "Esja"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Hekla",
+            "cs": "Hekla"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Kirkjufell",
+            "cs": "Kirkjufell"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Snæfellsjökull",
+            "cs": "Snæfellsjökull"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Looking across the water from Sæbraut, you can see the broad multi-ridged Esja massif across the bay.",
+        "cs": "Při pohledu přes moře ze Sæbraut je dobře vidět široký členěný horský masiv Esja přes záliv."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Esja"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Esja_(2571116699).jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Dlouhý rozložitý hřbet přímo přes záliv od městského pobřeží. Kirkjufell je izolovaný kužel, Hekla a Snæfellsjökull mají jiné vulkanické siluety a neleží naproti městu."
+    }
+  ]
+}

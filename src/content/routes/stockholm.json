@@ -1,0 +1,616 @@
+{
+  "id": "stockholm",
+  "name": {
+    "en": "Stockholm",
+    "cs": "Stockholm"
+  },
+  "coordinates": {
+    "lat": 59.3294,
+    "lon": 18.0686
+  },
+  "postcardQuestionId": "STO10",
+  "stops": [
+    {
+      "id": "STO01",
+      "place": {
+        "en": "At the edge of the sunken square by the broad steps",
+        "cs": "Na okraji sníženého náměstí u širokých schodů"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/STO01.webp",
+      "sceneAlt": {
+        "en": "Black-and-white triangles across a sunken square, with broad steps and glass-fronted floors beside them",
+        "cs": "Černobílé trojúhelníky na sníženém náměstí s širokými schody a prosklenými patry po straně"
+      },
+      "question": {
+        "en": "Which Stockholm square is in view?",
+        "cs": "Které stockholmské náměstí vidíš?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Stortorget",
+            "cs": "Stortorget"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Nytorget",
+            "cs": "Nytorget"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Gustav Adolfs torg",
+            "cs": "Gustav Adolfs torg"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Sergels torg",
+            "cs": "Sergels torg"
+          }
+        }
+      ],
+      "correctChoiceId": "d",
+      "feedback": {
+        "en": "At Sergels torg, the black-and-white paving extends to the broad steps up to street level.",
+        "cs": "Na Sergels torg leží černobílá pěší plocha před širokými schody k úrovni ulice."
+      },
+      "sourceUrls": [
+        "https://www.visitstockholm.com/see-do/attractions/find-the-highlights-of-sergelstaden/"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Sergels_torg_-_20250830_-_02.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "STO02",
+      "place": {
+        "en": "On Gustav Adolfs torg",
+        "cs": "Na Gustav Adolfs torg"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/STO02.webp",
+      "sceneAlt": {
+        "en": "A broad pale façade with columns above the entrance and an equestrian statue in front",
+        "cs": "Dlouhé světlé průčelí se sloupy nad vstupem a jezdeckou sochou v popředí"
+      },
+      "question": {
+        "en": "Which Stockholm arts venue has these tall columns above the doors by the equestrian statue?",
+        "cs": "Kterou stockholmskou kulturní stavbu poznáš podle vysokých sloupů nad vchody u jezdecké sochy?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Royal Swedish Opera",
+            "cs": "Královská opera"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Royal Dramatic Theatre",
+            "cs": "Královské dramatické divadlo"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Stockholm Concert Hall",
+            "cs": "Koncertní dům"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Nationalmuseum",
+            "cs": "Národní muzeum"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On Gustav Adolfs torg, you are outside the Royal Swedish Opera.",
+        "cs": "Na Gustav Adolfs torg stojíš před Královskou operou."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Royal_Swedish_Opera"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Kungliga_operan,_20230423.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "STO03",
+      "place": {
+        "en": "From Norrbro",
+        "cs": "Z mostu Norrbro"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/STO03.webp",
+      "sceneAlt": {
+        "en": "A bridge and water channel leading towards old houses and a massive palace",
+        "cs": "Most a průliv před hustou starou zástavbou a masivním palácem"
+      },
+      "question": {
+        "en": "What is the historic district across the bridge called?",
+        "cs": "Jak se jmenuje historická část města za mostem?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Gamla stan",
+            "cs": "Gamla stan"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Djurgården",
+            "cs": "Djurgården"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Östermalm",
+            "cs": "Östermalm"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Södermalm",
+            "cs": "Södermalm"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Norrbro leads you towards Gamla stan, the old centre of Stockholm.",
+        "cs": "Z Norrbro přecházíš směrem ke Gamla stan, historickému centru Stockholmu."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Gamla_stan"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Norrbro_Stockholm_July_2006.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "STO04",
+      "place": {
+        "en": "By the stone ramp beyond Norrbro",
+        "cs": "U kamenné rampy na konci Norrbro"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/STO04.webp",
+      "sceneAlt": {
+        "en": "A long pale stone front with regular rows of windows and a stone ramp by the waterfront crossing",
+        "cs": "Dlouhé světlé kamenné průčelí, pravidelné řady oken a kamenná rampa u přechodu z nábřeží"
+      },
+      "question": {
+        "en": "Which Stockholm landmark can you see?",
+        "cs": "Kterou stockholmskou stavbu vidíš?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Royal Palace",
+            "cs": "Královský palác"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Stockholm City Hall",
+            "cs": "Stockholmská radnice"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Nationalmuseum",
+            "cs": "Národní muzeum"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Swedish Parliament House",
+            "cs": "Budova švédského parlamentu"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "At the end of Norrbro, the Royal Palace rises by the entrance to Gamla stan.",
+        "cs": "Na konci mostu Norrbro se u vstupu do Gamla stan zvedá Královský palác."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Stockholm_Palace"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Stockholms_slott_norra_fasaden_2011.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "STO05",
+      "place": {
+        "en": "Below the palace on the way down to the quay",
+        "cs": "Pod palácem při sestupu k molu"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/STO05.webp",
+      "sceneAlt": {
+        "en": "A row of old houses below a massive palace, with boats tied along a long straight quay",
+        "cs": "Řada starých domů pod masivním palácem a lodě u dlouhého rovného mola"
+      },
+      "question": {
+        "en": "Which Stockholm waterfront can you see?",
+        "cs": "Které stockholmské nábřeží vidíš?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Skeppsbron",
+            "cs": "Skeppsbron"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Strandvägen",
+            "cs": "Strandvägen"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Söder Mälarstrand",
+            "cs": "Söder Mälarstrand"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Norr Mälarstrand",
+            "cs": "Norr Mälarstrand"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Boats are moored at Skeppsbron below the Royal Palace.",
+        "cs": "Pod Královským palácem se lodě vážou u mola na Skeppsbron."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Skeppsbron"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/Category:Skeppsbron"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "STO06",
+      "place": {
+        "en": "By the painted gables in Gamla stan",
+        "cs": "U trojice malovaných štítů v Gamla stan"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/STO06.webp",
+      "sceneAlt": {
+        "en": "Narrow red and yellow gables behind a low well on the old square",
+        "cs": "Červené a žluté úzké štíty za nízkou studnou uprostřed historického náměstí"
+      },
+      "question": {
+        "en": "Which square can you see?",
+        "cs": "Které náměstí vidíš?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Sergels torg",
+            "cs": "Sergels torg"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Nytorget",
+            "cs": "Nytorget"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Mariatorget",
+            "cs": "Mariatorget"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Stortorget",
+            "cs": "Stortorget"
+          }
+        }
+      ],
+      "correctChoiceId": "d",
+      "feedback": {
+        "en": "By the painted gables in Gamla stan, you can see narrow red and yellow gables behind a low well on the old square.",
+        "cs": "U trojice malovaných štítů v Gamla stan je dobře vidět červené a žluté úzké štíty za nízkou studnou uprostřed historického náměstí."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Stortorget"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Stortorget_i_Gamla_Stan_i_Stockholm-2.JPG"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "STO07",
+      "place": {
+        "en": "At the foot of the lane off Västerlånggatan",
+        "cs": "U úpatí ulice ze směru Västerlånggatan"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/STO07.webp",
+      "sceneAlt": {
+        "en": "A narrow paved lane rises between old buildings towards a slim dark spire",
+        "cs": "Úzká dlážděná ulice stoupá mezi starými domy ke štíhlé tmavé věži"
+      },
+      "question": {
+        "en": "Which old Stockholm pedestrian street gives this narrow uphill view to the German Church’s dark spire?",
+        "cs": "Kterou pěší ulici ve starém Stockholmu poznáš podle úzkého svažitého pohledu mezi domy k tmavé špici Německého kostela?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Tyska Brinken",
+            "cs": "Tyska Brinken"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Drottninggatan",
+            "cs": "Drottninggatan"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Västerlånggatan",
+            "cs": "Västerlånggatan"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Strandvägen",
+            "cs": "Strandvägen"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "From Västerlånggatan, Tyska Brinken climbs towards the church at the top.",
+        "cs": "Z Västerlånggatan stoupá Tyska Brinken ke kostelu na vrcholu ulice."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Tyska_Brinken"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Tyska_Brinken_februari_2007.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "STO08",
+      "place": {
+        "en": "From Evert Taubes terrass on Riddarholmen",
+        "cs": "Z Evert Taubes terrass na Riddarholmenu"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/STO08.webp",
+      "sceneAlt": {
+        "en": "A brick hall on the far bank with three crowns topping its tower",
+        "cs": "Cihlová radnice přímo u vody a tři koruny na vrcholu věže na protějším břehu"
+      },
+      "question": {
+        "en": "Which building is in front of you?",
+        "cs": "Kterou stavbu máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Stockholm Palace",
+            "cs": "Stockholmský palác"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Stockholm City Hall",
+            "cs": "Stockholmská radnice"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Swedish Parliament House",
+            "cs": "Švédský parlament"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Nordic Museum",
+            "cs": "Nordické muzeum"
+          }
+        }
+      ],
+      "correctChoiceId": "b",
+      "feedback": {
+        "en": "From Evert Taubes terrass on Riddarholmen, you can see a brick hall on the far bank with three crowns topping its tower.",
+        "cs": "Z Evert Taubes terrass na Riddarholmenu je dobře vidět cihlová radnice přímo u vody a tři koruny na vrcholu věže na protějším břehu."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Stockholm_City_Hall"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Stockholms_stadshus_February_2026_02.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "STO09",
+      "place": {
+        "en": "On the way back past Birger Jarls torg",
+        "cs": "Při návratu kolem náměstí Birger Jarls torg"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/STO09.webp",
+      "sceneAlt": {
+        "en": "An openwork metal spire with sky visible through its lattice",
+        "cs": "Kovová prolamovaná špice, skrze jejíž mříž je vidět obloha"
+      },
+      "question": {
+        "en": "Which Stockholm church has an openwork metal spire and stands on a small island beside Gamla stan?",
+        "cs": "Který stockholmský kostel má prolamovanou kovovou špici a stojí na samostatném ostrůvku u Gamla stan?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Riddarholmen Church",
+            "cs": "Kostel na Riddarholmenu"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "German Church",
+            "cs": "Německý kostel"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Storkyrkan",
+            "cs": "Storkyrkan"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Klara Church",
+            "cs": "Kostel sv. Kláry"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On the way back past Birger Jarls torg, you can see an openwork metal spire with sky visible through its lattice.",
+        "cs": "Při návratu kolem náměstí Birger Jarls torg je dobře vidět kovová prolamovaná špice, skrze jejíž mříž je vidět obloha."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Riddarholmen_Church"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Rhkyrkan_fr_staden.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Prolamovaná kovová špice, kterou prosvítá obloha, a samostatný ostrov. Tři ostatní kostely mají plnější špice a jiné umístění."
+    },
+    {
+      "id": "STO10",
+      "place": {
+        "en": "From the Monteliusvägen overlook",
+        "cs": "Z vyhlídky Monteliusvägen"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/STO10.webp",
+      "sceneAlt": {
+        "en": "A narrow railed path against the rocks, aligned with the city hall tower across the water",
+        "cs": "Úzká pěšina se zábradlím pod skálou a radniční věž za vodou v ose pohledu"
+      },
+      "question": {
+        "en": "Which Stockholm viewpoint follows a narrow path high on the rocky slope opposite City Hall and Gamla stan?",
+        "cs": "Kterou stockholmskou vyhlídku poznáš podle úzké pěšiny po skalním svahu naproti radnici a Gamla stan?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Monteliusvägen",
+            "cs": "Monteliusvägen"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Katarinahissen",
+            "cs": "Katarinahissen"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Fjällgatan",
+            "cs": "Fjällgatan"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Skinnarviksberget",
+            "cs": "Skinnarviksberget"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "From the Monteliusvägen overlook, you can see an elevated view across the lake to separate built-up islands linked by bridges.",
+        "cs": "Z vyhlídky Monteliusvägen je dobře vidět vyvýšený pohled přes jezero na oddělené zastavěné ostrovy s mosty."
+      },
+      "sourceUrls": [
+        "https://www.visitstockholm.com/o/monteliusvagen/"
+      ],
+      "photoReferenceUrls": [
+        "https://www.visitstockholm.com/o/monteliusvagen/"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Úzké zábradlí na skalní pěšině a osa napříč jezerem přímo k radniční věži. Katarinahissen je výtah, Fjällgatan široká ulice a Skinnarviksberget otevřená holá skála."
+    }
+  ]
+}

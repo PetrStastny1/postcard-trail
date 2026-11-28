@@ -1,0 +1,618 @@
+{
+  "id": "paris",
+  "name": {
+    "en": "Paris",
+    "cs": "Paříž"
+  },
+  "coordinates": {
+    "lat": 48.8567,
+    "lon": 2.3522
+  },
+  "postcardQuestionId": "PAR01",
+  "stops": [
+    {
+      "id": "PAR01",
+      "place": {
+        "en": "On the Champ de Mars",
+        "cs": "Na Martově poli"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/PAR01.webp",
+      "sceneAlt": {
+        "en": "An iron lattice tower with four splayed legs",
+        "cs": "Železná příhradová věž se čtyřmi rozkročenými nohami"
+      },
+      "question": {
+        "en": "Which tower is in front of you?",
+        "cs": "Kterou věž máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Leaning Tower of Pisa",
+            "cs": "Pisa"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Eiffel Tower",
+            "cs": "Eiffelova věž"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "CN Tower",
+            "cs": "CN Tower"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Petřín Lookout Tower",
+            "cs": "Petřínská rozhledna"
+          }
+        }
+      ],
+      "correctChoiceId": "b",
+      "feedback": {
+        "en": "From the Champ de Mars, you can see the four lattice legs of the Eiffel Tower.",
+        "cs": "Z Martova pole se díváš na čtyři příhradové nohy Eiffelovy věže."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Eiffel_Tower"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Tour_Eiffel_Wikimedia_Commons_(cropped).jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "PAR02",
+      "place": {
+        "en": "On Pont d’Iéna",
+        "cs": "Na mostě Pont d’Iéna"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/PAR02.webp",
+      "sceneAlt": {
+        "en": "A blue, white and red vertical flag in the foreground by a bridge statue",
+        "cs": "Svislá modro-bílo-červená vlajka v popředí u sochy mostu"
+      },
+      "question": {
+        "en": "Which country does the flag by the bridge represent?",
+        "cs": "Které zemi patří vlajka u mostu?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "France",
+            "cs": "Francie"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Italy",
+            "cs": "Itálie"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Belgium",
+            "cs": "Belgie"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Netherlands",
+            "cs": "Nizozemsko"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On Pont d’Iéna, the tricolour has a white stripe between the blue and red.",
+        "cs": "Na mostě Pont d’Iéna vlaje trikolóra s bílým pruhem mezi modrým a červeným."
+      },
+      "sourceUrls": [
+        "https://www.elysee.fr/en/french-presidency/the-french-flag",
+        "https://en.wikipedia.org/wiki/Flag_of_France"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Flag_of_France.svg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "PAR03",
+      "place": {
+        "en": "From the Trocadéro terrace",
+        "cs": "Z terasy Trocadéra"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/PAR03.webp",
+      "sceneAlt": {
+        "en": "A broad river with a boat between the terrace and the iron tower",
+        "cs": "Široká řeka s lodí mezi terasou a železnou věží"
+      },
+      "question": {
+        "en": "Which river is in front of you?",
+        "cs": "Kterou řeku máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Loire",
+            "cs": "Loira"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Thames",
+            "cs": "Temže"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Rhine",
+            "cs": "Rýn"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Seine",
+            "cs": "Seina"
+          }
+        }
+      ],
+      "correctChoiceId": "d",
+      "feedback": {
+        "en": "From the Trocadéro terrace, the Seine lies between you and the Eiffel Tower.",
+        "cs": "Z terasy Trocadéra máš Seinu mezi sebou a Eiffelovou věží."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Seine"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Seine_by_Eiffel.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "PAR04",
+      "place": {
+        "en": "Outside Les Invalides",
+        "cs": "Před Invalidovnou"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/PAR04.webp",
+      "sceneAlt": {
+        "en": "A gilded dome over a pale façade",
+        "cs": "Zlatá kupole nad světlým průčelím"
+      },
+      "question": {
+        "en": "Which Paris complex has this gilded dome above a broad courtyard?",
+        "cs": "Který pařížský komplex poznáš podle pozlacené kupole nad velkým nádvořím?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Les Invalides",
+            "cs": "Invalidovna"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Panthéon",
+            "cs": "Panthéon"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Sainte-Chapelle",
+            "cs": "Sainte-Chapelle"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Palace of Versailles",
+            "cs": "Palác ve Versailles"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "From the forecourt of Les Invalides, the gilded church dome dominates the view.",
+        "cs": "Ve dvoře před Invalidovnou dominuje výhledu zlatá kupole kostela."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Les_Invalides"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Hôtel_des_Invalides_from_the_Eiffel_Tower,_23_July_2009.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "PAR05",
+      "place": {
+        "en": "On Pont Alexandre III",
+        "cs": "Na mostě Alexandra III."
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/PAR05.webp",
+      "sceneAlt": {
+        "en": "A broad low bridge with gilded winged statues on tall pillars",
+        "cs": "Široký nízký most s pozlacenými okřídlenými sochami na vysokých sloupech"
+      },
+      "question": {
+        "en": "What is the name of the bridge in view?",
+        "cs": "Jak se jmenuje most v záběru?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Pont Neuf",
+            "cs": "Pont Neuf"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Pont Alexandre III",
+            "cs": "Most Alexandra III."
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Pont des Arts",
+            "cs": "Pont des Arts"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Pont d’Alma",
+            "cs": "Pont d’Alma"
+          }
+        }
+      ],
+      "correctChoiceId": "b",
+      "feedback": {
+        "en": "On Pont Alexandre III, you walk between tall pillars crowned by gilded winged figures.",
+        "cs": "Na mostě Alexandra III. procházíš mezi vysokými sloupy s pozlacenými okřídlenými sochami."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Pont_Alexandre_III"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Pont_Alexandre_III_depuis_pont_de_la_Concorde_Paris.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "PAR06",
+      "place": {
+        "en": "In the middle of Place de la Concorde",
+        "cs": "Uprostřed Place de la Concorde"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/PAR06.webp",
+      "sceneAlt": {
+        "en": "A freestanding obelisk between fountains in a broad square",
+        "cs": "Samostatný obelisk mezi fontánami na otevřeném náměstí"
+      },
+      "question": {
+        "en": "Which square can you see?",
+        "cs": "Které náměstí vidíš?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Place Vendôme",
+            "cs": "Place Vendôme"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Place des Vosges",
+            "cs": "Place des Vosges"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Place de la Concorde",
+            "cs": "Place de la Concorde"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Place de la Bastille",
+            "cs": "Place de la Bastille"
+          }
+        }
+      ],
+      "correctChoiceId": "c",
+      "feedback": {
+        "en": "In the middle of Place de la Concorde, you can see a freestanding obelisk between fountains in a broad square.",
+        "cs": "Uprostřed Place de la Concorde je dobře vidět samostatný obelisk mezi fontánami na otevřeném náměstí."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Place_de_la_Concorde"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Place_de_la_Concorde_from_the_Eiffel_Tower,_Paris_April_2011.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "PAR07",
+      "place": {
+        "en": "Among the beds of the Tuileries",
+        "cs": "Mezi záhony Tuilerií"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/PAR07.webp",
+      "sceneAlt": {
+        "en": "A straight avenue, formal beds and an octagonal pool in line",
+        "cs": "Přímá alej, pravidelné záhony a osmiboká vodní nádrž v ose"
+      },
+      "question": {
+        "en": "Which garden are you walking through?",
+        "cs": "Kterou zahradou procházíš?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Luxembourg Garden",
+            "cs": "Lucemburská zahrada"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Parc Monceau",
+            "cs": "Parc Monceau"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Jardin des Plantes",
+            "cs": "Jardin des Plantes"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Tuileries Garden",
+            "cs": "Tuilerijská zahrada"
+          }
+        }
+      ],
+      "correctChoiceId": "d",
+      "feedback": {
+        "en": "Among the beds of the Tuileries, you can see a straight avenue, formal beds and an octagonal pool in line.",
+        "cs": "Mezi záhony Tuilerií je dobře vidět přímá alej, pravidelné záhony a osmiboká vodní nádrž v ose."
+      },
+      "sourceUrls": [
+        "https://musee.louvre.fr/en/explore/the-palace/from-royal-garden-to-public-park",
+        "https://en.wikipedia.org/wiki/Tuileries_Garden"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Grand_Bassin_Octogonal_Jardin_Tuileries_Paris_1.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "PAR08",
+      "place": {
+        "en": "In the Cour Napoléon",
+        "cs": "Na nádvoří Cour Napoléon"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/PAR08.webp",
+      "sceneAlt": {
+        "en": "A large glass pyramid surrounded by palace wings",
+        "cs": "Velká skleněná pyramida obklopená palácovými křídly"
+      },
+      "question": {
+        "en": "Which building is in front of you?",
+        "cs": "Kterou stavbu máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Louvre",
+            "cs": "Louvre"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Musée d’Orsay",
+            "cs": "Musée d’Orsay"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Centre Pompidou",
+            "cs": "Centre Pompidou"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Petit Palais",
+            "cs": "Petit Palais"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "In the Cour Napoléon, you can see a large glass pyramid surrounded by palace wings.",
+        "cs": "Na nádvoří Cour Napoléon je dobře vidět velká skleněná pyramida obklopená palácovými křídly."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Louvre_Pyramid"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Louvre_Pyramid_and_Cour_Napol%C3%A9on%2C_Paris.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "PAR09",
+      "place": {
+        "en": "On the Île de la Cité",
+        "cs": "Na ostrově Île de la Cité"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/PAR09.webp",
+      "sceneAlt": {
+        "en": "Stone arches, semicircular pedestrian bays and a low island tip",
+        "cs": "Kamenné oblouky, polokruhové výstupky pro chodce a nízký cíp ostrova"
+      },
+      "question": {
+        "en": "Which Paris bridge has these semicircular bays by the tip of an island?",
+        "cs": "Který pařížský most poznáš podle půlkruhových výstupků a cípu ostrova?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Pont Neuf",
+            "cs": "Pont Neuf"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Pont des Arts",
+            "cs": "Pont des Arts"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Pont Alexandre III",
+            "cs": "Most Alexandra III."
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Pont d’Iéna",
+            "cs": "Pont d’Iéna"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On the Île de la Cité, you can see stone arches, semicircular pedestrian bays and a low island tip.",
+        "cs": "Na ostrově Île de la Cité je dobře vidět kamenné oblouky, polokruhové výstupky pro chodce a nízký cíp ostrova."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Pont_Neuf"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:The_western_sides_of_the_Île_de_la_Cité_and_the_Pont_Neuf,_14_July_2008.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Kamenné půlkruhové výstupky přímo u cípu ostrova odliší Pont Neuf od ploché lávky, vysokých zlatých pilířů i mostu u Eiffelovy věže."
+    },
+    {
+      "id": "PAR10",
+      "place": {
+        "en": "From the south bank of the Seine",
+        "cs": "Z jižního břehu Seiny"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/PAR10.webp",
+      "sceneAlt": {
+        "en": "Flying buttresses around the east end of a cathedral beside a river island",
+        "cs": "Opěrné oblouky okolo východního závěru katedrály vedle říčního ostrova"
+      },
+      "question": {
+        "en": "Which Paris landmark can you see across the river?",
+        "cs": "Kterou pařížskou stavbu vidíš na protějším břehu?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Notre-Dame",
+            "cs": "Notre-Dame"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Sainte-Chapelle",
+            "cs": "Sainte-Chapelle"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Saint-Eustache",
+            "cs": "Saint-Eustache"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Dôme des Invalides",
+            "cs": "Dóm Invalidovny"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "From the south bank of the Seine, you can see flying buttresses around the east end of a cathedral beside a river island.",
+        "cs": "Z jižního břehu Seiny je dobře vidět opěrné oblouky okolo východního závěru katedrály vedle říčního ostrova."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Notre-Dame_de_Paris"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Notre-Dame_de_Paris,_4_October_2017.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Východní závěr Notre-Dame s opěrnými oblouky stojí přímo nad špičkou říčního ostrova. Sainte-Chapelle má štíhlou nástavbu a stojí uvnitř ostrova, Saint-Eustache je mezi ulicemi a Invalidovna má pozlacenou kupoli na souši."
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "name": "postcard-trail",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "npm run validate:content && vite build",
+    "build:poki": "npm run validate:content && VITE_PLATFORM=poki vite build",
+    "build:crazygames": "npm run validate:content && VITE_PLATFORM=crazygames vite build",
+    "preview": "vite preview",
+    "lint": "oxlint --deny-warnings src tools e2e",
+    "typecheck": "tsc && tsc -p tsconfig.node.json",
+    "validate:content": "node tools/content/validate.ts",
+    "content:import": "node tools/content/import.ts",
+    "content:placeholders": "node tools/content/placeholders.ts",
+    "test": "npm run validate:content && node --test \"src/**/*.test.ts\" \"tools/**/*.test.ts\"",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.1",
+    "@types/node": "^26.6.11",
+    "oxlint": "^1.95.0",
+    "typescript": "~7.0.2",
+    "vite": "^8.4.0"
+  }
+}

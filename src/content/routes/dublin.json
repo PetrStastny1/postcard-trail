@@ -1,0 +1,617 @@
+{
+  "id": "dublin",
+  "name": {
+    "en": "Dublin",
+    "cs": "Dublin"
+  },
+  "coordinates": {
+    "lat": 53.3497,
+    "lon": -6.2603
+  },
+  "postcardQuestionId": "DUB10",
+  "stops": [
+    {
+      "id": "DUB01",
+      "place": {
+        "en": "In the Trinity College courtyard",
+        "cs": "Na nádvoří Trinity College"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/DUB01.webp",
+      "sceneAlt": {
+        "en": "A slim campanile with a bell visible inside the open upper stage",
+        "cs": "Štíhlá kampanila s viditelným zvonem v otevřeném horním patře"
+      },
+      "question": {
+        "en": "Which Dublin university has a freestanding bell tower in this paved courtyard?",
+        "cs": "Kterou dublinskou univerzitu poznáš podle samostatné zvonice uprostřed dlážděného nádvoří?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Trinity College",
+            "cs": "Trinity College"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "University College Dublin",
+            "cs": "University College Dublin"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Dublin City University",
+            "cs": "Dublin City University"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Technological University Dublin",
+            "cs": "Technological University Dublin"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "In the Trinity College courtyard, you can see a slim campanile with a bell visible inside the open upper stage.",
+        "cs": "Na nádvoří Trinity College je dobře vidět štíhlá kampanila s viditelným zvonem v otevřeném horním patře."
+      },
+      "sourceUrls": [
+        "https://www.tcd.ie/news_events/articles/2025/campanile/"
+      ],
+      "photoReferenceUrls": [
+        "https://www.tcd.ie/news_events/articles/2025/campanile/"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "DUB02",
+      "place": {
+        "en": "At the edge of Grafton Street",
+        "cs": "Na kraji Grafton Street"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/DUB02.webp",
+      "sceneAlt": {
+        "en": "A paved shopping street with a stone gate to a park at its end",
+        "cs": "Dlážděná nákupní ulice a za jejím koncem kamenná brána do zeleně"
+      },
+      "question": {
+        "en": "Which Dublin street runs between Trinity College and the gate to St Stephen’s Green?",
+        "cs": "Která dublinská ulice vede mezi Trinity College a bránou do St Stephen’s Green?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Grafton Street",
+            "cs": "Grafton Street"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "O’Connell Street",
+            "cs": "O’Connell Street"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Dame Street",
+            "cs": "Dame Street"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Kildare Street",
+            "cs": "Kildare Street"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "At the edge of Grafton Street, you can see people walking across the full width between shopfronts on a central pedestrian street.",
+        "cs": "Na kraji Grafton Street je dobře vidět chodci mezi výlohami po celé šířce centrální pěší ulice."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Grafton_Street"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Grafton_St,_Dublin.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "DUB03",
+      "place": {
+        "en": "At the park’s northwest entrance",
+        "cs": "U severozápadní brány parku"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/DUB03.webp",
+      "sceneAlt": {
+        "en": "A monumental stone gateway with a rounded opening at the park",
+        "cs": "Monumentální kamenný oblouk s oblým průchodem u parku"
+      },
+      "question": {
+        "en": "Which Dublin park are you entering?",
+        "cs": "Do kterého dublinského parku vstupuješ?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "St Stephen’s Green",
+            "cs": "St Stephen’s Green"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Phoenix Park",
+            "cs": "Phoenix Park"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Merrion Square Park",
+            "cs": "Merrion Square Park"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Iveagh Gardens",
+            "cs": "Iveagh Gardens"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "At the park’s northwest entrance, you can see a monumental stone gateway with a rounded opening at the park.",
+        "cs": "U severozápadní brány parku je dobře vidět monumentální kamenný oblouk s oblým průchodem u parku."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Fusiliers%27_Arch"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Fusiliers_Arch.JPG"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "DUB04",
+      "place": {
+        "en": "At the rocky corner of Merrion Square",
+        "cs": "U skalnatého rohu Merrion Square"
+      },
+      "difficulty": "easy",
+      "sceneAsset": "scenes/DUB04.webp",
+      "sceneAlt": {
+        "en": "A figure in a green jacket with pink lapels reclines on a rough boulder among trees",
+        "cs": "Postava v zeleném saku s růžovými klopami se opírá o velký surový balvan mezi stromy"
+      },
+      "question": {
+        "en": "Who is commemorated by this Dublin statue?",
+        "cs": "Koho připomíná tato dublinská socha?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "James Joyce",
+            "cs": "James Joyce"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Samuel Beckett",
+            "cs": "Samuel Beckett"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "W. B. Yeats",
+            "cs": "W. B. Yeats"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Oscar Wilde",
+            "cs": "Oscar Wilde"
+          }
+        }
+      ],
+      "correctChoiceId": "d",
+      "feedback": {
+        "en": "On Merrion Square, Oscar Wilde reclines on a large rock in the park.",
+        "cs": "Oscar Wilde se v parku na Merrion Square opírá o velký kámen."
+      },
+      "sourceUrls": [
+        "https://www.visitdublin.com/oscar-wilde"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Merrion_Square_-_Oscar_Wilde_01.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "DUB05",
+      "place": {
+        "en": "On Kildare Street",
+        "cs": "V Kildare Street"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/DUB05.webp",
+      "sceneAlt": {
+        "en": "A symmetrical mansion with residential wings behind railings",
+        "cs": "Symetrické palácové průčelí s obytnými křídly za plotem"
+      },
+      "question": {
+        "en": "Which building is in front of you?",
+        "cs": "Kterou stavbu máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Leinster House",
+            "cs": "Leinster House"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Dublin Castle",
+            "cs": "Dublinský hrad"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Dublin City Hall",
+            "cs": "Dublinská radnice"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Custom House",
+            "cs": "Custom House"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "On Kildare Street, you can see a symmetrical mansion with residential wings behind railings.",
+        "cs": "V Kildare Street je dobře vidět symetrické palácové průčelí s obytnými křídly za plotem."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Leinster_House"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Leinster_House_in_Dublin,_seat_of_the_Oireachtas.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "DUB06",
+      "place": {
+        "en": "Outside the museum entrance on Kildare Street",
+        "cs": "Před vchodem do muzea na Kildare Street"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/DUB06.webp",
+      "sceneAlt": {
+        "en": "A view from the threshold into a circular hall with a dome and arches",
+        "cs": "Pohled z prahu rotundy do kruhového sálu s kupolí a oblouky"
+      },
+      "question": {
+        "en": "Which Dublin institution opens from Kildare Street into this round hall with a gallery running around it?",
+        "cs": "Která dublinská instituce má po vstupu z Kildare Street takovou kruhovou rotundu s galerií kolem dokola?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "National Museum of Ireland – Archaeology",
+            "cs": "Irské národní muzeum – archeologie"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Trinity College Library",
+            "cs": "Knihovna Trinity College"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "National Gallery of Ireland",
+            "cs": "Národní galerie"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Dublin City Hall",
+            "cs": "Dublinská radnice"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Outside the museum entrance on Kildare Street, you can see a view from the threshold into a circular hall with a dome and arches.",
+        "cs": "Před vchodem do muzea na Kildare Street je dobře vidět pohled z prahu rotundy do kruhového sálu s kupolí a oblouky."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/National_Museum_of_Ireland_%E2%80%93_Archaeology"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Interior_of_the_National_Museum_of_Ireland-Archaeology,_Dublin,_Ireland.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "DUB07",
+      "place": {
+        "en": "By the statue outside St Andrew’s Church",
+        "cs": "U pomníku před St Andrew’s Church"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/DUB07.webp",
+      "sceneAlt": {
+        "en": "A statue of a woman pushing a two-wheeled cart with baskets",
+        "cs": "Socha ženy tlačící dvoukolový vozík s koši"
+      },
+      "question": {
+        "en": "Which Dublin statue shows a woman pushing a two-wheeled sale cart by St Andrew’s Church?",
+        "cs": "Kterou dublinskou sochu poznáš podle prodejkyně s dvoukolovým vozíkem u kostela sv. Ondřeje?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Molly Malone",
+            "cs": "Molly Malone"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Oscar Wilde",
+            "cs": "Oscar Wilde"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "James Joyce",
+            "cs": "James Joyce"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Phil Lynott",
+            "cs": "Phil Lynott"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "Outside St Andrew’s Church, the statue shows Molly Malone pushing a two-wheeled cart.",
+        "cs": "U kostela svatého Ondřeje zachycuje socha Molly Malone s dvoukolovým prodejním vozíkem."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Molly_Malone"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Dublin_-_Molly_Malone.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "DUB08",
+      "place": {
+        "en": "Outside City Hall on Dame Street",
+        "cs": "U City Hall na Dame Street"
+      },
+      "difficulty": "hard",
+      "sceneAsset": "scenes/DUB08.webp",
+      "sceneAlt": {
+        "en": "A stone portico on steps close to the street corner",
+        "cs": "Kamenný portikus na schodech těsně u uliční křižovatky"
+      },
+      "question": {
+        "en": "Which building is in front of you?",
+        "cs": "Kterou stavbu máš před sebou?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "General Post Office",
+            "cs": "General Post Office"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Leinster House",
+            "cs": "Leinster House"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Four Courts",
+            "cs": "Four Courts"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Dublin City Hall",
+            "cs": "Dublinská radnice"
+          }
+        }
+      ],
+      "correctChoiceId": "d",
+      "feedback": {
+        "en": "Outside City Hall on Dame Street, you can see a stone portico on steps close to the street corner.",
+        "cs": "U City Hall na Dame Street je dobře vidět kamenný portikus na schodech těsně u uliční křižovatky."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/City_Hall,_Dublin"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:Dublin_City_Hall_2018a.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable"
+    },
+    {
+      "id": "DUB09",
+      "place": {
+        "en": "In Meeting House Square",
+        "cs": "Na Meeting House Square"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/DUB09.webp",
+      "sceneAlt": {
+        "en": "Separate posts supporting umbrella-like roofs over a Temple Bar square",
+        "cs": "Samostatné sloupy se střechami ve tvaru rozevřených deštníků nad náměstím v Temple Bar"
+      },
+      "question": {
+        "en": "Which Dublin square can you see?",
+        "cs": "Které dublinské náměstí vidíš?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Meeting House Square",
+            "cs": "Meeting House Square"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Temple Bar Square",
+            "cs": "Temple Bar Square"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "Smithfield Square",
+            "cs": "Smithfield Square"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Merrion Square",
+            "cs": "Merrion Square"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "In Meeting House Square, you can see separate posts supporting umbrella-like roofs over a Temple Bar square.",
+        "cs": "Na Meeting House Square je dobře vidět samostatné sloupy se střechami ve tvaru rozevřených deštníků nad náměstím v Temple Bar."
+      },
+      "sourceUrls": [
+        "https://www.visitdublin.com/meeting-house-square",
+        "https://en.wikipedia.org/wiki/Meeting_House_Square"
+      ],
+      "photoReferenceUrls": [
+        "https://www.visitdublin.com/meeting-house-square"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Čtyři textilní střechy na samostatných vysokých sloupech zakrývají komorní náměstí. Smithfield je rozlehlý, Merrion má zahradu a hlavní Temple Bar Square tuto střechu nemá."
+    },
+    {
+      "id": "DUB10",
+      "place": {
+        "en": "From the south bank of the Liffey",
+        "cs": "Z jižního nábřeží Liffey"
+      },
+      "difficulty": "expert",
+      "sceneAsset": "scenes/DUB10.webp",
+      "sceneAlt": {
+        "en": "A steep white cast-iron footbridge with a single arch and lamps",
+        "cs": "Strmá bílá litinová pěší lávka s jediným obloukem a lucernami"
+      },
+      "question": {
+        "en": "Which Liffey bridge has a single steep white cast-iron arch and lanterns?",
+        "cs": "Který most přes Liffey poznáš podle jediného strmého bílého litinového oblouku a luceren?"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": {
+            "en": "Ha’penny Bridge",
+            "cs": "Ha’penny Bridge"
+          }
+        },
+        {
+          "id": "b",
+          "label": {
+            "en": "Samuel Beckett Bridge",
+            "cs": "Samuel Beckett Bridge"
+          }
+        },
+        {
+          "id": "c",
+          "label": {
+            "en": "O’Connell Bridge",
+            "cs": "O’Connell Bridge"
+          }
+        },
+        {
+          "id": "d",
+          "label": {
+            "en": "Grattan Bridge",
+            "cs": "Grattan Bridge"
+          }
+        }
+      ],
+      "correctChoiceId": "a",
+      "feedback": {
+        "en": "From the south bank of the Liffey, you can see a steep white cast-iron footbridge with a single arch and lamps.",
+        "cs": "Z jižního nábřeží Liffey je dobře vidět strmá bílá litinová pěší lávka s jediným obloukem a lucernami."
+      },
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Ha%27penny_Bridge"
+      ],
+      "photoReferenceUrls": [
+        "https://commons.wikimedia.org/wiki/File:HalfPennyBridge.jpg"
+      ],
+      "verifiedOn": "2026-11-26",
+      "stability": "stable",
+      "distinguishingFeature": "Bílý litinový oblouk a strmé nástupy na úzkou pěší lávku odliší most od ploché vozovky O’Connell Bridge, kovové harfy Samuela Becketta i Grattan Bridge."
+    }
+  ]
+}

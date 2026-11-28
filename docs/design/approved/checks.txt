@@ -1,0 +1,66 @@
+question.en.375x812 scene=343 stacked=false choicesBelow=0 ok
+question.en.320x568 scene=200 stacked=false choicesBelow=2 ok
+question.en.568x320 scene=184 stacked=false choicesBelow=2 ok
+question.en.844x390 scene=254 stacked=false choicesBelow=0 ok
+question.en.640x360 scene=224 stacked=false choicesBelow=0 ok
+question.en.1440x900 scene=664 stacked=false choicesBelow=0 ok
+result.en.375x812 scene=343 stacked=false choicesBelow=0 ok
+result.en.320x568 scene=200 stacked=false choicesBelow=0 ok
+result.en.568x320 scene=184 stacked=false choicesBelow=0 ok
+result.en.844x390 scene=254 stacked=false choicesBelow=0 ok
+result.en.640x360 scene=224 stacked=false choicesBelow=0 ok
+result.en.1440x900 scene=664 stacked=false choicesBelow=0 ok
+loading.en.375x812 scene=343 stacked=false choicesBelow=0 ok
+loading.en.320x568 scene=200 stacked=false choicesBelow=2 ok
+loading.en.568x320 scene=184 stacked=false choicesBelow=2 ok
+loading.en.844x390 scene=254 stacked=false choicesBelow=0 ok
+loading.en.640x360 scene=224 stacked=false choicesBelow=0 ok
+loading.en.1440x900 scene=664 stacked=false choicesBelow=0 ok
+error.en.375x812 scene=343 stacked=false choicesBelow=0 ok
+error.en.320x568 scene=200 stacked=false choicesBelow=0 ok
+error.en.568x320 scene=184 stacked=false choicesBelow=0 ok
+error.en.844x390 scene=254 stacked=false choicesBelow=0 ok
+error.en.640x360 scene=224 stacked=false choicesBelow=0 ok
+error.en.1440x900 scene=664 stacked=false choicesBelow=0 ok
+fifty.en.375x812 scene=343 stacked=false choicesBelow=0 ok
+fifty.en.320x568 scene=200 stacked=false choicesBelow=0 ok
+fifty.en.568x320 scene=184 stacked=false choicesBelow=0 ok
+fifty.en.844x390 scene=254 stacked=false choicesBelow=0 ok
+fifty.en.640x360 scene=224 stacked=false choicesBelow=0 ok
+fifty.en.1440x900 scene=664 stacked=false choicesBelow=0 ok
+untimed.en.375x812 scene=343 stacked=false choicesBelow=0 ok
+untimed.en.320x568 scene=200 stacked=false choicesBelow=2 ok
+untimed.en.568x320 scene=184 stacked=false choicesBelow=2 ok
+untimed.en.844x390 scene=254 stacked=false choicesBelow=0 ok
+untimed.en.640x360 scene=224 stacked=false choicesBelow=0 ok
+untimed.en.1440x900 scene=664 stacked=false choicesBelow=0 ok
+result-correct.en.375x812 scene=343 stacked=false choicesBelow=0 ok
+result-correct.en.568x320 scene=184 stacked=false choicesBelow=0 ok
+result-correct.en.1440x900 scene=664 stacked=false choicesBelow=0 ok
+result-timeout.en.375x812 scene=343 stacked=false choicesBelow=0 ok
+result-timeout.en.568x320 scene=184 stacked=false choicesBelow=0 ok
+result-timeout.en.1440x900 scene=664 stacked=false choicesBelow=0 ok
+question.cs.320x568 scene=200 stacked=false choicesBelow=2 ok
+question.cs.568x320 scene=184 stacked=false choicesBelow=2 ok
+question.cs.640x360 scene=224 stacked=false choicesBelow=0 ok
+result.cs.320x568 scene=200 stacked=false choicesBelow=0 ok
+result.cs.568x320 scene=184 stacked=false choicesBelow=0 ok
+result.cs.640x360 scene=224 stacked=false choicesBelow=0 ok
+question.en.375x812.focus-choice scene=343 stacked=false choicesBelow=0 ok
+result.en.375x812.focus-next scene=343 stacked=false choicesBelow=0 ok
+question.en.375x812.dark scene=343 stacked=false choicesBelow=0 ok
+result.en.320x568.dark scene=200 stacked=false choicesBelow=0 ok
+result.en.375x812.dark scene=343 stacked=false choicesBelow=0 ok
+result.cs.320x568.dark scene=200 stacked=false choicesBelow=0 ok
+result.cs.375x812 scene=343 stacked=false choicesBelow=0 ok
+result.cs.375x812.dark scene=343 stacked=false choicesBelow=0 ok
+scene size en375x812: 343 same in all states
+scene size en320x568: 200 same in all states
+scene size en568x320: 184 same in all states
+scene size en844x390: 254 same in all states
+scene size en640x360: 224 same in all states
+scene size en1440x900: 664 same in all states
+scene size cs320x568: 200 same in all states
+scene size cs568x320: 184 same in all states
+scene size cs640x360: 224 same in all states
+scene size cs375x812: 343 same in all states
